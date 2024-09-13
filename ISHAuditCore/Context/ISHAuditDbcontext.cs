@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using ISHAuditCore.Migrations;
+using ISHAuditCore.Migrations.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace ISHAuditCore.Context;

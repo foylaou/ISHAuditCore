@@ -1,0 +1,6 @@
+﻿services:
+  ishauditcore:
+    image: ishauditcore
+    build:
+      context: .
+      dockerfile: ISHAuditCore/Dockerfile

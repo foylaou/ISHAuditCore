@@ -1,3 +1,4 @@
+using ISHAuditCore.Context;
 using ISHAuditCore.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,10 @@ builder.Services.AddSession(options =>
 });
 // 註冊 IHttpContextAccessor
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ISHAuditDbcontext>();
+// ISHADB
+builder.Services.AddScoped<Authority>();
+// ISHA 權限
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<Codes>(); // 如果 Codes 是每次請求一個實例，使用 Scoped 生命週期

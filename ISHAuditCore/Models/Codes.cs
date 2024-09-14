@@ -6,12 +6,18 @@ using ISHAuditCore.Migrations.Model;
 
 namespace ISHAuditCore.Models
 {
+    
     public class Codes
     {
-        private readonly ISHAuditDbcontext _db = null!;
-
-        // 透過依賴注入來處理 IConfiguration 和 DbContext
-
+        private readonly ISHAuditDbcontext _db; // 使用更具描述性的名稱
+        // 無參數構造函數，供 LINQ 使用
+        public Codes()
+        {
+        }
+        public Codes(ISHAuditDbcontext dbContext) // 構造函數名稱修正
+        {
+            _db = dbContext;
+        }
 
         public string Id { get; set; }
         public string Name { get; set; }
@@ -151,6 +157,7 @@ namespace ISHAuditCore.Models
 
         public List<user_info> GetUserList(string userid)
         {
+            Console.WriteLine(userid);
             var data = new List<user_info>();
 
             var query = from user_info in _db.user_infos

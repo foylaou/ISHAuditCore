@@ -1,0 +1,89 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    ViewBag.Title = "登入";
+}
+@section css{
+
+}
+
+@section js{
+}
+@section page_title{
+
+}
+@section location{
+    <li class="breadcrumb-item">@Html.ActionLink("首頁", "Index", "Home")</li>
+    <li class="breadcrumb-item active">@Html.ActionLink("登入", "Index", "Login")</li>
+}
+@section scripts{
+    <script>
+        
+        success: function (data) {
+            if (data.error) {
+                // 顯示錯誤訊息
+                alert(data.error);
+            } else if (data.message) {
+                // 顯示成功訊息
+                alert(data.message);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error(error);
+
+
+
+    </script>
+}
+
+<div class="row">
+    <div class="login-box" style="float:none;margin:auto;">
+        <!-- /.login-logo -->
+        <div class="card card-outline card-primary">
+            <div class="card-header text-center">
+                <a class="h5"><b>中華民國工業安全衛生協會</b></a><br>
+                <a class="h7">安全與環保技術服務處</a>
+            </div>
+            <div class="card-body">
+                <p class="login-box-msg">請輸入您的帳號及密碼</p>
+                <form action="/Login" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" name="Username" placeholder="Username">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-user"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="password" class="form-control" name="password" placeholder="Password">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                    
+                    <div class="col-6 text-center" style=" margin:auto">
+                        <button type="submit" class="btn btn-primary btn-block">Sign In</button><p></p>
+                        <!-- 封印創建帳號
+                        <a href="">創建帳號</a>
+                        -->
+                    </div>
+            </div>
+
+            </form>
+            <!-- /.social-auth-links -->
+        </div>
+           
+            <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+    </div>
+    <!-- /.login-box -->
+</div>
+

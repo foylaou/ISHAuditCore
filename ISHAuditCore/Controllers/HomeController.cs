@@ -1,14 +1,16 @@
 using System.Diagnostics;
+using ISHAuditCore.Context;
 using Microsoft.AspNetCore.Mvc;
 using ISHAuditCore.Models;
 
 namespace ISHAuditCore.Controllers;
 
-public class HomeController : Controller
+public class HomeController : BaseController
 {
     private readonly ILogger<HomeController> _logger;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ISHAuditDbcontext dbContext, Authority authorityClass,ILogger<HomeController> logger)
+        : base(dbContext, authorityClass) // 調用基類構造函數
     {
         _logger = logger;
     }
@@ -17,12 +19,7 @@ public class HomeController : Controller
     {
         return View();
     }
-
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
+    
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

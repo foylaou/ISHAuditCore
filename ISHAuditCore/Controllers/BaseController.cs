@@ -20,6 +20,8 @@ namespace ISHAuditCore.Controllers
             _authorityClass = authorityClass;
         }
 
+
+
         // Action Filter: OnActionExecuting
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
@@ -28,7 +30,7 @@ namespace ISHAuditCore.Controllers
 
             if (sController != sBypassController.ToUpper())
             {
-                AutoLogin();
+                // AutoLogin();
 
                 if (HttpContext.Session.GetString("login") == null || 
                     string.IsNullOrWhiteSpace(HttpContext.Session.GetString("login")))

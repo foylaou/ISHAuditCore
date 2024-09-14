@@ -1,0 +1,1313 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <script src="js/exceljs.min.js"></script>
+    <script src="js/table2excel.core.js"></script>
+    <script>
+        function exportTables() {
+            new Table2Excel('table').export()
+        }
+    </script>
+</head>
+<body>
+<button onclick="exportTables()">export</button>
+
+
+<h1>Table 1</h1>
+<table border="1">
+    <tbody>
+    <tr>
+        <td colspan="2">1</td>
+        <td rowspan="2"><a href="//github.com">github</a></td>
+        <td>
+            <select>
+                <option>option 1</option>
+                <option>option 2</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td><input value="input value"></td>
+        <td><textarea>textarea</textarea></td>
+        <td>c</td>
+    </tr>
+    </tbody>
+</table>
+
+<h1>ASCII Table</h1>
+<table border="1" class="wikitable" style="text-align: center">
+    <tbody>
+    <tr>
+        <th rowspan="2"><a class="mw-redirect" href="/wiki/Binary_numeral_system"
+                           title="Binary numeral system">Binary</a></th>
+        <th rowspan="2"><a href="/wiki/Octal" title="Octal">Oct</a></th>
+        <th rowspan="2"><a href="/wiki/Decimal" title="Decimal">Dec</a></th>
+        <th rowspan="2"><a href="/wiki/Hexadecimal" title="Hexadecimal">Hex</a></th>
+        <th colspan="3">Abbreviation</th>
+        <th rowspan="2"><sup class="reference" id="cite_ref-39"><a href="#cite_note-39">[b]</a></sup></th>
+        <th rowspan="2"><sup class="reference" id="cite_ref-40"><a href="#cite_note-40">[c]</a></sup></th>
+        <th rowspan="2"><sup class="reference" id="cite_ref-41"><a href="#cite_note-41">[d]</a></sup></th>
+        <th rowspan="2">Name ('67)</th>
+    </tr>
+    <tr>
+        <th>'63</th>
+        <th>'65</th>
+        <th>'67</th>
+    </tr>
+    <tr>
+        <td>000 0000</td>
+        <td style="background:lightblue;">000</td>
+        <td style="background:#CFF;">0</td>
+        <td style="background:lightblue;">00</td>
+        <td>NULL</td>
+        <td colspan="2">NUL</td>
+        <td style="font-size:large;">␀</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5E@" title="^@">^@</a></code></td>
+        <td><code><a class="mw-redirect" href="/wiki/%5C0" title="\0">\0</a></code></td>
+        <td style="text-align:left;"><a href="/wiki/Null_character" title="Null character">Null</a></td>
+    </tr>
+    <tr>
+        <td>000 0001</td>
+        <td style="background:lightblue;">001</td>
+        <td style="background:#CFF;">1</td>
+        <td style="background:lightblue;">01</td>
+        <td>SOM</td>
+        <td colspan="2">SOH</td>
+        <td style="font-size:large;">␁</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5EA" title="^A">^A</a></code></td>
+        <td></td>
+        <td style="text-align:left;"><a class="mw-redirect" href="/wiki/Start_of_Heading" title="Start of Heading">Start
+            of Heading</a></td>
+    </tr>
+    <tr>
+        <td>000 0010</td>
+        <td style="background:lightblue;">002</td>
+        <td style="background:#CFF;">2</td>
+        <td style="background:lightblue;">02</td>
+        <td>EOA</td>
+        <td colspan="2">STX</td>
+        <td style="font-size:large;">␂</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5EB" title="^B">^B</a></code></td>
+        <td></td>
+        <td style="text-align:left;"><a class="mw-redirect" href="/wiki/Start_of_Text" title="Start of Text">Start of
+            Text</a></td>
+    </tr>
+    <tr>
+        <td>000 0011</td>
+        <td style="background:lightblue;">003</td>
+        <td style="background:#CFF;">3</td>
+        <td style="background:lightblue;">03</td>
+        <td>EOM</td>
+        <td colspan="2">ETX</td>
+        <td style="font-size:large;">␃</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5EC" title="^C">^C</a></code></td>
+        <td></td>
+        <td style="text-align:left;"><a href="/wiki/End-of-Text_character" title="End-of-Text character">End of Text</a>
+        </td>
+    </tr>
+    <tr>
+        <td>000 0100</td>
+        <td style="background:lightblue;">004</td>
+        <td style="background:#CFF;">4</td>
+        <td style="background:lightblue;">04</td>
+        <td colspan="3">EOT</td>
+        <td style="font-size:large;">␄</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5ED" title="^D">^D</a></code></td>
+        <td></td>
+        <td style="text-align:left;"><a href="/wiki/End-of-Transmission_character"
+                                        title="End-of-Transmission character">End of Transmission</a></td>
+    </tr>
+    <tr>
+        <td>000 0101</td>
+        <td style="background:lightblue;">005</td>
+        <td style="background:#CFF;">5</td>
+        <td style="background:lightblue;">05</td>
+        <td>WRU</td>
+        <td colspan="2">ENQ</td>
+        <td style="font-size:large;">␅</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5EE" title="^E">^E</a></code></td>
+        <td></td>
+        <td style="text-align:left;"><a href="/wiki/Enquiry_character" title="Enquiry character">Enquiry</a></td>
+    </tr>
+    <tr>
+        <td>000 0110</td>
+        <td style="background:lightblue;">006</td>
+        <td style="background:#CFF;">6</td>
+        <td style="background:lightblue;">06</td>
+        <td>RU</td>
+        <td colspan="2">ACK</td>
+        <td style="font-size:large;">␆</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5EF" title="^F">^F</a></code></td>
+        <td></td>
+        <td style="text-align:left;"><a class="mw-redirect" href="/wiki/Acknowledge_character"
+                                        title="Acknowledge character">Acknowledgement</a></td>
+    </tr>
+    <tr>
+        <td>000 0111</td>
+        <td style="background:lightblue;">007</td>
+        <td style="background:#CFF;">7</td>
+        <td style="background:lightblue;">07</td>
+        <td>BELL</td>
+        <td colspan="2">BEL</td>
+        <td style="font-size:large;">␇</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5EG" title="^G">^G</a></code></td>
+        <td><code><a class="mw-redirect" href="/wiki/%5Ca" title="\a">\a</a></code></td>
+        <td style="text-align:left;"><a href="/wiki/Bell_character" title="Bell character">Bell</a></td>
+    </tr>
+    <tr>
+        <td>000 1000</td>
+        <td style="background:lightblue;">010</td>
+        <td style="background:#CFF;">8</td>
+        <td style="background:lightblue;">08</td>
+        <td>FE0</td>
+        <td colspan="2">BS</td>
+        <td style="font-size:large;">␈</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5EH" title="^H">^H</a></code></td>
+        <td><code><a href="/wiki/Backspace" title="Backspace">\b</a></code></td>
+        <td style="text-align:left;"><a href="/wiki/Backspace" title="Backspace">Backspace</a><sup class="reference"
+                                                                                                   id="cite_ref-42"><a
+                href="#cite_note-42">[e]</a></sup><sup class="reference" id="cite_ref-bsp_del_mismatch_43-0"><a
+                href="#cite_note-bsp_del_mismatch-43">[f]</a></sup></td>
+    </tr>
+    <tr>
+        <td>000 1001</td>
+        <td style="background:lightblue;">011</td>
+        <td style="background:#CFF;">9</td>
+        <td style="background:lightblue;">09</td>
+        <td>HT/SK</td>
+        <td colspan="2">HT</td>
+        <td style="font-size:large;">␉</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5EI" title="^I">^I</a></code></td>
+        <td><code><a class="mw-redirect" href="/wiki/%5Ct" title="\t">\t</a></code></td>
+        <td style="text-align:left;"><a class="mw-redirect" href="/wiki/Horizontal_Tab" title="Horizontal Tab">Horizontal
+            Tab</a><sup class="reference" id="cite_ref-44"><a href="#cite_note-44">[g]</a></sup></td>
+    </tr>
+    <tr>
+        <td>000 1010</td>
+        <td style="background:lightblue;">012</td>
+        <td style="background:#CFF;">10</td>
+        <td style="background:lightblue;">0A</td>
+        <td colspan="3">LF</td>
+        <td style="font-size:large;">␊</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5EJ" title="^J">^J</a></code></td>
+        <td><code><a class="mw-redirect" href="/wiki/%5Cn" title="\n">\n</a></code></td>
+        <td style="text-align:left;"><a class="mw-redirect" href="/wiki/Line_Feed" title="Line Feed">Line Feed</a></td>
+    </tr>
+    <tr>
+        <td>000 1011</td>
+        <td style="background:lightblue;">013</td>
+        <td style="background:#CFF;">11</td>
+        <td style="background:lightblue;">0B</td>
+        <td>VTAB</td>
+        <td colspan="2">VT</td>
+        <td style="font-size:large;">␋</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5EK" title="^K">^K</a></code></td>
+        <td><code><a class="mw-redirect" href="/wiki/%5Cv" title="\v">\v</a></code></td>
+        <td style="text-align:left;"><a class="mw-redirect" href="/wiki/Vertical_Tab" title="Vertical Tab">Vertical
+            Tab</a></td>
+    </tr>
+    <tr>
+        <td>000 1100</td>
+        <td style="background:lightblue;">014</td>
+        <td style="background:#CFF;">12</td>
+        <td style="background:lightblue;">0C</td>
+        <td colspan="3">FF</td>
+        <td style="font-size:large;">␌</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5EL" title="^L">^L</a></code></td>
+        <td><code><a class="mw-redirect" href="/wiki/%5Cf" title="\f">\f</a></code></td>
+        <td style="text-align:left;"><a class="mw-redirect" href="/wiki/Form_Feed" title="Form Feed">Form Feed</a></td>
+    </tr>
+    <tr>
+        <td>000 1101</td>
+        <td style="background:lightblue;">015</td>
+        <td style="background:#CFF;">13</td>
+        <td style="background:lightblue;">0D</td>
+        <td colspan="3">CR</td>
+        <td style="font-size:large;">␍</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5EM" title="^M">^M</a></code></td>
+        <td><code><a class="mw-redirect" href="/wiki/%5Cr" title="\r">\r</a></code></td>
+        <td style="text-align:left;"><a class="mw-redirect" href="/wiki/Carriage_Return" title="Carriage Return">Carriage
+            Return</a><sup class="reference" id="cite_ref-45"><a href="#cite_note-45">[h]</a></sup></td>
+    </tr>
+    <tr>
+        <td>000 1110</td>
+        <td style="background:lightblue;">016</td>
+        <td style="background:#CFF;">14</td>
+        <td style="background:lightblue;">0E</td>
+        <td colspan="3">SO</td>
+        <td style="font-size:large;">␎</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5EN" title="^N">^N</a></code></td>
+        <td></td>
+        <td style="text-align:left;"><a class="mw-redirect" href="/wiki/Shift_Out" title="Shift Out">Shift Out</a></td>
+    </tr>
+    <tr>
+        <td>000 1111</td>
+        <td style="background:lightblue;">017</td>
+        <td style="background:#CFF;">15</td>
+        <td style="background:lightblue;">0F</td>
+        <td colspan="3">SI</td>
+        <td style="font-size:large;">␏</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5EO" title="^O">^O</a></code></td>
+        <td></td>
+        <td style="text-align:left;"><a class="mw-redirect" href="/wiki/Shift_In" title="Shift In">Shift In</a></td>
+    </tr>
+    <tr>
+        <td>001 0000</td>
+        <td style="background:lightblue;">020</td>
+        <td style="background:#CFF;">16</td>
+        <td style="background:lightblue;">10</td>
+        <td>DC0</td>
+        <td colspan="2">DLE</td>
+        <td style="font-size:large;">␐</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5EP" title="^P">^P</a></code></td>
+        <td></td>
+        <td style="text-align:left;"><a class="mw-redirect" href="/wiki/Data_Link_Escape" title="Data Link Escape">Data
+            Link Escape</a></td>
+    </tr>
+    <tr>
+        <td>001 0001</td>
+        <td style="background:lightblue;">021</td>
+        <td style="background:#CFF;">17</td>
+        <td style="background:lightblue;">11</td>
+        <td colspan="3">DC1</td>
+        <td style="font-size:large;">␑</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5EQ" title="^Q">^Q</a></code></td>
+        <td></td>
+        <td style="text-align:left;"><a class="mw-redirect" href="/wiki/Device_Control_1" title="Device Control 1">Device
+            Control 1</a> (often <a class="mw-redirect" href="/wiki/XON" title="XON">XON</a>)
+        </td>
+    </tr>
+    <tr>
+        <td>001 0010</td>
+        <td style="background:lightblue;">022</td>
+        <td style="background:#CFF;">18</td>
+        <td style="background:lightblue;">12</td>
+        <td colspan="3">DC2</td>
+        <td style="font-size:large;">␒</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5ER" title="^R">^R</a></code></td>
+        <td></td>
+        <td style="text-align:left;"><a class="mw-redirect" href="/wiki/Device_Control_2" title="Device Control 2">Device
+            Control 2</a></td>
+    </tr>
+    <tr>
+        <td>001 0011</td>
+        <td style="background:lightblue;">023</td>
+        <td style="background:#CFF;">19</td>
+        <td style="background:lightblue;">13</td>
+        <td colspan="3">DC3</td>
+        <td style="font-size:large;">␓</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5ES" title="^S">^S</a></code></td>
+        <td></td>
+        <td style="text-align:left;"><a class="mw-redirect" href="/wiki/Device_Control_3" title="Device Control 3">Device
+            Control 3</a> (often <a class="mw-redirect" href="/wiki/XOFF" title="XOFF">XOFF</a>)
+        </td>
+    </tr>
+    <tr>
+        <td>001 0100</td>
+        <td style="background:lightblue;">024</td>
+        <td style="background:#CFF;">20</td>
+        <td style="background:lightblue;">14</td>
+        <td colspan="3">DC4</td>
+        <td style="font-size:large;">␔</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5ET" title="^T">^T</a></code></td>
+        <td></td>
+        <td style="text-align:left;"><a class="mw-redirect" href="/wiki/Device_Control_4" title="Device Control 4">Device
+            Control 4</a></td>
+    </tr>
+    <tr>
+        <td>001 0101</td>
+        <td style="background:lightblue;">025</td>
+        <td style="background:#CFF;">21</td>
+        <td style="background:lightblue;">15</td>
+        <td>ERR</td>
+        <td colspan="2">NAK</td>
+        <td style="font-size:large;">␕</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5EU" title="^U">^U</a></code></td>
+        <td></td>
+        <td style="text-align:left;"><a class="mw-redirect" href="/wiki/Negative-acknowledge_character"
+                                        title="Negative-acknowledge character">Negative Acknowledgement</a></td>
+    </tr>
+    <tr>
+        <td>001 0110</td>
+        <td style="background:lightblue;">026</td>
+        <td style="background:#CFF;">22</td>
+        <td style="background:lightblue;">16</td>
+        <td>SYNC</td>
+        <td colspan="2">SYN</td>
+        <td style="font-size:large;">␖</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5EV" title="^V">^V</a></code></td>
+        <td></td>
+        <td style="text-align:left;"><a href="/wiki/Synchronous_Idle" title="Synchronous Idle">Synchronous Idle</a></td>
+    </tr>
+    <tr>
+        <td>001 0111</td>
+        <td style="background:lightblue;">027</td>
+        <td style="background:#CFF;">23</td>
+        <td style="background:lightblue;">17</td>
+        <td>LEM</td>
+        <td colspan="2">ETB</td>
+        <td style="font-size:large;">␗</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5EW" title="^W">^W</a></code></td>
+        <td></td>
+        <td style="text-align:left;"><a href="/wiki/End-of-Transmission-Block_character"
+                                        title="End-of-Transmission-Block character">End of Transmission Block</a></td>
+    </tr>
+    <tr>
+        <td>001 1000</td>
+        <td style="background:lightblue;">030</td>
+        <td style="background:#CFF;">24</td>
+        <td style="background:lightblue;">18</td>
+        <td>S0</td>
+        <td colspan="2">CAN</td>
+        <td style="font-size:large;">␘</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5EX" title="^X">^X</a></code></td>
+        <td></td>
+        <td style="text-align:left;"><a href="/wiki/Cancel_character" title="Cancel character">Cancel</a></td>
+    </tr>
+    <tr>
+        <td>001 1001</td>
+        <td style="background:lightblue;">031</td>
+        <td style="background:#CFF;">25</td>
+        <td style="background:lightblue;">19</td>
+        <td>S1</td>
+        <td colspan="2">EM</td>
+        <td style="font-size:large;">␙</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5EY" title="^Y">^Y</a></code></td>
+        <td></td>
+        <td style="text-align:left;"><a class="mw-redirect" href="/wiki/End_of_Medium" title="End of Medium">End of
+            Medium</a></td>
+    </tr>
+    <tr>
+        <td>001 1010</td>
+        <td style="background:lightblue;">032</td>
+        <td style="background:#CFF;">26</td>
+        <td style="background:lightblue;">1A</td>
+        <td>S2</td>
+        <td>SS</td>
+        <td>SUB</td>
+        <td style="font-size:large;">␚</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5EZ" title="^Z">^Z</a></code></td>
+        <td></td>
+        <td style="text-align:left;"><a href="/wiki/Substitute_character" title="Substitute character">Substitute</a>
+        </td>
+    </tr>
+    <tr>
+        <td>001 1011</td>
+        <td style="background:lightblue;">033</td>
+        <td style="background:#CFF;">27</td>
+        <td style="background:lightblue;">1B</td>
+        <td>S3</td>
+        <td colspan="2">ESC</td>
+        <td style="font-size:large;">␛</td>
+        <td><code>^[</code></td>
+        <td><code><a class="mw-redirect" href="/wiki/%5Ce" title="\e">\e</a></code><sup class="reference"
+                                                                                        id="cite_ref-46"><a
+                href="#cite_note-46">[i]</a></sup></td>
+        <td style="text-align:left;"><a href="/wiki/Escape_character" title="Escape character">Escape</a><sup
+                class="reference" id="cite_ref-47"><a href="#cite_note-47">[j]</a></sup></td>
+    </tr>
+    <tr>
+        <td>001 1100</td>
+        <td style="background:lightblue;">034</td>
+        <td style="background:#CFF;">28</td>
+        <td style="background:lightblue;">1C</td>
+        <td>S4</td>
+        <td colspan="2">FS</td>
+        <td style="font-size:large;">␜</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5E%5C" title="^\">^\</a></code></td>
+        <td></td>
+        <td style="text-align:left;"><a class="mw-redirect" href="/wiki/File_Separator" title="File Separator">File
+            Separator</a></td>
+    </tr>
+    <tr>
+        <td>001 1101</td>
+        <td style="background:lightblue;">035</td>
+        <td style="background:#CFF;">29</td>
+        <td style="background:lightblue;">1D</td>
+        <td>S5</td>
+        <td colspan="2">GS</td>
+        <td style="font-size:large;">␝</td>
+        <td><code>^]</code></td>
+        <td></td>
+        <td style="text-align:left;"><a class="mw-redirect" href="/wiki/Group_Separator" title="Group Separator">Group
+            Separator</a></td>
+    </tr>
+    <tr>
+        <td>001 1110</td>
+        <td style="background:lightblue;">036</td>
+        <td style="background:#CFF;">30</td>
+        <td style="background:lightblue;">1E</td>
+        <td>S6</td>
+        <td colspan="2">RS</td>
+        <td style="font-size:large;">␞</td>
+        <td><code>^^</code><sup class="reference" id="cite_ref-48"><a href="#cite_note-48">[k]</a></sup></td>
+        <td></td>
+        <td style="text-align:left;"><a class="mw-redirect" href="/wiki/Record_Separator" title="Record Separator">Record
+            Separator</a></td>
+    </tr>
+    <tr>
+        <td>001 1111</td>
+        <td style="background:lightblue;">037</td>
+        <td style="background:#CFF;">31</td>
+        <td style="background:lightblue;">1F</td>
+        <td>S7</td>
+        <td colspan="2">US</td>
+        <td style="font-size:large;">␟</td>
+        <td><code>^_</code></td>
+        <td></td>
+        <td style="text-align:left;"><a class="mw-redirect" href="/wiki/Unit_Separator" title="Unit Separator">Unit
+            Separator</a></td>
+    </tr>
+    <tr>
+        <td>111 1111</td>
+        <td style="background:lightblue;">177</td>
+        <td style="background:#CFF;">127</td>
+        <td style="background:lightblue;">7F</td>
+        <td colspan="3">DEL</td>
+        <td style="font-size:large;">␡</td>
+        <td><code><a class="mw-redirect" href="/wiki/%5E%3F" title="^?">^?</a></code></td>
+        <td></td>
+        <td style="text-align:left;"><a href="/wiki/Delete_character" title="Delete character">Delete</a><sup
+                class="reference" id="cite_ref-49"><a href="#cite_note-49">[l]</a></sup><sup
+                class="reference" id="cite_ref-bsp_del_mismatch_43-1"><a
+                href="#cite_note-bsp_del_mismatch-43">[f]</a></sup></td>
+    </tr>
+    </tbody>
+</table>
+
+<h1>Table 3</h1>
+<table border="1">
+    <tbody>
+    <tr align="center" style="margin:auto" valign="bottom">
+        <td width="1.2%"><b>族→</b></td>
+        <td width="5.3%"><b><a class="mw-redirect" href="/wiki/%E9%B9%BC%E9%87%91%E5%B1%AC" title="碱金属">1</a></b>
+        </td>
+        <td width="5.3%"><b><a class="mw-redirect" href="/wiki/%E9%B9%BC%E5%9C%9F%E9%87%91%E5%B1%AC"
+                               title="碱土金属">2</a></b></td>
+        <td width="5.3%"><b><a href="/wiki/3%E6%97%8F%E5%85%83%E7%B4%A0" title="3族元素">3</a></b></td>
+        <td width="5.3%"><b><a href="/wiki/4%E6%97%8F%E5%85%83%E7%B4%A0" title="4族元素">4</a></b></td>
+        <td width="5.3%"><b><a href="/wiki/5%E6%97%8F%E5%85%83%E7%B4%A0" title="5族元素">5</a></b></td>
+        <td width="5.3%"><b><a href="/wiki/6%E6%97%8F%E5%85%83%E7%B4%A0" title="6族元素">6</a></b></td>
+        <td width="5.3%"><b><a href="/wiki/7%E6%97%8F%E5%85%83%E7%B4%A0" title="7族元素">7</a></b></td>
+        <td width="5.3%"><b><a href="/wiki/8%E6%97%8F%E5%85%83%E7%B4%A0" title="8族元素">8</a></b></td>
+        <td width="5.3%"><b><a href="/wiki/9%E6%97%8F%E5%85%83%E7%B4%A0" title="9族元素">9</a></b></td>
+        <td width="5.3%"><b><a href="/wiki/10%E6%97%8F%E5%85%83%E7%B4%A0" title="10族元素">10</a></b></td>
+        <td width="5.3%"><b><a href="/wiki/11%E6%97%8F%E5%85%83%E7%B4%A0" title="11族元素">11</a></b></td>
+        <td width="5.3%"><b><a href="/wiki/12%E6%97%8F%E5%85%83%E7%B4%A0" title="12族元素">12</a></b></td>
+        <td width="5.3%"><b><a href="/wiki/%E7%A1%BC%E6%97%8F%E5%85%83%E7%B4%A0" title="硼族元素">13</a></b></td>
+        <td width="5.3%"><b><a href="/wiki/%E7%A2%B3%E6%97%8F%E5%85%83%E7%B4%A0" title="碳族元素">14</a></b></td>
+        <td width="5.3%"><b><a href="/wiki/%E6%B0%AE%E6%97%8F%E5%85%83%E7%B4%A0" title="氮族元素">15</a></b></td>
+        <td width="5.3%"><b><a href="/wiki/%E6%B0%A7%E6%97%8F%E5%85%83%E7%B4%A0" title="氧族元素">16</a></b></td>
+        <td width="5.3%"><b><a class="mw-redirect" href="/wiki/%E9%B9%B5%E7%B4%A0" title="卤素">17</a></b></td>
+        <td width="5.3%"><b><a href="/wiki/%E7%A8%80%E6%9C%89%E6%B0%94%E4%BD%93" title="稀有气体">18</a></b></td>
+        <td rowspan="3" width="1.6%"><b>电子层</b></td>
+        <td rowspan="3" width="1.6%"><b>0族电子数</b></td>
+    </tr>
+    <tr align="center">
+        <td colspan="19">
+            <hr>
+        </td>
+    </tr>
+    <tr align="center" valign="bottom">
+        <td><b>周期↓</b></td>
+        <td><b>I</b>A</td>
+        <td colspan="16"></td>
+        <td><b>VIII</b>A<br>
+            （0）
+        </td>
+    </tr>
+    <tr align="center">
+        <td><a href="/wiki/%E7%AC%AC1%E5%91%A8%E6%9C%9F%E5%85%83%E7%B4%A0" title="第1周期元素">1</a></td>
+        <td bgcolor="#A0FFA0"><span style="color:green;"><b>1</b></span><br>
+            H<br>
+            <a class="mw-redirect" href="/wiki/%E6%B0%AB" title="氢">氢</a><br>
+            1.008
+        </td>
+        <td valign="bottom"><b>II</b> A</td>
+        <td colspan="10"></td>
+        <td valign="bottom"><b>III</b> A</td>
+        <td valign="bottom"><b>IV</b> A</td>
+        <td valign="bottom"><b>V</b> A</td>
+        <td valign="bottom"><b>VI</b> A</td>
+        <td valign="bottom"><b>VII</b> A</td>
+        <td bgcolor="#C0FFFF"><span style="color:green;"><b>2</b></span><br>
+            He<br>
+            <a href="/wiki/%E6%B0%A6" title="氦">氦</a><br>
+            4.003
+        </td>
+        <td style="font-size:50%;line-height:1.2" valign="bottom"><br>
+            <br>
+            <br>
+            <br>
+            <br>
+            K
+        </td>
+        <td style="font-size:50%;line-height:1.2" valign="bottom"><br>
+            <br>
+            <br>
+            <br>
+            <br>
+            2
+        </td>
+    </tr>
+    <tr align="center">
+        <td><a href="/wiki/%E7%AC%AC2%E5%91%A8%E6%9C%9F%E5%85%83%E7%B4%A0" title="第2周期元素">2</a></td>
+        <td bgcolor="#FF6666"><b>3</b><br>
+            Li<br>
+            <a class="mw-redirect" href="/wiki/%E9%8B%B0" title="锂">锂</a><br>
+            6.941
+        </td>
+        <td bgcolor="#FFDEAD"><b>4</b><br>
+            Be<br>
+            <a class="mw-redirect" href="/wiki/%E9%88%B9" title="铍">铍</a><br>
+            9.012
+        </td>
+        <td colspan="10"></td>
+        <td bgcolor="#CCCC99"><b>5</b><br>
+            B<br>
+            <a href="/wiki/%E7%A1%BC" title="硼">硼</a><br>
+            10.81
+        </td>
+        <td bgcolor="#A0FFA0"><b>6</b><br>
+            C<br>
+            <a href="/wiki/%E7%A2%B3" title="碳">碳</a><br>
+            12.01
+        </td>
+        <td bgcolor="#A0FFA0"><span style="color:green;"><b>7</b></span><br>
+            N<br>
+            <a href="/wiki/%E6%B0%AE" title="氮">氮</a><br>
+            14.01
+        </td>
+        <td bgcolor="#A0FFA0"><span style="color:green;"><b>8</b></span><br>
+            O<br>
+            <a href="/wiki/%E6%B0%A7" title="氧">氧</a><br>
+            16.00
+        </td>
+        <td bgcolor="#FFFF99"><span style="color:green;"><b>9</b></span><br>
+            F<br>
+            <a href="/wiki/%E6%B0%9F" title="氟">氟</a><br>
+            19.00
+        </td>
+        <td bgcolor="#C0FFFF"><span style="color:green;"><b>10</b></span><br>
+            Ne<br>
+            <a href="/wiki/%E6%B0%96" title="氖">氖</a><br>
+            20.18
+        </td>
+        <td style="font-size:50%;line-height:1.2" valign="bottom"><br>
+            <br>
+            <br>
+            <br>
+            L<br>
+            K
+        </td>
+        <td style="font-size:50%;line-height:1.2" valign="bottom"><br>
+            <br>
+            <br>
+            <br>
+            8<br>
+            2
+        </td>
+    </tr>
+    <tr align="center">
+        <td><a href="/wiki/%E7%AC%AC3%E5%91%A8%E6%9C%9F%E5%85%83%E7%B4%A0" title="第3周期元素">3</a></td>
+        <td bgcolor="#FF6666"><b>11</b><br>
+            Na<br>
+            <a class="mw-redirect" href="/wiki/%E9%88%89" title="钠">钠</a><br>
+            22.99
+        </td>
+        <td bgcolor="#FFDEAD"><b>12</b><br>
+            Mg<br>
+            <a class="mw-redirect" href="/wiki/%E9%8E%82" title="镁">镁</a><br>
+            24.31
+        </td>
+        <td valign="bottom"><b>III</b> B</td>
+        <td valign="bottom"><b>IV</b> B</td>
+        <td valign="bottom"><b>V</b> B</td>
+        <td valign="bottom"><b>VI</b> B</td>
+        <td valign="bottom"><b>VII</b> B</td>
+        <td colspan="3" valign="bottom"><b>VIII</b> B<br>
+            <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y"
+                                                 style="display: none;"><math
+                    xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <mrow class="MJX-TeXAtom-OP">
+          <mover>
+            <mrow>
+              <mspace width="2em"></mspace>
+              <mspace width="2em"></mspace>
+              <mspace width="2em"></mspace>
+            </mrow>
+            <mo accent="false">⏞<!-- ⏞ --></mo>
+          </mover>
+        </mrow>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle \overbrace {\qquad \qquad \qquad } }</annotation>
+  </semantics>
+</math></span><img alt="\overbrace {\qquad \qquad \qquad } "
+                   aria-hidden="true" class="mwe-math-fallback-image-inline"
+                   src="https://wikimedia.org/api/rest_v1/media/math/render/svg/220427fd36f89da1fe868ced1f293fd5a1a90267"
+                   style="vertical-align: -0.171ex; margin-right: -0.02ex; width:13.955ex; height:1.843ex;"></span></td>
+        <td valign="bottom"><b>I</b> B</td>
+        <td valign="bottom"><b>II</b> B</td>
+        <td bgcolor="#CCCCCC"><b>13</b><br>
+            Al<br>
+            <a class="mw-redirect" href="/wiki/%E9%8B%81" title="铝">铝</a><br>
+            26.98
+        </td>
+        <td bgcolor="#CCCC99"><b>14</b><br>
+            Si<br>
+            <a href="/wiki/%E7%A1%85" title="硅">硅</a><br>
+            28.09
+        </td>
+        <td bgcolor="#A0FFA0"><b>15</b><br>
+            P<br>
+            <a href="/wiki/%E7%A3%B7" title="磷">磷</a><br>
+            30.97
+        </td>
+        <td bgcolor="#A0FFA0"><b>16</b><br>
+            S<br>
+            <a href="/wiki/%E7%A1%AB" title="硫">硫</a><br>
+            32.07
+        </td>
+        <td bgcolor="#FFFF99"><span style="color:green;"><b>17</b></span><br>
+            Cl<br>
+            <a href="/wiki/%E6%B0%AF" title="氯">氯</a><br>
+            35.45
+        </td>
+        <td bgcolor="#C0FFFF"><span style="color:green;"><b>18</b></span><br>
+            Ar<br>
+            <a class="mw-redirect" href="/wiki/%E6%B0%AC" title="氩">氩</a><br>
+            39.95
+        </td>
+        <td style="font-size:50%;line-height:1.2" valign="bottom"><br>
+            <br>
+            <br>
+            M<br>
+            L<br>
+            K
+        </td>
+        <td style="font-size:50%;line-height:1.2" valign="bottom"><br>
+            <br>
+            <br>
+            8<br>
+            8<br>
+            2
+        </td>
+    </tr>
+    <tr align="center">
+        <td><a href="/wiki/%E7%AC%AC4%E5%91%A8%E6%9C%9F%E5%85%83%E7%B4%A0" title="第4周期元素">4</a></td>
+        <td bgcolor="#FF6666"><b>19</b><br>
+            K<br>
+            <a class="mw-redirect" href="/wiki/%E9%89%80" title="钾">钾</a><br>
+            39.10
+        </td>
+        <td bgcolor="#FFDEAD"><b>20</b><br>
+            Ca<br>
+            <a class="mw-redirect" href="/wiki/%E9%88%A3" title="钙">钙</a><br>
+            40.08
+        </td>
+        <td bgcolor="#FFC0C0"><b>21</b><br>
+            Sc<br>
+            <a class="mw-redirect" href="/wiki/%E9%88%A7" title="钪">钪</a><br>
+            44.96
+        </td>
+        <td bgcolor="#FFC0C0"><b>22</b><br>
+            Ti<br>
+            <a class="mw-redirect" href="/wiki/%E9%88%A6" title="钛">钛</a><br>
+            47.88
+        </td>
+        <td bgcolor="#FFC0C0"><b>23</b><br>
+            V<br>
+            <a class="mw-redirect" href="/wiki/%E9%87%A9" title="钒">钒</a><br>
+            50.94
+        </td>
+        <td bgcolor="#FFC0C0"><b>24</b><br>
+            Cr<br>
+            <a class="mw-redirect" href="/wiki/%E9%89%BB" title="铬">铬</a><br>
+            52.00
+        </td>
+        <td bgcolor="#FFC0C0"><b>25</b><br>
+            Mn<br>
+            <a class="mw-redirect" href="/wiki/%E9%8C%B3" title="锰">锰</a><br>
+            54.94
+        </td>
+        <td bgcolor="#FFC0C0"><b>26</b><br>
+            Fe<br>
+            <a class="mw-redirect" href="/wiki/%E9%90%B5" title="铁">铁</a><br>
+            55.85
+        </td>
+        <td bgcolor="#FFC0C0"><b>27</b><br>
+            Co<br>
+            <a class="mw-redirect" href="/wiki/%E9%88%B7" title="钴">钴</a><br>
+            58.93
+        </td>
+        <td bgcolor="#FFC0C0"><b>28</b><br>
+            Ni<br>
+            <a class="mw-redirect" href="/wiki/%E9%8E%B3" title="镍">镍</a><br>
+            58.69
+        </td>
+        <td bgcolor="#FFC0C0"><b>29</b><br>
+            Cu<br>
+            <a class="mw-redirect" href="/wiki/%E9%8A%85" title="铜">铜</a><br>
+            63.55
+        </td>
+        <td bgcolor="#FFC0C0"><b>30</b><br>
+            Zn<br>
+            <a class="mw-redirect" href="/wiki/%E9%8B%85" title="锌">锌</a><br>
+            65.39
+        </td>
+        <td bgcolor="#CCCCCC"><b>31</b><br>
+            Ga<br>
+            <a class="mw-redirect" href="/wiki/%E9%8E%B5" title="镓">镓</a><br>
+            69.72
+        </td>
+        <td bgcolor="#CCCC99"><b>32</b><br>
+            Ge<br>
+            <a class="mw-redirect" href="/wiki/%E9%8D%BA" title="锗">锗</a><br>
+            72.59
+        </td>
+        <td bgcolor="#CCCC99"><b>33</b><br>
+            As<br>
+            <a href="/wiki/%E7%A0%B7" title="砷">砷</a><br>
+            74.92
+        </td>
+        <td bgcolor="#A0FFA0"><b>34</b><br>
+            Se<br>
+            <a href="/wiki/%E7%A1%92" title="硒">硒</a><br>
+            78.96
+        </td>
+        <td bgcolor="#FFFF99"><span style="color:blue;"><b>35</b></span><br>
+            Br<br>
+            <a href="/wiki/%E6%BA%B4" title="溴">溴</a><br>
+            79.90
+        </td>
+        <td bgcolor="#C0FFFF"><span style="color:green;"><b>36</b></span><br>
+            Kr<br>
+            <a href="/wiki/%E6%B0%AA" title="氪">氪</a><br>
+            83.80
+        </td>
+        <td style="font-size:50%;line-height:1.2" valign="bottom"><br>
+            <br>
+            N<br>
+            M<br>
+            L<br>
+            K
+        </td>
+        <td style="font-size:50%;line-height:1.2" valign="bottom"><br>
+            <br>
+            8<br>
+            18<br>
+            8<br>
+            2
+        </td>
+    </tr>
+    <tr align="center">
+        <td><a href="/wiki/%E7%AC%AC5%E5%91%A8%E6%9C%9F%E5%85%83%E7%B4%A0" title="第5周期元素">5</a></td>
+        <td bgcolor="#FF6666"><b>37</b><br>
+            Rb<br>
+            <a class="mw-redirect" href="/wiki/%E9%8A%A3" title="铷">铷</a><br>
+            85.47
+        </td>
+        <td bgcolor="#FFDEAD"><b>38</b><br>
+            Sr<br>
+            <a class="mw-redirect" href="/wiki/%E9%8D%B6" title="锶">锶</a><br>
+            87.62
+        </td>
+        <td bgcolor="#FFC0C0"><b>39</b><br>
+            Y<br>
+            <a class="mw-redirect" href="/wiki/%E9%87%94" title="钇">钇</a><br>
+            88.91
+        </td>
+        <td bgcolor="#FFC0C0"><b>40</b><br>
+            Zr<br>
+            <a class="mw-redirect" href="/wiki/%E9%8B%AF" title="锆">锆</a><br>
+            91.22
+        </td>
+        <td bgcolor="#FFC0C0"><b>41</b><br>
+            Nb<br>
+            <a class="mw-redirect" href="/wiki/%E9%88%AE" title="铌">铌</a><br>
+            92.91
+        </td>
+        <td bgcolor="#FFC0C0"><b>42</b><br>
+            Mo<br>
+            <a class="mw-redirect" href="/wiki/%E9%89%AC" title="钼">钼</a><br>
+            95.94
+        </td>
+        <td bgcolor="#FFC0C0"><b>43</b><br>
+            Tc<br>
+            <a class="mw-redirect" href="/wiki/%E9%8E%9D" title="锝">锝</a><br>
+            (97.91)
+        </td>
+        <td bgcolor="#FFC0C0"><b>44</b><br>
+            Ru<br>
+            <a class="mw-redirect" href="/wiki/%E9%87%95" title="钌">钌</a><br>
+            101.1
+        </td>
+        <td bgcolor="#FFC0C0"><b>45</b><br>
+            Rh<br>
+            <a class="mw-redirect" href="/wiki/%E9%8A%A0" title="铑">铑</a><br>
+            102.9
+        </td>
+        <td bgcolor="#FFC0C0"><b>46</b><br>
+            Pd<br>
+            <a class="mw-redirect" href="/wiki/%E9%88%80" title="钯">钯</a><br>
+            106.4
+        </td>
+        <td bgcolor="#FFC0C0"><b>47</b><br>
+            Ag<br>
+            <a href="/wiki/%E9%8A%80" title="银">银</a><br>
+            107.9
+        </td>
+        <td bgcolor="#FFC0C0"><b>48</b><br>
+            Cd<br>
+            <a class="mw-redirect" href="/wiki/%E9%8E%98" title="镉">镉</a><br>
+            112.4
+        </td>
+        <td bgcolor="#CCCCCC"><b>49</b><br>
+            In<br>
+            <a class="mw-redirect" href="/wiki/%E9%8A%A6" title="铟">铟</a><br>
+            114.8
+        </td>
+        <td bgcolor="#CCCCCC"><b>50</b><br>
+            Sn<br>
+            <a class="mw-redirect" href="/wiki/%E9%8C%AB" title="锡">锡</a><br>
+            118.7
+        </td>
+        <td bgcolor="#CCCC99"><b>51</b><br>
+            Sb<br>
+            <a class="mw-redirect" href="/wiki/%E9%8A%BB" title="锑">锑</a><br>
+            121.8
+        </td>
+        <td bgcolor="#CCCC99"><b>52</b><br>
+            Te<br>
+            <a href="/wiki/%E7%A2%B2" title="碲">碲</a><br>
+            127.6
+        </td>
+        <td bgcolor="#FFFF99"><b>53</b><br>
+            I<br>
+            <a href="/wiki/%E7%A2%98" title="碘">碘</a><br>
+            126.9
+        </td>
+        <td bgcolor="#C0FFFF"><span style="color:green;"><b>54</b></span><br>
+            Xe<br>
+            <a href="/wiki/%E6%B0%99" title="氙">氙</a><br>
+            131.3
+        </td>
+        <td style="font-size:50%;line-height:1.2" valign="bottom"><br>
+            O<br>
+            N<br>
+            M<br>
+            L<br>
+            K
+        </td>
+        <td style="font-size:50%;line-height:1.2" valign="bottom"><br>
+            8<br>
+            18<br>
+            18<br>
+            8<br>
+            2
+        </td>
+    </tr>
+    <tr align="center">
+        <td><a href="/wiki/%E7%AC%AC6%E5%91%A8%E6%9C%9F%E5%85%83%E7%B4%A0" title="第6周期元素">6</a></td>
+        <td bgcolor="#FF6666"><b>55</b><br>
+            Cs<br>
+            <a class="mw-redirect" href="/wiki/%E9%8A%AB" title="铯">铯</a><br>
+            132.9
+        </td>
+        <td bgcolor="#FFDEAD"><b>56</b><br>
+            Ba<br>
+            <a class="mw-redirect" href="/wiki/%E9%8B%87" title="钡">钡</a><br>
+            137.3
+        </td>
+        <td bgcolor="#FFBFFF"><b>57</b>-<br>
+            <b>71</b><br>
+            <a class="mw-redirect" href="/wiki/%E9%91%AD%E7%B3%BB%E5%85%83%E7%B4%A0" title="镧系元素">镧系<br>
+                元素</a></td>
+        <td bgcolor="#FFC0C0"><b>72</b><br>
+            Hf<br>
+            <a class="mw-redirect" href="/wiki/%E9%89%BF" title="铪">铪</a><br>
+            178.5
+        </td>
+        <td bgcolor="#FFC0C0"><b>73</b><br>
+            Ta<br>
+            <a class="mw-redirect" href="/wiki/%E9%89%AD" title="钽">钽</a><br>
+            180.9
+        </td>
+        <td bgcolor="#FFC0C0"><b>74</b><br>
+            W<br>
+            <a class="mw-redirect" href="/wiki/%E9%8E%A2" title="钨">钨</a><br>
+            183.9
+        </td>
+        <td bgcolor="#FFC0C0"><b>75</b><br>
+            Re<br>
+            <a class="mw-redirect" href="/wiki/%E9%8C%B8" title="铼">铼</a><br>
+            186.2
+        </td>
+        <td bgcolor="#FFC0C0"><b>76</b><br>
+            Os<br>
+            <a class="mw-redirect" href="/wiki/%E9%8B%A8" title="锇">锇</a><br>
+            190.2
+        </td>
+        <td bgcolor="#FFC0C0"><b>77</b><br>
+            Ir<br>
+            <a class="mw-redirect" href="/wiki/%E9%8A%A5" title="铱">铱</a><br>
+            192.2
+        </td>
+        <td bgcolor="#FFC0C0"><b>78</b><br>
+            Pt<br>
+            <a class="mw-redirect" href="/wiki/%E9%89%91" title="铂">铂</a><br>
+            195.1
+        </td>
+        <td bgcolor="#FFC0C0"><b>79</b><br>
+            Au<br>
+            <a href="/wiki/%E9%87%91" title="金">金</a><br>
+            197.0
+        </td>
+        <td bgcolor="#FFC0C0"><span style="color:blue;"><b>80</b></span><br>
+            Hg<br>
+            <a href="/wiki/%E6%B1%9E" title="汞">汞</a><br>
+            200.6
+        </td>
+        <td bgcolor="#CCCCCC"><b>81</b><br>
+            Tl<br>
+            <a class="mw-redirect" href="/wiki/%E9%89%88" title="铊">铊</a><br>
+            204.4
+        </td>
+        <td bgcolor="#CCCCCC"><b>82</b><br>
+            Pb<br>
+            <a class="mw-redirect" href="/wiki/%E9%89%9B" title="铅">铅</a><br>
+            207.2
+        </td>
+        <td bgcolor="#CCCCCC"><b>83</b><br>
+            Bi<br>
+            <a class="mw-redirect" href="/wiki/%E9%89%8D" title="铋">铋</a><br>
+            209.0
+        </td>
+        <td bgcolor="#CCCCCC"><b>84</b><br>
+            Po<br>
+            <a class="mw-redirect" href="/wiki/%E9%87%99" title="钋">钋</a><br>
+            (209.0)
+        </td>
+        <td bgcolor="#FFFF99"><b>85</b><br>
+            At<br>
+            <a href="/wiki/%E7%A0%B9" title="砹">砹</a><br>
+            (210.0)
+        </td>
+        <td bgcolor="#C0FFFF"><span style="color:green;"><b>86</b></span><br>
+            Rn<br>
+            <a href="/wiki/%E6%B0%A1" title="氡">氡</a><br>
+            (222.0)
+        </td>
+        <td style="font-size:50%;line-height:1.2" valign="bottom">P<br>
+            O<br>
+            N<br>
+            M<br>
+            L<br>
+            K
+        </td>
+        <td style="font-size:50%;line-height:1.2" valign="bottom">8<br>
+            18<br>
+            32<br>
+            18<br>
+            8<br>
+            2
+        </td>
+    </tr>
+    <tr align="center">
+        <td><a href="/wiki/%E7%AC%AC7%E5%91%A8%E6%9C%9F%E5%85%83%E7%B4%A0" title="第7周期元素">7</a></td>
+        <td bgcolor="#FF6666"><b>87</b><br>
+            Fr<br>
+            <a class="mw-redirect" href="/wiki/%E9%8D%85" title="钫">钫</a><br>
+            (223.0)
+        </td>
+        <td bgcolor="#FFDEAD"><b>88</b><br>
+            Ra<br>
+            <a class="mw-redirect" href="/wiki/%E9%90%B3" title="镭">镭</a><br>
+            (226.0)
+        </td>
+        <td bgcolor="#FF99CC"><b>89</b>-<br>
+            <b>103</b><br>
+            <a class="mw-redirect" href="/wiki/%E9%8C%92%E7%B3%BB%E5%85%83%E7%B4%A0" title="锕系元素">锕系<br>
+                元素</a></td>
+        <td bgcolor="#FFC0C0"><span style="color:grey;"><b>104</b></span><br>
+            Rf<br>
+            <a href="/wiki/%E9%91%AA" title="𬬻">𬬻（鑪）</a><br>
+            (265.1)
+        </td>
+        <td bgcolor="#FFC0C0"><span style="color:grey;"><b>105</b></span><br>
+            Db<br>
+            <a href="/wiki/%F0%A8%A7%80" title="𨧀">𬭊（𨧀）</a><br>
+            (268.1)
+        </td>
+        <td bgcolor="#FFC0C0"><span style="color:grey;"><b>106</b></span><br>
+            Sg<br>
+            <a href="/wiki/%F0%A8%AD%8E" title="𨭎">𬭳（𨭎）</a><br>
+            (271.1)
+        </td>
+        <td bgcolor="#FFC0C0"><span style="color:grey;"><b>107</b></span><br>
+            Bh<br>
+            <a href="/wiki/%F0%A8%A8%8F" title="𨨏">𬭛（𨨏）</a><br>
+            (270.1)
+        </td>
+        <td bgcolor="#FFC0C0"><span style="color:grey;"><b>108</b></span><br>
+            Hs<br>
+            <a href="/wiki/%F0%A8%AD%86" title="𬭶">𬭶（𨭆）</a><br>
+            (277.2)
+        </td>
+        <td bgcolor="#E8E8E8"><span style="color:grey;"><b>109</b></span><br>
+            Mt<br>
+            <a href="/wiki/%E4%A5%91" title="鿏">鿏（䥑）</a><br>
+            (276.2)
+        </td>
+        <td bgcolor="#E8E8E8"><span style="color:grey;"><b>110</b></span><br>
+            Ds<br>
+            <a href="/wiki/%E9%90%BD" title="𫟼">𫟼（鐽）</a><br>
+            (281.2)
+        </td>
+        <td bgcolor="#E8E8E8"><span style="color:grey;"><b>111</b></span><br>
+            Rg<br>
+            <a href="/wiki/%E9%8C%80" title="錀">𬬭（錀）</a><br>
+            (280.2)
+        </td>
+        <td bgcolor="#FFC0C0"><span style="color:grey;"><b>112</b></span><br>
+            Cn<br>
+            <a href="/wiki/%E9%8E%B6" title="鿔">鿔（鎶）</a><br>
+            (285.2)
+        </td>
+        <td bgcolor="#E8E8E8"><span style="color:grey;"><b>113</b></span><br>
+            Nh<br>
+            <a href="/wiki/Nh" title="读音：ni3，字符描述：左「钅」右「尔」"><img alt="缺字图片"
+                                                                           data-file-height="200"
+                                                                           data-file-width="200" height="15"
+                                                                           src="//upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Nihonium_zh-hans.svg/15px-Nihonium_zh-hans.svg.png"
+                                                                           srcset="//upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Nihonium_zh-hans.svg/23px-Nihonium_zh-hans.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Nihonium_zh-hans.svg/30px-Nihonium_zh-hans.svg.png 2x" width="15"></a><br>
+            (284.2)
+        </td>
+        <td bgcolor="#CCCCCC"><span style="color:grey;"><b>114</b></span><br>
+            Fl<br>
+            <a href="/wiki/%E9%88%87" title="𫓧">𫓧（鈇）</a><br>
+            (289.2)
+        </td>
+        <td bgcolor="#E8E8E8"><span style="color:grey;"><b>115</b></span><br>
+            Mc<br>
+            <a class="mw-redirect" href="/wiki/%E9%8F%8C" title="镆">镆</a><br>
+            (288.2)
+        </td>
+        <td bgcolor="#E8E8E8"><span style="color:grey;"><b>116</b></span><br>
+            Lv<br>
+            <a href="/wiki/%E9%89%9D" title="𫟷">𫟷（鉝）</a><br>
+            (293.2)
+        </td>
+        <td bgcolor="#E8E8E8"><span style="color:grey;"><b>117</b></span><br>
+            Ts<br>
+            <a href="/wiki/Ts" title="读音：tian2，字符描述：左「石」右「田」"><img alt="缺字图片"
+                                                                             data-file-height="200"
+                                                                             data-file-width="200" height="15"
+                                                                             src="//upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Tennessine_zh.svg/15px-Tennessine_zh.svg.png"
+                                                                             srcset="//upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Tennessine_zh.svg/23px-Tennessine_zh.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Tennessine_zh.svg/30px-Tennessine_zh.svg.png 2x"
+                                                                             width="15"></a><br>
+            (294.2)
+        </td>
+        <td bgcolor="#E8E8E8"><span style="color:grey;"><b>118</b></span><br>
+            Og<br>
+            <a href="/wiki/Og" title="读音：ao4，字符描述：⿹气奥"><img alt="缺字图片"
+                                                                    data-file-height="200"
+                                                                    data-file-width="200" height="15"
+                                                                    src="//upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Oganesson_zh-hans.svg/15px-Oganesson_zh-hans.svg.png"
+                                                                    srcset="//upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Oganesson_zh-hans.svg/23px-Oganesson_zh-hans.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Oganesson_zh-hans.svg/30px-Oganesson_zh-hans.svg.png 2x"
+                                                                    width="15"></a><br>
+            (294.2)
+        </td>
+        <td style="font-size:50%;line-height:1.2" valign="bottom">Q<br>
+            P<br>
+            O<br>
+            N<br>
+            M<br>
+            L<br>
+            K
+        </td>
+        <td style="font-size:50%;line-height:1.2" valign="bottom">8<br>
+            18<br>
+            32<br>
+            32<br>
+            18<br>
+            8<br>
+            2
+        </td>
+    </tr>
+
+    <tr align="center">
+        <td align="right" colspan="3"><a class="mw-redirect" href="/wiki/%E9%91%AD%E7%B3%BB%E5%85%83%E7%B4%A0"
+                                         title="镧系元素">镧系元素</a></td>
+        <td bgcolor="#FFBFFF"><b>57</b><br>
+            La<br>
+            <a class="mw-redirect" href="/wiki/%E9%91%AD" title="镧">镧</a><br>
+            138.9
+        </td>
+        <td bgcolor="#FFBFFF"><b>58</b><br>
+            Ce<br>
+            <a class="mw-redirect" href="/wiki/%E9%88%B0" title="铈">铈</a><br>
+            140.1
+        </td>
+        <td bgcolor="#FFBFFF"><b>59</b><br>
+            Pr<br>
+            <a class="mw-redirect" href="/wiki/%E9%90%A0" title="镨">镨</a><br>
+            140.9
+        </td>
+        <td bgcolor="#FFBFFF"><b>60</b><br>
+            Nd<br>
+            <a class="mw-redirect" href="/wiki/%E9%87%B9" title="钕">钕</a><br>
+            144.2
+        </td>
+        <td bgcolor="#FFBFFF"><b>61</b><br>
+            Pm<br>
+            <a class="mw-redirect" href="/wiki/%E9%89%95" title="钷">钷</a><br>
+            (144.9)
+        </td>
+        <td bgcolor="#FFBFFF"><b>62</b><br>
+            Sm<br>
+            <a class="mw-redirect" href="/wiki/%E9%87%A4" title="钐">钐</a><br>
+            150.4
+        </td>
+        <td bgcolor="#FFBFFF"><b>63</b><br>
+            Eu<br>
+            <a class="mw-redirect" href="/wiki/%E9%8A%AA" title="铕">铕</a><br>
+            152.0
+        </td>
+        <td bgcolor="#FFBFFF"><b>64</b><br>
+            Gd<br>
+            <a class="mw-redirect" href="/wiki/%E9%87%93" title="钆">钆</a><br>
+            157.3
+        </td>
+        <td bgcolor="#FFBFFF"><b>65</b><br>
+            Tb<br>
+            <a class="mw-redirect" href="/wiki/%E9%8B%B1" title="铽">铽</a><br>
+            158.9
+        </td>
+        <td bgcolor="#FFBFFF"><b>66</b><br>
+            Dy<br>
+            <a class="mw-redirect" href="/wiki/%E9%8F%91" title="镝">镝</a><br>
+            162.5
+        </td>
+        <td bgcolor="#FFBFFF"><b>67</b><br>
+            Ho<br>
+            <a class="mw-redirect" href="/wiki/%E9%88%A5" title="钬">钬</a><br>
+            164.9
+        </td>
+        <td bgcolor="#FFBFFF"><b>68</b><br>
+            Er<br>
+            <a class="mw-redirect" href="/wiki/%E9%89%BA" title="铒">铒</a><br>
+            167.3
+        </td>
+        <td bgcolor="#FFBFFF"><b>69</b><br>
+            Tm<br>
+            <a class="mw-redirect" href="/wiki/%E9%8A%A9" title="铥">铥</a><br>
+            168.9
+        </td>
+        <td bgcolor="#FFBFFF"><b>70</b><br>
+            Yb<br>
+            <a class="mw-redirect" href="/wiki/%E9%90%BF" title="镱">镱</a><br>
+            173.0
+        </td>
+        <td bgcolor="#FFBFFF"><b>71</b><br>
+            Lu<br>
+            <a class="mw-redirect" href="/wiki/%E9%8E%A6" title="镥">镥</a><br>
+            175.0
+        </td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr align="center">
+        <td align="right" colspan="3"><a class="mw-redirect" href="/wiki/%E9%8C%92%E7%B3%BB%E5%85%83%E7%B4%A0"
+                                         title="锕系元素">锕系元素</a></td>
+        <td bgcolor="#FF99CC"><b>89</b><br>
+            Ac<br>
+            <a class="mw-redirect" href="/wiki/%E9%8C%92" title="锕">锕</a><br>
+            (227.0)
+        </td>
+        <td bgcolor="#FF99CC"><b>90</b><br>
+            Th<br>
+            <a class="mw-redirect" href="/wiki/%E9%87%B7" title="钍">钍</a><br>
+            232.0
+        </td>
+        <td bgcolor="#FF99CC"><b>91</b><br>
+            Pa<br>
+            <a class="mw-redirect" href="/wiki/%E9%8F%B7" title="镤">镤</a><br>
+            231.0
+        </td>
+        <td bgcolor="#FF99CC"><b>92</b><br>
+            U<br>
+            <a href="/wiki/%E9%88%BE" title="铀">铀</a><br>
+            238.0
+        </td>
+        <td bgcolor="#FF99CC"><b>93</b><br>
+            Np<br>
+            <a class="mw-redirect" href="/wiki/%E9%8C%BC" title="镎">镎</a><br>
+            (237.1)
+        </td>
+        <td bgcolor="#FF99CC"><b>94</b><br>
+            Pu<br>
+            <a class="mw-redirect" href="/wiki/%E9%88%BD" title="钚">钚</a><br>
+            (244.1)
+        </td>
+        <td bgcolor="#FF99CC"><b>95</b><br>
+            Am<br>
+            <a class="mw-redirect" href="/wiki/%E9%8B%82" title="镅">镅</a><br>
+            (243.1)
+        </td>
+        <td bgcolor="#FF99CC"><b>96</b><br>
+            Cm<br>
+            <a class="mw-redirect" href="/wiki/%E9%8B%A6" title="锔">锔</a><br>
+            (247.1)
+        </td>
+        <td bgcolor="#FF99CC"><b>97</b><br>
+            Bk<br>
+            <a class="mw-redirect" href="/wiki/%E9%89%B3" title="锫">锫</a><br>
+            (247.1)
+        </td>
+        <td bgcolor="#FF99CC"><b>98</b><br>
+            Cf<br>
+            <a class="mw-redirect" href="/wiki/%E9%89%B2" title="锎">锎</a><br>
+            (252.1)
+        </td>
+        <td bgcolor="#FF99CC"><b>99</b><br>
+            Es<br>
+            <a class="mw-redirect" href="/wiki/%E9%91%80" title="锿">锿</a><br>
+            (252.1)
+        </td>
+        <td bgcolor="#FF99CC"><span style="color:gray"><b>100</b></span><br>
+            Fm<br>
+            <a class="mw-redirect" href="/wiki/%E9%90%A8" title="镄">镄</a><br>
+            (257.1)
+        </td>
+        <td bgcolor="#FF99CC"><span style="color:gray"><b>101</b></span><br>
+            Md<br>
+            <a class="mw-redirect" href="/wiki/%E9%8D%86" title="钔">钔</a><br>
+            (258.1)
+        </td>
+        <td bgcolor="#FF99CC"><span style="color:gray"><b>102</b></span><br>
+            No<br>
+            <a class="mw-redirect" href="/wiki/%E9%8D%A9" title="锘">锘</a><br>
+            (259.1)
+        </td>
+        <td bgcolor="#FF99CC"><span style="color:gray"><b>103</b></span><br>
+            Lr<br>
+            <a href="/wiki/%E9%90%92" title="铹">铹</a><br>
+            (262.1)
+        </td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    </tbody>
+</table>
+
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+{
+  "name": "table2excel.js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "es5/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --config webpack.core.config.js -p && webpack --config webpack.umd.config.js -p",
+    "build:es5": "babel src --out-dir es5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jackgit/table2excel.js.git"
+  },
+  "keywords": [
+    "table",
+    "js",
+    "excel",
+    "xlsx",
+    "xls"
+  ],
+  "author": "ygjack414@hotmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jackgit/table2excel.js/issues"
+  },
+  "homepage": "https://github.com/jackgit/table2excel.js#readme",
+  "dependencies": {
+    "file-saver": "^1.3.3"
+  },
+  "peerDependencies": {
+    "exceljs": "^0.6.2"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-1": "^6.24.1",
+    "cross-env": "^5.2.0"
+  }
+}

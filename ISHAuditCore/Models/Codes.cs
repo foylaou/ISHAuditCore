@@ -148,5 +148,23 @@ namespace ISHAuditCore.Models
 
             return query.FirstOrDefault()?.company ?? "";
         }
+
+        public List<user_info> GetUserList(string userid)
+        {
+            var data = new List<user_info>();
+
+            var query = from user_info in _db.user_infos
+                    select user_info
+                ;
+            var iUserid = Convert.ToInt32(userid);
+            if (!string.IsNullOrEmpty(userid))
+                query = from q in query
+                    where q.id != iUserid
+                    select q;
+            data = query.ToList();
+            return data;
+        }
+        
+
     }
 }

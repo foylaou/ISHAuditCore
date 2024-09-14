@@ -14,6 +14,7 @@ builder.Services.AddSession(options =>
 builder.Services.AddHttpContextAccessor();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<Codes>(); // 如果 Codes 是每次請求一個實例，使用 Scoped 生命週期
 
 var app = builder.Build();
 

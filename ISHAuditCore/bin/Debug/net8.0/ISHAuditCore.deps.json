@@ -12,7 +12,9 @@
           "Microsoft.EntityFrameworkCore.Design": "8.0.8",
           "Microsoft.EntityFrameworkCore.SqlServer": "8.0.8",
           "Microsoft.EntityFrameworkCore.Tools": "8.0.8",
-          "Newtonsoft.Json": "13.0.3"
+          "Newtonsoft.Json": "13.0.3",
+          "bootstrap": "5.3.3",
+          "jQuery": "3.7.1"
         },
         "runtime": {
           "ISHAuditCore.dll": {}
@@ -52,6 +54,7 @@
           }
         }
       },
+      "bootstrap/5.3.3": {},
       "Humanizer.Core/2.14.1": {
         "runtime": {
           "lib/net6.0/Humanizer.dll": {
@@ -60,6 +63,7 @@
           }
         }
       },
+      "jQuery/3.7.1": {},
       "Microsoft.Bcl.AsyncInterfaces/6.0.0": {
         "runtime": {
           "lib/netstandard2.1/Microsoft.Bcl.AsyncInterfaces.dll": {
@@ -889,12 +893,26 @@
       "path": "azure.identity/1.10.3",
       "hashPath": "azure.identity.1.10.3.nupkg.sha512"
     },
+    "bootstrap/5.3.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-iQohLXwneNPDyW4x24mKQ90qGwT5WTtNl3KybL0koTluJPjKYxFCU/NTLHsJiWR2n7VmnwcpAgr8TR42KNmPOg==",
+      "path": "bootstrap/5.3.3",
+      "hashPath": "bootstrap.5.3.3.nupkg.sha512"
+    },
     "Humanizer.Core/2.14.1": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-lQKvtaTDOXnoVJ20ibTuSIOf2i0uO0MPbDhd1jm238I+U/2ZnRENj0cktKZhtchBMtCUSRQ5v4xBCUbKNmyVMw==",
       "path": "humanizer.core/2.14.1",
       "hashPath": "humanizer.core.2.14.1.nupkg.sha512"
+    },
+    "jQuery/3.7.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-rF8hnQxmBMlIspf8VN72bALtmIpKx6hKRpUdTOkp/8JzfF8KgNqHut5lOy9kFGvFIStumCqJ+PBxpI9gxpRYfQ==",
+      "path": "jquery/3.7.1",
+      "hashPath": "jquery.3.7.1.nupkg.sha512"
     },
     "Microsoft.Bcl.AsyncInterfaces/6.0.0": {
       "type": "package",

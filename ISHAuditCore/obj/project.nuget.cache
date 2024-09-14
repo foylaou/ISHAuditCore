@@ -1,12 +1,14 @@
 {
   "version": 2,
-  "dgSpecHash": "hFYBRRTRvo/vCNbiuBduF0q8LbU+vxN0T1oupQ23sZwNlYpc65LDpliE+3DR+TgS7slbHppD2GgT7o+5/eH+kA==",
+  "dgSpecHash": "Bsn7tQsJKSNxadpE7cA69FtNQTdON7BYWRkWtLT4GSCkNEtzCHeTQGAJvapweAAaMEY4yEHnQHtKWVBmLpdd6g==",
   "success": true,
   "projectFilePath": "/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C# Projects/ISHAuditCore/ISHAuditCore/ISHAuditCore.csproj",
   "expectedPackageFiles": [
     "/Users/foyliu/.nuget/packages/azure.core/1.35.0/azure.core.1.35.0.nupkg.sha512",
     "/Users/foyliu/.nuget/packages/azure.identity/1.10.3/azure.identity.1.10.3.nupkg.sha512",
+    "/Users/foyliu/.nuget/packages/bootstrap/5.3.3/bootstrap.5.3.3.nupkg.sha512",
     "/Users/foyliu/.nuget/packages/humanizer.core/2.14.1/humanizer.core.2.14.1.nupkg.sha512",
+    "/Users/foyliu/.nuget/packages/jquery/3.7.1/jquery.3.7.1.nupkg.sha512",
     "/Users/foyliu/.nuget/packages/microsoft.bcl.asyncinterfaces/6.0.0/microsoft.bcl.asyncinterfaces.6.0.0.nupkg.sha512",
     "/Users/foyliu/.nuget/packages/microsoft.codeanalysis.analyzers/3.3.3/microsoft.codeanalysis.analyzers.3.3.3.nupkg.sha512",
     "/Users/foyliu/.nuget/packages/microsoft.codeanalysis.common/4.5.0/microsoft.codeanalysis.common.4.5.0.nupkg.sha512",

@@ -1,49 +1,367 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@using Newtonsoft.Json
+@inject IHttpContextAccessor HttpContextAccessor
+@inject Codes Code
+<!DOCTYPE html>
+<!--
+This is a starter template page. Use this page to start your new project from
+scratch. This page gets rid of all links and provides the needed markup only.
+-->
+<html lang="zh-tw">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>@ViewData["Title"] - ISHAuditCore</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="~/ISHAuditCore.styles.css" asp-append-version="true"/>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="google-site-verification" content="ZObYVqxgN6lAQ2jVQ3QGx6Kz2igbI5MMS0Wg3lt8CHU"/>
+    <title>@ViewBag.Titlev</title>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MYF7BQRM3N"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MYF7BQRM3N');
+    </script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
+
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- jsGrid -->
+    <link rel="stylesheet" href="~/plugins/jsgrid/jsgrid.min.css">
+    <link rel="stylesheet" href="~/plugins/jsgrid/jsgrid-theme.min.css">
+    <script src="~/plugins/AGgrid/zh-TW.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.1/dist/ag-grid-community.min.js"></script>
+    <!--ag grid enterprise-->
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-enterprise@31.3.2/dist/ag-grid-enterprise.min.js"></script>
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="~/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+    <link rel="stylesheet" href="~/plugins/toastr/toastr.min.css">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="~/plugins/fontawesome-free/css/all.min.css">
+    <!-- icheck bootstrap -->
+    <link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- Bootstrap Color Picker -->
+    <link rel="stylesheet" href="~/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css">
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="~/plugins/select2/css/select2.min.css">
+    <link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+    <!-- Bootstrap4 Duallistbox -->
+    <link rel="stylesheet" href="~/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
+    <!-- BS Stepper -->
+    <link rel="stylesheet" href="~/plugins/bs-stepper/css/bs-stepper.min.css">
+    <!-- dropzonejs -->
+    <link rel="stylesheet" href="~/plugins/dropzone/min/dropzone.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="~/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="~/dist/themes/default/style.min.css"/>
+    <link rel="stylesheet" href="~/dist/timesheet/timesheet.min.css">
+    <!--data picker-->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
+    @RenderSection("css")
+    @RenderSection("js")
+    <style>
+        .hide {
+            display: none;
+        }
+
+        tr.highlight td.jsgrid-cell {
+            background-color: #C4E1FF;
+        }
+
+        body {
+            font-family: arial,"Microsoft JhengHei","微軟正黑體",sans-serif !important;
+        }
+    </style>
 </head>
-<body>
-<header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-        <div class="container-fluid">
-            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ISHAuditCore</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
+<body class="hold-transition layout-top-nav">
+<div class="wrapper">
+
+    <!-- Navbar -->
+    <nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
+        <div class="container">
+            <a href="https://sets.org.tw/" title="回「工業安全網站」首頁">
+                <img src="~/dist/img/new_logo.svg" alt="回首頁" class="brand-image " style="opacity: .8">
+            </a>
+            <!--
+            <a href="/" class="navbar-brand">
+                <img src="~/dist/img/isha.png" alt="ISHA Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+                <span class="brand-text font-weight-light">ISHA</span>
+            </a>
+            -->
+            <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                    </li>
-                </ul>
+            @{
+
+                    var login = HttpContextAccessor.HttpContext.Session.GetString("login");
+                    var authoritySession = HttpContextAccessor.HttpContext.Session.GetString("authority");
+
+                    if (login != null && !string.IsNullOrWhiteSpace(login))
+                    {
+                        var Authority = JsonConvert.DeserializeObject<Authority>(authoritySession).Sys;
+                        if (Authority == "admin")
+                        {
+                            <div class="col-sm-3">
+                                <div class="input-group input-group-sm">
+                                    <div class="input-group-prepend">
+                                        <button class="btn btn-outline-secondary" onclick="change_user()" type="button">更換</button>
+                                    </div>
+                                    <select class="custom-select" id="user_account">
+                                        <option selected="selected" value="">-- 請選擇 --</option>
+                                        @{
+                                            var userId = HttpContextAccessor.HttpContext.Session.GetString("user_id");
+                                            if (userId != null && !string.IsNullOrWhiteSpace(userId))
+                                            {
+                                                var UserList = Code.GetUserList(userId); // 使用注入的 Code 服務
+                                                foreach (var data in UserList)
+                                                {
+                                                    <option value="@data.id">@data.nickname</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        }
+                    }
+                
+            }
+            <div class="collapse navbar-collapse order-3" id="navbarCollapse">
+                <!-- Left navbar links -->
+                @* @Html.Partial("_Menu") *@
+                <!-- SEARCH FORM -->
+                <form class="form-inline ml-0 ml-md-3">
+                    <div class="input-group input-group-sm">
+                        <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+                        <div class="input-group-append">
+                            <button class="btn btn-navbar" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
+            @{
+                var loginSession = HttpContextAccessor.HttpContext.Session.GetString("login");
+                var username = HttpContextAccessor.HttpContext.Session.GetString("username");
+                var nickname = HttpContextAccessor.HttpContext.Session.GetString("nickname");
+
+                if (loginSession != null && !string.IsNullOrWhiteSpace(loginSession))
+                {
+                    <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
+                        <!-- Messages Dropdown Menu -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" data-toggle="dropdown" href="#">
+                                <i class="fas fa-user"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                                <a href="#" class="dropdown-item">
+                                    <!-- Message Start -->
+                                    <div class="media">
+                                        <img src="../../dist/img/user.png" alt="User Avatar" class="img-size-50 img-circle mr-3">
+                                        <div class="media-body">
+                                            <h5 class="dropdown-item-title">
+                                                @username
+                                            </h5>
+                                            <p class="text-sm">@nickname</p>
+                                        </div>
+                                    </div>
+                                    <!-- Message End -->
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item dropdown-footer">查看個人資料</a>
+                            </div>
+                        </li>
+                    </ul>
+                }
+            }
+
+
+            <!-- Right navbar links -->
         </div>
     </nav>
-</header>
-<div class="container">
-    <main role="main" class="pb-3">
+    <!-- /.navbar -->
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+            <div class="container">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        @RenderSection("page_title")
+                    </div><!-- /.col -->
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            @RenderSection("location")
+                        </ol>
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+            </div><!-- /.container-fluid -->
+        </div>
+        <!-- /.content-header -->
+        <!-- Main content -->
+        <!--<div class="content">
+        <div class="container">
+
+        </div>-->
+        <!-- /.container-fluid -->
+        <!--</div>-->
         @RenderBody()
-    </main>
+        <!-- /.content -->
+    </div>
+
+    <!-- /.content-wrapper -->
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+        <!-- Control sidebar content goes here -->
+    </aside>
+    <!-- /.control-sidebar -->
+    <!-- Main Footer -->
+    <footer class="main-footer">
+        <!-- Default to the left -->
+        <strong>
+            ※本網所提供之電子檔案部分為.PDF格式，如無法閱讀，請自行下載安裝　免費軟體「中文版Adobe PDF Reader」
+            本網站由經濟部產業發展署「工業安全智慧化輔導計畫」之委辦單位「中華民國工業安全衛生協會」維護管理<Br>
+            This site, sponsored by IDA/MOEA, was created and is maintained by the ISHA
+            本網站最佳瀏覽環境為 1024 x 768 視窗模式以上，IE 11.0含以上、Firefox、Chrome、safari最新版本瀏覽器
+        </strong>
+    </footer>
 </div>
 
-<footer class="border-top footer text-muted">
-    <div class="container">
-        &copy; 2024 - ISHAuditCore - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-    </div>
-</footer>
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
-@await RenderSectionAsync("Scripts", required: false)
+<script src="~/Scripts/jsgrid/external/jquery/jquery-1.8.3.js"></script>
+<script src="~/Scripts/jsgrid/src/jsgrid.core.js"></script>
+<script src="~/Scripts/jsgrid/src/jsgrid.load-indicator.js"></script>
+<script src="~/Scripts/jsgrid/src/jsgrid.load-strategies.js"></script>
+<script src="~/Scripts/jsgrid/src/jsgrid.sort-strategies.js"></script>
+<script src="~/Scripts/jsgrid/src/jsgrid.field.js"></script>
+<script src="~/Scripts/jsgrid/src/fields/jsgrid.field.text.js"></script>
+<script src="~/Scripts/jsgrid/src/fields/jsgrid.field.number.js"></script>
+<script src="~/Scripts/jsgrid/src/fields/jsgrid.field.select.js"></script>
+<script src="~/Scripts/jsgrid/src/fields/jsgrid.field.checkbox.js"></script>
+<script src="~/Scripts/jsgrid/src/fields/jsgrid.field.control.js"></script>
+
+<!-- ./wrapper -->
+<!-- REQUIRED SCRIPTS -->
+<!-- jQuery -->
+<script src="~/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- bs-custom-file-input -->
+<script src="~/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+<!-- jsGrid -->
+<script src="~/plugins/jsgrid/jsgrid.min.js"></script>
+
+<!-- DataTables  & Plugins -->
+<script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="~/plugins/jszip/jszip.min.js"></script>
+<script src="~/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="~/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<!-- AdminLTE App -->
+<script src="~/dist/js/adminlte.min.js"></script>
+<!-- SweetAlert2 -->
+<script src="~/plugins/sweetalert2/sweetalert2.min.js"></script>
+<!-- Toastr -->
+<script src="~/plugins/toastr/toastr.min.js"></script>
+<!-- Select2 -->
+<script src="~/plugins/select2/js/select2.full.min.js"></script>
+<!-- Bootstrap4 Duallistbox -->
+<script src="~/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js"></script>
+<!-- InputMask -->
+<script src="~/plugins/moment/moment.min.js"></script>
+<script src="~/plugins/inputmask/jquery.inputmask.min.js"></script>
+<!-- date-range-picker -->
+<script src="~/plugins/daterangepicker/daterangepicker.js"></script>
+<!-- bootstrap color picker -->
+<script src="~/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<!-- Bootstrap Switch -->
+<script src="~/plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+<!-- BS-Stepper -->
+<script src="~/plugins/bs-stepper/js/bs-stepper.min.js"></script>
+<!-- dropzonejs -->
+<script src="~/plugins/dropzone/min/dropzone.min.js"></script>
+<script type="text/javascript" src="~/plugins/summernote/summernote.js"></script>
+
+<script type="text/ecmascript" charset="big5" src="~/Scripts/block.js"></script>
+<script type="text/ecmascript" charset="big5" src="~/Scripts/js/System.js"></script>
+<script type="text/ecmascript" charset="big5" src="~/plugins/jquery-ui/jquery.blockUI.js"></script>
+<script src="~/dist/jstree.min.js"></script>
+<!-- AdminLTE for demo purposes -->
+@*<script src="~/dist/js/demo.js"></script>*@
+@RenderSection("scripts", false)
+<script>
+        $('.select2').select2();
+        //Initialize Select2 Elements
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 5000
+        });
+        $('.main-footer').addClass('text-sm');
+        $('.nav-sidebar').addClass('text-sm');
+        function logOut() {
+            window.location = '/user/logout';
+        }
+
+        function change_user() {
+            block();
+            if ($('#user_account').val() == '') {
+                unblock();
+                Toast.fire({
+                    icon: 'warning',
+                    title: '請選擇帳號'
+                });
+            } else {
+                $.ajax({
+                    url: '/Login/ChangeAccount',
+                    type: "post",
+                    dataType: "json",
+                    data: { user_account: $("#user_account").val() },
+                    success: function (resault) {
+                        unblock();
+                        Toast.fire({
+                            icon: 'success',
+                            title: '載入完畢'
+                        });
+                        location.reload(true);
+                    },
+                    error: function (XMLHttpRequest, textStatus) {
+                        //location.reload(true);
+                        unblock();
+                        Toast.fire({
+                            icon: 'error',
+                            title: '加載失敗'
+                        });
+                    }
+                });
+
+            }
+        }
+    </script>
 </body>
 </html>

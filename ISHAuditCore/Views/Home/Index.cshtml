@@ -1,8 +1,88 @@
-﻿@{
+﻿@using Newtonsoft.Json
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@section css {
+    <!-- 這裡放置頁面的自定義 CSS -->
+}
+
+@section js{
+
+}
+
+@section page_title{
+
+}
+
+@section location
+{
+
+}
+
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+// 創建 Authority 類的實例
+    var authorityClass = new Authority();
+    var SysAuthority = "none";
+    var AuditAuthority = "none";
+    var KpiAuthority = "none";
+
+// 從 Session 中取得 login 和 authority
+    var loginSession = HttpContextAccessor.HttpContext?.Session.GetString("login");
+    var authoritySession = HttpContextAccessor.HttpContext?.Session.GetString("authority");
+
+// 如果 login 存在且驗證通過
+    if (!string.IsNullOrWhiteSpace(loginSession) && authorityClass.Login(loginSession))
+    {
+// 確保 authority 存在
+        if (!string.IsNullOrWhiteSpace(authoritySession))
+        {
+            var authority = JsonConvert.DeserializeObject<Authority>(authoritySession);
+
+// 取得各種權限並轉成大寫
+            SysAuthority = authority?.Sys.ToUpper();
+            AuditAuthority = authority?.Audit.ToUpper();
+            KpiAuthority = authority?.KPI.ToUpper();
+        }
+    }
+}
+
+
+<div class="card card-success">
+    <div class="card-body" style=" text-align:center; margin:auto">
+        <div class="row">
+            @{
+                if (KpiAuthority != "none".ToUpper())
+                {
+                    <div class="col-md-6 col-lg-6" style="text-align: center; margin: auto" href="/Kpi/Index">
+                        <div class="card mb-2 bg-gradient-dark" style="cursor:pointer;" onclick="window.location.href='/Kpi/Index'">
+                            <img class="card-img-top" style="cursor: pointer;" src=" https://images.pexels.com/photos/373543/pexels-photo-373543.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260">
+                            <div class="card-img-overlay d-flex flex-column justify-content-end">
+                                <a class="text-white">
+                                    <h4 style="font-size:50px; line-height:250px; text-align:center; " class="card-title text-primary text-white">績效指標資料</h4>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            @{
+                if (AuditAuthority != "none".ToUpper())
+                {
+                    <div class="col-md-6 col-lg-6" style="text-align: center; margin: auto">
+                        <div class="card mb-2 bg-gradient-dark" style="cursor:pointer;" onclick="window.location.href='/Audit/Index'">
+                            <img class="card-img-top" src="https://images.pexels.com/photos/5470452/pexels-photo-5470452.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260">
+                            <div class="card-img-overlay d-flex flex-column justify-content-end">
+                                <a class="text-white">
+                                    <h4 style="font-size:50px; line-height:250px; text-align:center;" class="card-title text-primary text-white">大型石化督導</h4>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
 </div>

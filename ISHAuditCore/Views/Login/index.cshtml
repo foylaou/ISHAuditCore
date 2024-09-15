@@ -1,40 +1,75 @@
 @{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @{
-    ViewBag.Title = "登入";
+ViewBag.Title = "登入";
 }
 @section css{
 
 }
 
 @section js{
+
 }
+
 @section page_title{
 
 }
 @section location{
-    <li class="breadcrumb-item">@Html.ActionLink("首頁", "Index", "Home")</li>
-    <li class="breadcrumb-item active">@Html.ActionLink("登入", "Index", "Login")</li>
+<li class="breadcrumb-item">@Html.ActionLink("首頁", "Index", "Home")</li>
+<li class="breadcrumb-item active">@Html.ActionLink("登入", "Index", "Login")</li>
 }
 @section scripts{
-    <script>
-        
-        success: function (data) {
-            if (data.error) {
-                // 顯示錯誤訊息
-                alert(data.error);
-            } else if (data.message) {
-                // 顯示成功訊息
-                alert(data.message);
+<script>
+    // 攔截表單提交，並使用 AJAX 進行處理
+    $(document).ready(function () {
+        $('form').on('submit', function (e) {
+            e.preventDefault(); // 防止表單默認提交
+            var form = $(this);
+            var url = form.attr('action');
+
+            // 發送 AJAX 請求
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(), // 將表單資料序列化
+                success: function (data) {
+                    handleResponse(data);
+                },
+                error: function (xhr, status, error) {
+                    handleError(xhr, status, error);
+                }
+            });
+        });
+    });
+
+    // 處理成功或錯誤的 JSON 響應
+    function handleResponse(data) {
+        if (data.error) {
+            // 使用 SweetAlert2 顯示錯誤訊息
+            Swal.fire({
+                icon: 'error',
+                title: '錯誤',
+                text: data.error,
+                confirmButtonText: '確定'
+            });
+        } else if (data.message) {
+                window.location.href = data.redirectUrl;
             }
-        },
-        error: function (xhr, status, error) {
-            console.error(error);
+        }
+    
 
-
-
-    </script>
+    function handleError(xhr, status, error) {
+        console.error(error);
+        // 使用 SweetAlert2 顯示錯誤訊息
+        Swal.fire({
+            icon: 'error',
+            title: '伺服器錯誤',
+            text: '發生錯誤，請稍後再試。',
+            confirmButtonText: '確定'
+        });
+    }
+</script>
 }
 
 <div class="row">
@@ -67,23 +102,17 @@
                     </div>
 
                     <div class="row">
-                    
-                    <div class="col-6 text-center" style=" margin:auto">
-                        <button type="submit" class="btn btn-primary btn-block">Sign In</button><p></p>
-                        <!-- 封印創建帳號
-                        <a href="">創建帳號</a>
-                        -->
+                        <div class="col-6 text-center" style=" margin:auto">
+                            <button type="submit" class="btn btn-primary btn-block">Sign In</button><p></p>
+                            <!-- 封印創建帳號 -->
+                            <!-- <a href="">創建帳號</a> -->
+                        </div>
                     </div>
+                </form>
             </div>
-
-            </form>
-            <!-- /.social-auth-links -->
-        </div>
-           
             <!-- /.card-body -->
         </div>
         <!-- /.card -->
     </div>
     <!-- /.login-box -->
 </div>
-

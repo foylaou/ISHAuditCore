@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices.JavaScript;
 using ISHAuditCore.Context;
 using ISHAuditCore.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -21,10 +22,22 @@ namespace ISHAuditCore.Controllers
             return View();
         }
 
+        // 用於處理登入資料的 POST 請求
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Index(string username, string password)
         {
+            if (string.IsNullOrEmpty(password))
+            {
+                return Json(new { error = "密碼不能為空" });
+            }
+
+            var user = _db.user_infos.FirstOrDefault(u => u.username == username);
+            if (user == null)
+            {
+                return Json(new { error = "使用者不存在" });
+            }
+
             byte[] salt = new byte[128 / 8];
             string hashedPassword = Convert.ToBase64String(KeyDerivation.Pbkdf2(
                 password: password,
@@ -33,18 +46,21 @@ namespace ISHAuditCore.Controllers
                 iterationCount: 10000,
                 numBytesRequested: 256 / 8));
 
-            // 驗證帳號密碼
-            var user = _db.user_infos.FirstOrDefault(u => u.username == username);
-            if (user != null && user.password == hashedPassword)
+            if (user.password == hashedPassword)
             {
                 HttpContext.Session.SetString("login", "login");
                 WrSession(user.id);
-                if (user.authority != null) HttpContext.Session.SetString("authority", user.authority);
-                return RedirectToAction("Index", "Home");
-            }
+                if (user.authority != null)
+                {
+                    HttpContext.Session.SetString("authority", user.authority);
+                }
 
-            // 如果驗證失敗，返回 Index 視圖
-            return View();
+                return Json(new { message = "登錄成功", redirectUrl = Url.Action("Index", "Home") });
+            }
+            else
+            {
+                return Json(new { error = "密碼錯誤" });
+            }
         }
 
         [HttpPost]

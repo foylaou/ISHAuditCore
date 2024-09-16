@@ -78,9 +78,9 @@ namespace ISHAuditCore.Controllers
                 Codes CodeClass = new Codes();
 
                 HttpContext.Session.SetString("user_id", user.id.ToString());
-                HttpContext.Session.SetString("username", user.username);
-                HttpContext.Session.SetString("nickname", user.nickname);
-                HttpContext.Session.SetString("enterprise_id", user.enterprise_id.ToString());
+                if (user.username != null) HttpContext.Session.SetString("username", user.username);
+                if (user.nickname != null) HttpContext.Session.SetString("nickname", user.nickname);
+                HttpContext.Session.SetString("enterprise_id", user.enterprise_id.ToString() ?? string.Empty);
                 HttpContext.Session.SetString("company_id", user.company_id.ToString());
                 HttpContext.Session.SetString("factory_id", user.factory_id.ToString());
                 HttpContext.Session.SetString("factory_name", CodeClass.FactoryName(user.factory_id.ToString()));

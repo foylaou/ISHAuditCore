@@ -136,3 +136,12 @@
 /Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C# Projects/ISHAuditCore/ISHAuditCore/obj/Debug/net8.0/ref/ISHAuditCore.dll
 /Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C# Projects/ISHAuditCore/ISHAuditCore/bin/Debug/net8.0/Newtonsoft.Json.dll
 /Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C# Projects/ISHAuditCore/ISHAuditCore/obj/Debug/net8.0/ISHAuditCore.sourcelink.json
+/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C# Projects/ISHAuditCore/ISHAuditCore/bin/Debug/net8.0/Serilog.dll
+/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C# Projects/ISHAuditCore/ISHAuditCore/bin/Debug/net8.0/Serilog.AspNetCore.dll
+/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C# Projects/ISHAuditCore/ISHAuditCore/bin/Debug/net8.0/Serilog.Extensions.Hosting.dll
+/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C# Projects/ISHAuditCore/ISHAuditCore/bin/Debug/net8.0/Serilog.Extensions.Logging.dll
+/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C# Projects/ISHAuditCore/ISHAuditCore/bin/Debug/net8.0/Serilog.Formatting.Compact.dll
+/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C# Projects/ISHAuditCore/ISHAuditCore/bin/Debug/net8.0/Serilog.Settings.Configuration.dll
+/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C# Projects/ISHAuditCore/ISHAuditCore/bin/Debug/net8.0/Serilog.Sinks.Console.dll
+/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C# Projects/ISHAuditCore/ISHAuditCore/bin/Debug/net8.0/Serilog.Sinks.Debug.dll
+/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C# Projects/ISHAuditCore/ISHAuditCore/bin/Debug/net8.0/Serilog.Sinks.File.dll

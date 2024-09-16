@@ -3,25 +3,24 @@
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 @{
-var authorityClass = new Authority();
-var SysAuthority = "none";
-var AuditAuthority = "none";
-var KpiAuthority = "none";
-var OrgAuthority = "none";
+    var authorityClass = new Authority();
+    var SysAuthority = "none";
+    var AuditAuthority = "none";
+    var KpiAuthority = "none";
+    var OrgAuthority = "none";
 
-// 確保 session 不為空
-var loginSession = HttpContextAccessor.HttpContext.Session.GetString("login");
-var authoritySession = HttpContextAccessor.HttpContext.Session.GetString("authority");
+    // 確保 session 不為空
+    var loginSession = HttpContextAccessor.HttpContext.Session.GetString("login");
+    var authoritySession = HttpContextAccessor.HttpContext.Session.GetString("authority");
 
-if (!string.IsNullOrWhiteSpace(loginSession) && authorityClass.Login(loginSession))
-{
-var authority = JsonConvert.DeserializeObject<Authority>(authoritySession);
-SysAuthority = authority.Sys.ToUpper();
-AuditAuthority = authority.Audit.ToUpper();
-KpiAuthority = authority.KPI.ToUpper();
-OrgAuthority = authority.Org.ToUpper();
-}
-
+    if (!string.IsNullOrWhiteSpace(loginSession) && authorityClass.Login(loginSession))
+    {
+        var authority = JsonConvert.DeserializeObject<Authority>(authoritySession);
+        SysAuthority = authority.Sys.ToUpper();
+        AuditAuthority = authority.Audit.ToUpper();
+        KpiAuthority = authority.KPI.ToUpper();
+        OrgAuthority = authority.Org.ToUpper();
+    }
 }
 
 <ul class="navbar-nav">
@@ -30,133 +29,142 @@ OrgAuthority = authority.Org.ToUpper();
     </li>
 
     @{
-    // 檢查 Session login 是否存在
-    if (!string.IsNullOrWhiteSpace(HttpContextAccessor.HttpContext.Session.GetString("login")))
-    {
+        // 檢查 Session login 是否存在
+        if (!string.IsNullOrWhiteSpace(loginSession))
+        {
     <li class="nav-item dropdown">
         <a id="dropdownSubMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">功能模組</a>
         <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
             @{
-            // 檢查 AuditAuthority 權限
-            if (AuditAuthority != "NONE")
-            {
+                // 檢查 AuditAuthority 權限
+                if (AuditAuthority != "NONE")
+                {
             <li class="dropdown-submenu dropdown-hover">
                 <a id="AcountManage" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-item dropdown-toggle">石化督導</a>
                 <ul aria-labelledby="AcountManage" class="dropdown-menu border-0 shadow">
                     <li class="dropdown-submenu">
                         <a id="ViewKpi" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-item dropdown-toggle">石化督導資料設定</a>
                         <ul aria-labelledby="ViewKpi" class="dropdown-menu border-0 shadow">
-                            <li>
-                                <a href="/Audit/CreateAudit" class="dropdown-item">督導資料建立</a>
-                            </li>
-                            <li>
-                                <a href="/Audit/QueryFactory" class="dropdown-item">督導廠資料管理</a>
-                            </li>
+                            <li><a href="/Audit/CreateAudit" class="dropdown-item">督導資料建立</a></li>
+                            <li><a href="/Audit/QueryFactory" class="dropdown-item">督導廠資料管理</a></li>
                         </ul>
                     </li>
-                    <li>
-                        <a href="/Audit/Index" class="dropdown-item">石化督導資料綜合查詢</a>
-                    </li>
+                    <li><a href="/Audit/Index" class="dropdown-item">石化督導資料綜合查詢</a></li>
                     <li class="dropdown-submenu">
-                        <a id="ViewKpi" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-item dropdown-toggle">報表</a>
-                        <ul aria-labelledby="ViewKpi" class="dropdown-menu border-0 shadow">
-                            <li>
-                                <a href="/Audit/Report" class="dropdown-item">石化督導改善建議分類統計圖</a>
-                            </li>
-                            <li>
-                                <a href="/Audit/ReportImproveStatus" class="dropdown-item">事業單位改善完成率一覽表</a>
-                            </li>
-                            <li>
-                                <a href="/Audit/ReportSummary" class="dropdown-item">各類建議改善完成率一覽表</a>
-                            </li>
-                            <li>
-                                <a href="/Audit/ReportIncident" class="dropdown-item">災害事件一覽表</a>
+                        <a id="ViewKpiReport" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-item dropdown-toggle">報表</a>
+                        <ul aria-labelledby="ViewKpiReport" class="dropdown-menu border-0 shadow">
+                            <li><a href="/Audit/Report" class="dropdown-item">石化督導改善建議分類統計圖</a></li>
+                            <li><a href="/Audit/ReportImproveStatus" class="dropdown-item">事業單位改善完成率一覽表</a></li>
+                            <li><a href="/Audit/ReportSummary" class="dropdown-item">各類建議改善完成率一覽表</a></li>
+                            <li><a href="/Audit/ReportIncident" class="dropdown-item">災害事件一覽表</a></li>
+                            <li class="dropdown-submenu">
+                                <a id="ViewKpiReply" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-item dropdown-toggle">督導改善回覆設定</a>
+                                <ul aria-labelledby="ViewKpiReply" class="dropdown-menu border-0 shadow">
+                                    <li><a href="/Audit/KpiImprovement" class="dropdown-item">督導改善回覆KPI</a></li>
+                                    <li><a href="/Audit/AuditContact" class="dropdown-item">聯絡資訊設定</a></li>
+                                </ul>
                             </li>
                         </ul>
                     </li>
                 </ul>
             </li>
-            }
+                }
             }
 
             @{
-            if (KpiAuthority != "NONE")
-            {
+                // 檢查 KpiAuthority 權限
+                if (KpiAuthority != "NONE")
+                {
             <li class="dropdown-submenu dropdown-hover">
                 <a id="KPIModel" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-item dropdown-toggle">績效指標</a>
                 <ul aria-labelledby="KPIModel" class="dropdown-menu border-0 shadow">
                     <li class="dropdown-submenu">
                         <a id="ViewKpi" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-item dropdown-toggle">檢視/編輯KPI</a>
                         <ul aria-labelledby="ViewKpi" class="dropdown-menu border-0 shadow">
-                            <li>
-                                <a href="/KPI/PSM" class="dropdown-item">製程安全管理</a>
-                            </li>
-                            <li>
-                                <a href="/KPI/EP" class="dropdown-item">環保管理</a>
-                            </li>
+                            <li><a href="/KPI/PSM" class="dropdown-item">製程安全管理</a></li>
+                            <li><a href="/KPI/EP" class="dropdown-item">環保管理</a></li>
                             @{
-                            if (authorityClass.FunctionAuthority("Kpi", "Eco", SysAuthority, AuditAuthority, KpiAuthority, HttpContextAccessor.HttpContext.Session.GetString("factory_id")))
-                            {
-                            <li>
-                                <a href="/KPI/ECO" class="dropdown-item">能源管理</a>
-                            </li>
-                            }
+                                if (authorityClass.FunctionAuthority("Kpi", "Eco", SysAuthority, AuditAuthority, KpiAuthority, HttpContextAccessor.HttpContext.Session.GetString("factory_id")))
+                                {
+                            <li><a href="/KPI/ECO" class="dropdown-item">能源管理</a></li>
+                                }
                             }
                         </ul>
                     </li>
                     @{
-                    if (authorityClass.FunctionAuthority("Kpi", "CreateReport", SysAuthority, AuditAuthority, KpiAuthority, HttpContextAccessor.HttpContext.Session.GetString("factory_id")))
-                    {
+                        if (authorityClass.FunctionAuthority("Kpi", "CreateReport", SysAuthority, AuditAuthority, KpiAuthority, HttpContextAccessor.HttpContext.Session.GetString("factory_id")))
+                        {
                     <li class="dropdown-submenu">
                         <a id="CreateKpiReport" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-item dropdown-toggle">建立KPI報告</a>
                         <ul aria-labelledby="CreateKpiReport" class="dropdown-menu border-0 shadow">
-                            <li>
-                                <a href="/KPI/CreatePsmReport" class="dropdown-item">製程安全管理</a>
-                            </li>
-                            <li>
-                                <a href="/KPI/CreateEPReport" class="dropdown-item">環保管理</a>
-                            </li>
-                            <li>
-                                <a href="/KPI/CreateEcoReport" class="dropdown-item">能源管理</a>
-                            </li>
+                            <li><a href="/KPI/CreatePsmReport" class="dropdown-item">製程安全管理</a></li>
+                            <li><a href="/KPI/CreateEPReport" class="dropdown-item">環保管理</a></li>
+                            <li><a href="/KPI/CreateEcoReport" class="dropdown-item">能源管理</a></li>
                         </ul>
                     </li>
+                        }
                     }
-                    }
+                    <li class="dropdown-submenu">
+                        <a id="ViewKpiImprovement" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-item dropdown-toggle">改善成果</a>
+                        <ul aria-labelledby="ViewKpiImprovement" class="dropdown-menu border-0 shadow">
+                            <li><a href="/KPI/ImprovementResualtUpload" class="dropdown-item">資料上傳</a></li>
+                            <li><a href="/KPI/ImprovementResualtDb" class="dropdown-item">資料庫查詢</a></li>
+                            <li><a href="/KPI/ImprovementResualtImport" class="dropdown-item">Excel固定格式匯入</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="/KPI/ImprovementPlan" class="dropdown-item">改善計畫</a></li>
+                    <li class="dropdown-submenu">
+                        <a id="ViewKpiReport" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-item dropdown-toggle">報表</a>
+                        <ul aria-labelledby="ViewKpiReport" class="dropdown-menu border-0 shadow">
+                            <li><a href="/KPI/PSMConform" class="dropdown-item">各廠PSM符合度</a></li>
+                            <li><a href="/KPI/EPConform" class="dropdown-item">各廠EP符合度</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </li>
-            }
+                }
             }
         </ul>
     </li>
     }
-    }
+}
 
+@{
+    if (!string.IsNullOrWhiteSpace(loginSession))
+    {
+        var Authority = JsonConvert.DeserializeObject<Authority>(authoritySession).Sys;
+        if (Authority == "admin")
+        {
     <li class="nav-item dropdown">
-        <a id="dropdownSubMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">帳號</a>
-        <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
-            @{
-            if (string.IsNullOrWhiteSpace(HttpContextAccessor.HttpContext.Session.GetString("login")))
+        <a id="AcountManageAdmin" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">帳號管理</a>
+        <ul aria-labelledby="AcountManageAdmin" class="dropdown-menu border-0 shadow">
+            <li><a href="/SignUp" class="dropdown-item">新增帳號</a></li>
+            <li><a href="/UserEdit" class="dropdown-item">修改帳號</a></li>
+        </ul>
+    </li>
+        }
+    }
+}
+
+<li class="nav-item dropdown">
+    <a id="dropdownSubMenu2" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">帳號</a>
+    <ul aria-labelledby="dropdownSubMenu2" class="dropdown-menu border-0 shadow">
+        @{
+            if (string.IsNullOrWhiteSpace(loginSession))
             {
-            <li>
-                <a href="/Login" class="dropdown-item">登入</a>
-            </li>
+        <li><a href="/Login" class="dropdown-item">登入</a></li>
             }
             else
             {
-            <li>
-                <a href="/Login/Logout" class="dropdown-item">登出</a>
-            </li>
+        <li><a href="/Login/Logout" class="dropdown-item">登出</a></li>
             }
-            }
-        </ul>
-    </li>
-    <li class="nav-item dropdown">
-        <a id="dropdownSubMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">說明</a>
-        <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
-            <li>
-                <a href="/Help" class="dropdown-item">操作說明</a>
-            </li>
-        </ul>
-    </li>
+        }
+    </ul>
+</li>
+<li class="nav-item dropdown">
+    <a id="dropdownSubMenu3" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">說明</a>
+    <ul aria-labelledby="dropdownSubMenu3" class="dropdown-menu border-0 shadow">
+        <li><a href="/Help" class="dropdown-item">操作說明</a></li>
+    </ul>
+</li>
 </ul>

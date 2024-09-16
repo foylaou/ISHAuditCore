@@ -32,7 +32,7 @@ namespace ISHAuditCore.Controllers
             {
                 // AutoLogin();
 
-                if (HttpContext.Session.GetString("login") == null || 
+                if (HttpContext.Session.GetString("login") == null ||
                     string.IsNullOrWhiteSpace(HttpContext.Session.GetString("login")))
                 {
                     filterContext.Result = Redirect("~/Login");
@@ -40,14 +40,15 @@ namespace ISHAuditCore.Controllers
                 else
                 {
                     var sAction = filterContext.RouteData.Values["action"].ToString().ToUpper();
-                    var authority = JsonConvert.DeserializeObject<Authority>(HttpContext.Session.GetString("authority"));
+                    var authority =
+                        JsonConvert.DeserializeObject<Authority>(HttpContext.Session.GetString("authority"));
                     var SysAuthority = authority.Sys.ToUpper();
                     var AuditAuthority = authority.Audit.ToUpper();
                     var KpiAuthority = authority.KPI.ToUpper();
 
                     if (!_authorityClass.ModalAuthority(sController, SysAuthority, AuditAuthority, KpiAuthority) ||
-                        !_authorityClass.FunctionAuthority(sController, sAction, SysAuthority, AuditAuthority, 
-                                                           KpiAuthority, HttpContext.Session.GetString("factory_id")))
+                        !_authorityClass.FunctionAuthority(sController, sAction, SysAuthority, AuditAuthority,
+                            KpiAuthority, HttpContext.Session.GetString("factory_id")))
                     {
                         filterContext.Result = Redirect("~/");
                     }

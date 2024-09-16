@@ -1,7 +1,24 @@
 using ISHAuditCore.Context;
 using ISHAuditCore.Models;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Serilog;
+
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(443, listenOptions =>
+    {
+        // 配置 Kestrel 使用 HTTP/3
+        listenOptions.Protocols = HttpProtocols.Http1AndHttp2AndHttp3;
+        listenOptions.UseHttps(); // 使用 HTTPS，HTTP/3 需要 HTTPS
+    });
+});
+// 配置 Serilog，並將日誌寫入文件
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("logs/myapp.txt", rollingInterval: RollingInterval.Day) // 每天創建一個新文件
+    .CreateLogger();
 
 // 加入 Session 服務
 builder.Services.AddDistributedMemoryCache(); // 使用內存緩存來存儲會話數據

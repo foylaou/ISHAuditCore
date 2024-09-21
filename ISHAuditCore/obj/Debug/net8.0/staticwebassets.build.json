@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "uxc2oaa3UqIA280JoUqKuWB7wAWpY1/gGw6bcwSgF/I=",
+  "Hash": "YrTaZA44JRlDmbCfGIz+I5iuLWbpxjqxwcqhODiLSEI=",
   "Source": "ISHAuditCore",
   "BasePath": "_content/ISHAuditCore",
   "Mode": "Default",
@@ -889,6 +889,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C# Projects/ISHAuditCore/ISHAuditCore/obj/Debug/net8.0/scopedcss/projectbundle/ISHAuditCore.bundle.scp.css"
+    },
+    {
+      "Identity": "/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C# Projects/ISHAuditCore/ISHAuditCore/wwwroot/css/loading.css",
+      "SourceId": "ISHAuditCore",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C# Projects/ISHAuditCore/ISHAuditCore/wwwroot/",
+      "BasePath": "_content/ISHAuditCore",
+      "RelativePath": "css/loading.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/css/loading.css"
     },
     {
       "Identity": "/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C# Projects/ISHAuditCore/ISHAuditCore/wwwroot/css/site.css",

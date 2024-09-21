@@ -5,16 +5,11 @@ using ISHAuditCore.Models;
 
 namespace ISHAuditCore.Controllers;
 
-public class HomeController : BaseController
+public class homeController(ISHAuditDbcontext dbContext, Authority authorityClass )  //ILogger<homeController> logger  Controller 中看到類似的日誌記錄設置
+    : baseController(dbContext, authorityClass)
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ISHAuditDbcontext dbContext, Authority authorityClass,ILogger<HomeController> logger)
-        : base(dbContext, authorityClass) // 調用基類構造函數
-    {
-        _logger = logger;
-    }
-
+    // private readonly ILogger<homeController> _logger = logger;
+    
     public IActionResult Index()
     {
         return View();

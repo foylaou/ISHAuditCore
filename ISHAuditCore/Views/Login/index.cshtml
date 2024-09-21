@@ -5,7 +5,7 @@ Layout = "~/Views/Shared/_Layout.cshtml";
 ViewBag.Title = "登入";
 }
 @section css{
-
+<link rel="stylesheet" href="~/css/loading.css">
 }
 
 @section js{
@@ -20,70 +20,113 @@ ViewBag.Title = "登入";
 <li class="breadcrumb-item active">@Html.ActionLink("登入", "Index", "Login")</li>
 }
 @section scripts{
-<script>
-    // 攔截表單提交，並使用 AJAX 進行處理
-    $(document).ready(function () {
-        $('form').on('submit', function (e) {
-            e.preventDefault(); // 防止表單默認提交
-            var form = $(this);
-            var url = form.attr('action');
 
-            // 發送 AJAX 請求
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: form.serialize(), // 將表單資料序列化
-                success: function (data) {
-                    handleResponse(data);
-                },
-                error: function (xhr, status, error) {
-                    handleError(xhr, status, error);
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <script>
+        var widgetId;
+
+        // 當 CAPTCHA 加載後，保存 widgetId
+        window.onload = function() {
+            widgetId = turnstile.render('#captcha', {
+                sitekey: '0x4AAAAAAAgCSXub-CbDkEzy', // 替換為您的 sitekey
+                callback: function(token) {
+                    // 將 CAPTCHA 的 token 存入隱藏的 input 中
+                    document.getElementById('cf-turnstile-response').value = token;
+                    console.log("CAPTCHA passed, token: " + token);
                 }
             });
-        });
-    });
+        };
 
-    // 處理成功或錯誤的 JSON 響應
-    function handleResponse(data) {
-        if (data.error) {
-            // 使用 SweetAlert2 顯示錯誤訊息
-            Swal.fire({
-                icon: 'error',
-                title: '錯誤',
-                text: data.error,
-                confirmButtonText: '確定'
+        // 當表單提交失敗後刷新 CAPTCHA
+        function refreshCaptcha() {
+            turnstile.reset(widgetId);  // 使用 widgetId 來重置 CAPTCHA
+        }
+
+        // 攔截表單提交，並使用 AJAX 進行處理
+        $(document).ready(function () {
+            $('form').on('submit', function (e) {
+                e.preventDefault(); // 防止表單默認提交
+
+                // 檢查 CAPTCHA 是否已經通過驗證，確保 token 不為空
+                var token = $('#cf-turnstile-response').val();
+                if (!token) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '錯誤',
+                        text: '請通過 CAPTCHA 驗證',
+                        confirmButtonText: '確定'
+                    });
+                    return;
+                }
+
+                var form = $(this);
+                var url = form.attr('action');
+                $('#spinner').removeClass('hidden');
+                $('#submit-btn').prop('disabled', true);
+
+                // 發送 AJAX 請求
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: form.serialize(), // 將表單資料序列化，包括 CAPTCHA token
+                    success: function (data) {
+                        $('#spinner').addClass('hidden');
+                        $('#submit-btn').prop('disabled', false);
+                        handleResponse(data);
+                    },
+                    error: function (xhr, status, error) {
+                        $('#spinner').addClass('hidden');
+                        $('#submit-btn').prop('disabled', false);
+                        handleError(xhr, status, error);
+
+                    }
+                });
             });
-        } else if (data.message) {
+        });
+
+        // 處理成功或錯誤的 JSON 響應
+        function handleResponse(data) {
+            if (data.error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '錯誤',
+                    text: data.error,
+                    confirmButtonText: '確定',
+                    
+                });
+                refreshCaptcha()
+            } else if (data.message) {
                 window.location.href = data.redirectUrl;
             }
-        }
-    
-
-    function handleError(xhr, status, error) {
-        console.error(error);
-        // 使用 SweetAlert2 顯示錯誤訊息
-        Swal.fire({
-            icon: 'error',
-            title: '伺服器錯誤',
-            text: '發生錯誤，請稍後再試。',
-            confirmButtonText: '確定'
-        });
-    }
-</script>
 }
 
+        function handleError(xhr, status, error) {
+            console.error(error);
+            Swal.fire({
+                icon: 'error',
+                title: '伺服器錯誤',
+                text: '發生錯誤，請稍後再試。',
+                confirmButtonText: '確定'
+            });
+        }
+
+    
+    </script>
+}
 <div class="row">
     <div class="login-box" style="float:none;margin:auto;">
         <!-- /.login-logo -->
         <div class="card card-outline card-primary">
             <div class="card-header text-center">
-                <a class="h5"><b>中華民國工業安全衛生協會</b></a><br>
-                <a class="h7">安全與環保技術服務處</a>
+                <a class="h5"><b>經濟部產業發展署</b></a><br>
+                <a class="h7">大型石化督導管理系統</a>
             </div>
             <div class="card-body">
                 <p class="login-box-msg">請輸入您的帳號及密碼</p>
                 <form action="/Login" method="post">
                     @Html.AntiForgeryToken()
+                    <!-- 用來存儲 CAPTCHA token 的隱藏字段 -->
+                    <input type="hidden" id="cf-turnstile-response" name="cfTurnstileResponse" value="" />
                     <div class="input-group mb-3">
                         <input type="text" class="form-control" name="Username" placeholder="Username">
                         <div class="input-group-append">
@@ -102,8 +145,14 @@ ViewBag.Title = "登入";
                     </div>
 
                     <div class="row">
-                        <div class="col-6 text-center" style=" margin:auto">
-                            <button type="submit" class="btn btn-primary btn-block">Sign In</button><p></p>
+
+
+                            <!-- Cloudflare Turnstile CAPTCHA -->
+                            <div id="captcha" class="cf-turnstile" data-callback="onTurnstileSuccess" data-theme="light"></div>
+                        <div class="col-6 text-center" style=" margin:auto; position:relative;">
+                            <button id="submit-btn" type="submit" class="btn btn-primary btn-block">Sign In</button>
+                            <div id="spinner" class="spinner hidden col-3"></div>
+
                             <!-- 封印創建帳號 -->
                             <!-- <a href="">創建帳號</a> -->
                         </div>

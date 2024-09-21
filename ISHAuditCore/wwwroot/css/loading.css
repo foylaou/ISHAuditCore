@@ -1,0 +1,26 @@
+/* CSS for loading spinner */
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #09f;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+    margin-top: 10px; /* 使其顯示在按鈕正下方 */
+    margin-left:65px /* login center*/
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.hidden {
+    display: none;
+}
+.cf-turnstile {
+    display: block;
+    margin: 0 auto; /* 自動置中 */
+    text-align: center; /* 中心對齊 */
+    margin-bottom: 10px; /* 增加下方的間距 */
+}

@@ -53,17 +53,17 @@ namespace ISHAuditCore.Models
 
         public List<Codes> SuggestCategory()
         {
-            var suggest_category = (from q in _db.suggest_categories
+            var suggestCategory = (from q in _db.suggest_categories
                                     select new Codes
                                     {
                                         Id = q.id.ToString(),
                                         Name = q.suggest_category1
                                     }).ToList();
 
-            foreach (var subitem in suggest_category)
+            foreach (var subitem in suggestCategory)
             {
                 var Id = int.Parse(subitem.Id);
-                var suggest_type = (from q in _db.suggest_types
+                var suggestType = (from q in _db.suggest_types
                                     where q.suggest_category_id == Id
                                     select new Codes
                                     {
@@ -71,23 +71,23 @@ namespace ISHAuditCore.Models
                                         Name = q.suggest_type1
                                     }).ToList();
 
-                foreach (var item in suggest_type)
+                foreach (var item in suggestType)
                 {
                     var itemId = int.Parse(item.Id);
-                    var suggest_item = (from q in _db.suggest_items
+                    var suggestItem = (from q in _db.suggest_items
                                         where q.suggest_type_id == itemId
                                         select new Codes
                                         {
                                             Id = q.id.ToString(),
                                             Name = q.suggest_item1
                                         }).ToList();
-                    item.Child = suggest_item;
+                    item.Child = suggestItem;
                 }
 
-                subitem.Child = suggest_type;
+                subitem.Child = suggestType;
             }
 
-            return suggest_category;
+            return suggestCategory;
         }
 
         public List<Codes> Company()
@@ -157,7 +157,7 @@ namespace ISHAuditCore.Models
 
         public List<user_info> GetUserList(string userid)
         {
-            Console.WriteLine(userid);
+            // Console.WriteLine(userid);
             var data = new List<user_info>();
 
             var query = from user_info in _db.user_infos

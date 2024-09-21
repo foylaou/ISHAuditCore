@@ -473,6 +473,10 @@
       "PackagePath": "staticwebassets/Scripts/modernizr-2.8.3.js"
     },
     {
+      "Id": "/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C# Projects/ISHAuditCore/ISHAuditCore/wwwroot/css/loading.css",
+      "PackagePath": "staticwebassets/css/loading.css"
+    },
+    {
       "Id": "/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C# Projects/ISHAuditCore/ISHAuditCore/wwwroot/css/site.css",
       "PackagePath": "staticwebassets/css/site.css"
     },

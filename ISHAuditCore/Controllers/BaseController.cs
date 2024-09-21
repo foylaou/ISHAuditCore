@@ -1,31 +1,20 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-using System.Linq;
 using ISHAuditCore.Context;
 using ISHAuditCore.Models;
 
 namespace ISHAuditCore.Controllers
 {
-    public class BaseController : Controller
+    public class baseController(ISHAuditDbcontext dbContext, Authority authorityClass) : Controller
     {
-        private readonly ISHAuditDbcontext _dbContext;
-        private readonly Authority _authorityClass;
-
         // 通過依賴注入注入 DbContext 和 Authority
-        public BaseController(ISHAuditDbcontext dbContext, Authority authorityClass)
-        {
-            _dbContext = dbContext;
-            _authorityClass = authorityClass;
-        }
-
 
 
         // Action Filter: OnActionExecuting
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            var sController = filterContext.RouteData.Values["controller"].ToString().ToUpper();
+            var sController = filterContext.RouteData.Values["controller"].ToString()!.ToUpper();
             var sBypassController = "Auditedit";
 
             if (sController != sBypassController.ToUpper())
@@ -46,8 +35,8 @@ namespace ISHAuditCore.Controllers
                     var AuditAuthority = authority.Audit.ToUpper();
                     var KpiAuthority = authority.KPI.ToUpper();
 
-                    if (!_authorityClass.ModalAuthority(sController, SysAuthority, AuditAuthority, KpiAuthority) ||
-                        !_authorityClass.FunctionAuthority(sController, sAction, SysAuthority, AuditAuthority,
+                    if (!authorityClass.ModalAuthority(sController, SysAuthority, AuditAuthority, KpiAuthority) ||
+                        !authorityClass.FunctionAuthority(sController, sAction, SysAuthority, AuditAuthority,
                             KpiAuthority, HttpContext.Session.GetString("factory_id")))
                     {
                         filterContext.Result = Redirect("~/");
@@ -60,7 +49,7 @@ namespace ISHAuditCore.Controllers
 
         private void AutoLogin()
         {
-            var user = _dbContext.user_infos.FirstOrDefault(u => u.id == 1);
+            var user = dbContext.user_infos.FirstOrDefault(u => u.id == 1);
             if (user != null)
             {
                 HttpContext.Session.SetString("login", "login");
@@ -71,7 +60,7 @@ namespace ISHAuditCore.Controllers
 
         public void WrSession(int userId)
         {
-            var user = _dbContext.user_infos.FirstOrDefault(u => u.id == userId);
+            var user = dbContext.user_infos.FirstOrDefault(u => u.id == userId);
             if (user != null)
             {
                 var codeClass = new Codes();

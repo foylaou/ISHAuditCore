@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ISHAuditCore")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2578064a3484ecb5206b51e2c685000016877fca")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4fde205f045a9d5b083ab5862db35314aff3def5")]
 [assembly: System.Reflection.AssemblyProductAttribute("ISHAuditCore")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ISHAuditCore")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

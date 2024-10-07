@@ -1,0 +1,126 @@
+@{
+ViewBag.Title = "Login Page";
+Layout = "_Layout";
+}
+@section css{
+<style>
+    .login-container {
+        max-width: 300px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+    .login-container input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+    }
+    .login-container button {
+        width: 100%;
+        padding: 10px;
+        background-color: #28a745;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+    }
+    .login-container button:hover {
+        background-color: #218838;
+    }
+    .login-container p {
+        margin-top: 10px;
+        color: red;
+    }
+</style>
+}
+@section js{
+<script src="https://unpkg.com/react/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/babel-standalone/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+}
+@section Scripts {
+    <script type="text/babel">
+        class AuthComponent extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    username: '',
+                    password: '',
+                    nickname: '',
+                    auth: '',
+                    error: null
+                };
+            }
+
+            handleAuth = () => {
+                // 準備 POST 請求的數據
+                const data = {
+                    Username: this.state.username,
+                    Password: this.state.password
+                };
+
+                // 使用 axios 發送 POST 請求到後端 API
+                axios.post('/api/PostAuth', data)
+                    .then(response => {
+                        // 設置狀態，將 API 返回的數據顯示在 React 組件中
+                        this.setState({
+                            nickname: response.data.Nickname,
+                            auth: response.data.Auth,
+                            error: null
+                        });
+                    })
+                    .catch(error => {
+                        console.error("There was an error fetching the auth data!", error);
+                        this.setState({ error: 'Authentication failed. Please check your username and password.' });
+                    });
+            }
+
+            handleInputChange = (e) => {
+                const { name, value } = e.target;
+                this.setState({ [name]: value });
+            }
+
+            render() {
+                const { username, password, nickname, auth, error } = this.state;
+                return (
+                    <div className="login-container">
+                        <h2>Login</h2>
+                        <input
+                            type="text"
+                            name="username"
+                            value={username}
+                            onChange={this.handleInputChange}
+                            placeholder="Username"
+                            required
+                        />
+                        <input
+                            type="password"
+                            name="password"
+                            value={password}
+                            onChange={this.handleInputChange}
+                            placeholder="Password"
+                            required
+                        />
+                        <button onClick={this.handleAuth}>Login</button>
+
+                        {error && <p>{error}</p>}
+
+                        {nickname && (
+                            <div>
+                                <p><strong>Nickname:</strong> {nickname}</p>
+                                <p><strong>Authority:</strong> {auth}</p>
+                            </div>
+                        )}
+                    </div>
+                );
+            }
+        }
+
+        // 使用 ReactDOM 渲染元件
+        ReactDOM.render(<AuthComponent />, document.getElementById('app'));
+    </script>
+}
+
+<div id="app"></div>

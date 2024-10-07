@@ -1,0 +1,234 @@
+@using Newtonsoft.Json
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    ViewBag.Title = "新增帳號";
+}
+
+@section css{
+    <link rel="stylesheet" href="~/css/loading.css">
+}
+
+@section js{
+
+}
+
+@section page_title{
+
+}
+
+@section location{
+    <li class="breadcrumb-item">@Html.ActionLink("首頁", "Index", "Home")</li>
+    <li class="breadcrumb-item active">@Html.ActionLink("新增帳號", "Index", "SignUp")</li>
+}
+@section scripts
+{
+<script>
+    $(document).ready(function () {
+        // 將 JSON 字符串轉換為 JavaScript 對象
+        var enterprises = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.EnterpriseJson)));
+        var companies = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.CompanyJson)));
+        var factories = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.FactoryJson)));
+
+        // 調試輸出數據
+        console.log("Enterprises:", enterprises);
+        console.log("Companies:", companies);
+        console.log("Factories:", factories);
+
+        // 填充企業選單
+        var enterpriseSelect = $('#enterprise_id');
+        enterpriseSelect.empty().append('<option value="">-- 請選擇 --</option>');
+        enterprises.forEach(function (enterprise) {
+            enterpriseSelect.append('<option value="' + enterprise.Id + '">' + enterprise.Name + '</option>');
+        });
+
+        // 當企業選擇改變時，從企業的 Child 中提取公司
+        $('#enterprise_id').change(function () {
+            var selectedEnterpriseId = $(this).val();
+            var companySelect = $('#company_id');
+            var factorySelect = $('#factory_id');
+
+            console.log("Selected Enterprise ID:", selectedEnterpriseId);
+
+            // 清空公司和工廠選單
+            companySelect.empty().append('<option value="">-- 請選擇 --</option>');
+            factorySelect.empty().append('<option value="">-- 請選擇 --</option>');
+
+            // 找到選擇的企業，然後直接使用 Child 屬性中的公司列表
+            var selectedEnterprise = enterprises.find(enterprise => enterprise.Id == selectedEnterpriseId);
+
+            // 調試：檢查選擇的企業及其 Child 屬性
+            console.log("Selected Enterprise:", selectedEnterprise);
+            if (selectedEnterprise && selectedEnterprise.Child && selectedEnterprise.Child.length > 0) {
+                selectedEnterprise.Child.forEach(function (company) {
+                    console.log("Adding Company:", company);  // 調試：檢查正在添加的公司
+                    companySelect.append('<option value="' + company.Id + '">' + company.Name + '</option>');
+                });
+            } else {
+                console.warn("No companies found for the selected enterprise. Check if Child contains companies.");
+            }
+        });
+
+        // 當公司選擇改變時，從公司的 Child 中提取工廠
+        $('#company_id').change(function () {
+            var selectedCompanyId = $(this).val();
+            var factorySelect = $('#factory_id');
+
+            console.log("Selected Company ID:", selectedCompanyId);
+
+            // 清空工廠選單
+            factorySelect.empty().append('<option value="">-- 請選擇 --</option>');
+
+            // 找到選擇的公司，然後直接使用 Child 屬性中的工廠列表
+            var selectedCompany = companies.find(company => company.Id == selectedCompanyId);
+
+            // 調試：檢查選擇的公司及其 Child 屬性
+            console.log("Selected Company:", selectedCompany);
+            if (selectedCompany && selectedCompany.Child && selectedCompany.Child.length > 0) {
+                selectedCompany.Child.forEach(function (factory) {
+                    console.log("Adding Factory:", factory);  // 調試：檢查正在添加的工廠
+                    factorySelect.append('<option value="' + factory.Id + '">' + factory.Name + '</option>');
+                });
+            } else {
+                console.warn("No factories found for the selected company. Check if Child contains factories.");
+            }
+        });
+    });
+</script>
+}
+
+<div class="container">
+    <div class="card card-primary">
+        <div class="card-header">
+            <h3 class="card-title">建立人員帳號</h3>
+        </div>
+        <form id="signup-form" action="/SignUp/Index" method="post" class="mt-3">
+            @Html.AntiForgeryToken()
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 col-sm-3">
+                        <div class="form-group">
+                            <label for="username" class="form-label">帳號：</label>
+                            <input type="text" class="form-control" id="username" name="username">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-sm-3">
+                        <div class="form-group">
+                            <label for="password" class="form-label">密碼：</label>
+                            <input type="password" class="form-control" id="password" name="password"
+                                   pattern='^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,20}$'
+                                   title="請填入8~20位英文(必須含大寫)數字混和密碼">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-sm-3">
+                        <div class="form-group">
+                            <label for="nickname" class="form-label">名字：</label>
+                            <input type="text" class="form-control" id="nickname" name="nickname">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-sm-3">
+                        <div class="form-group">
+                            <label for="enterprise_id" class="form-label">企業：</label>
+                            <select id="enterprise_id" name="enterprise_id" class="form-control select2" style="width: 100%;">
+                                <option value="">-- 請選擇 --</option>
+                                @* 企業選項將由 JavaScript 動態更新 *@
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-sm-3">
+                        <div class="form-group">
+                            <label for="company_id" class="form-label">公司：</label>
+                            <select id="company_id" name="company_id" class="form-control select2" style="width: 100%;">
+                                <option value="">-- 請選擇 --</option>
+                                @* 公司選項將由 JavaScript 動態更新 *@
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-sm-3">
+                        <div class="form-group">
+                            <label for="factory_id" class="form-label">工廠：</label>
+                            <select id="factory_id" name="factory_id" class="form-control select2" style="width: 100%;">
+                                <option value="">-- 請選擇 --</option>
+                                @* 工廠選項將由 JavaScript 動態更新 *@
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-sm-12">
+                        <label class="form-label">Audit權限：</label>
+                        <div class="form-check">
+                            <fieldset>
+                                <input class="form-radio-input" type="radio" name="Audit" value="admin">
+                                <label class="form-radio-label">Admin</label>
+                                <input class="form-radio-input" type="radio" name="Audit" value="power">
+                                <label class="form-radio-label">Power</label>
+                                <input class="form-radio-input" type="radio" name="Audit" value="operator">
+                                <label class="form-radio-label">Operator</label>
+                                <input class="form-radio-input" type="radio" name="Audit" value="none">
+                                <label class="form-radio-label">None</label>
+                            </fieldset>
+                        </div>
+
+                        <label class="form-label">KPI權限：</label>
+                        <div class="form-check">
+                            <fieldset>
+                                <input class="form-radio-input" type="radio" name="KPI" value="admin">
+                                <label class="form-radio-label">Admin</label>
+                                <input class="form-radio-input" type="radio" name="KPI" value="power">
+                                <label class="form-radio-label">Power</label>
+                                <input class="form-radio-input" type="radio" name="KPI" value="operator">
+                                <label class="form-radio-label">Operator</label>
+                                <input class="form-radio-input" type="radio" name="KPI" value="none">
+                                <label class="form-radio-label">None</label>
+                            </fieldset>
+                        </div>
+
+                        <label class="form-label">Sys權限：</label>
+                        <div class="form-check">
+                            <fieldset>
+                                <input class="form-radio-input" type="radio" name="Sys" value="admin">
+                                <label class="form-radio-label">Admin</label>
+                                <input class="form-radio-input" type="radio" name="Sys" value="none">
+                                <label class="form-radio-label">None</label>
+                            </fieldset>
+                        </div>
+
+                        <label class="form-label">Org權限：</label>
+                        <div class="form-check">
+                            <fieldset>
+                                <input class="form-radio-input" type="radio" name="Org" value="admin">
+                                <label class="form-radio-label">Admin</label>
+                                <input class="form-radio-input" type="radio" name="Org" value="factory">
+                                <label class="form-radio-label">Factory</label>
+                                <input class="form-radio-input" type="radio" name="Org" value="manager">
+                                <label class="form-radio-label">Manager</label>
+                                <input class="form-radio-input" type="radio" name="Org" value="enterprise">
+                                <label class="form-radio-label">Enterprise</label>
+                                <input class="form-radio-input" type="radio" name="Org" value="company">
+                                <label class="form-radio-label">Company</label>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <button class="btn btn-primary">註冊</button>
+            </div>
+        </form>
+    </div>
+</div>

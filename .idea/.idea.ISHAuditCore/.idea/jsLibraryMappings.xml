@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="JavaScriptLibraryMappings">
-    <file url="PROJECT" libraries="{ag-grid-community, ag-grid-enterprise, api, chart.js, daterangepicker, moment, xlsx}" />
+    <file url="PROJECT" libraries="{ag-grid-community, ag-grid-enterprise, api, babel-standalone, chart.js, daterangepicker, jquery-3.7.1, moment, react, react-dom, xlsx}" />
   </component>
 </project>

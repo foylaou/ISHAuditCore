@@ -26,6 +26,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTG9naW4vaW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C\# Projects/ISHAuditCore/ISHAuditCore/Views/Login/test2.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTG9naW4vdGVzdDIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C\# Projects/ISHAuditCore/ISHAuditCore/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL0Vycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
@@ -36,6 +40,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C\# Projects/ISHAuditCore/ISHAuditCore/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C\# Projects/ISHAuditCore/ISHAuditCore/Views/SignUp/index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2lnblVwL2luZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C\# Projects/ISHAuditCore/ISHAuditCore/Views/_ViewImports.cshtml]

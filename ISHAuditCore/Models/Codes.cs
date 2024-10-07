@@ -171,7 +171,7 @@ namespace ISHAuditCore.Models
             data = query.ToList();
             return data;
         }
-        
+
 
     }
 }

@@ -31,7 +31,7 @@ namespace ISHAuditCore.Controllers
                         new KeyValuePair<string, string>("remoteip",
                             Request.HttpContext.Connection.RemoteIpAddress.ToString()) // 發送用戶的 IP 地址
                     }));
-
+        
                 // 將 Cloudflare 回應轉換成字串格式
                 var responseString = await response.Content.ReadAsStringAsync();
 
@@ -153,7 +153,7 @@ namespace ISHAuditCore.Controllers
                 HttpContext.Session.SetString("company_name",
                     codeClass.CompanyName(user.company_id.ToString() ?? throw new InvalidOperationException()));
                 HttpContext.Session.SetString("anyllmworkspace",
-                    user.anyllmworkspace ?? throw new InvalidOperationException());
+                    user.anyllmworkspace ?? string.Empty);
 
                 if (HttpContext.Session.GetString("authority") != null)
                 {

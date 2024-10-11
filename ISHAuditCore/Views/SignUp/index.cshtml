@@ -22,81 +22,7 @@
     <li class="breadcrumb-item">@Html.ActionLink("首頁", "Index", "Home")</li>
     <li class="breadcrumb-item active">@Html.ActionLink("新增帳號", "Index", "SignUp")</li>
 }
-@section scripts
-{
-<script>
-    $(document).ready(function () {
-        // 將 JSON 字符串轉換為 JavaScript 對象
-        var enterprises = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.EnterpriseJson)));
-        var companies = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.CompanyJson)));
-        var factories = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.FactoryJson)));
 
-        // 調試輸出數據
-        console.log("Enterprises:", enterprises);
-        console.log("Companies:", companies);
-        console.log("Factories:", factories);
-
-        // 填充企業選單
-        var enterpriseSelect = $('#enterprise_id');
-        enterpriseSelect.empty().append('<option value="">-- 請選擇 --</option>');
-        enterprises.forEach(function (enterprise) {
-            enterpriseSelect.append('<option value="' + enterprise.Id + '">' + enterprise.Name + '</option>');
-        });
-
-        // 當企業選擇改變時，從企業的 Child 中提取公司
-        $('#enterprise_id').change(function () {
-            var selectedEnterpriseId = $(this).val();
-            var companySelect = $('#company_id');
-            var factorySelect = $('#factory_id');
-
-            console.log("Selected Enterprise ID:", selectedEnterpriseId);
-
-            // 清空公司和工廠選單
-            companySelect.empty().append('<option value="">-- 請選擇 --</option>');
-            factorySelect.empty().append('<option value="">-- 請選擇 --</option>');
-
-            // 找到選擇的企業，然後直接使用 Child 屬性中的公司列表
-            var selectedEnterprise = enterprises.find(enterprise => enterprise.Id == selectedEnterpriseId);
-
-            // 調試：檢查選擇的企業及其 Child 屬性
-            console.log("Selected Enterprise:", selectedEnterprise);
-            if (selectedEnterprise && selectedEnterprise.Child && selectedEnterprise.Child.length > 0) {
-                selectedEnterprise.Child.forEach(function (company) {
-                    console.log("Adding Company:", company);  // 調試：檢查正在添加的公司
-                    companySelect.append('<option value="' + company.Id + '">' + company.Name + '</option>');
-                });
-            } else {
-                console.warn("No companies found for the selected enterprise. Check if Child contains companies.");
-            }
-        });
-
-        // 當公司選擇改變時，從公司的 Child 中提取工廠
-        $('#company_id').change(function () {
-            var selectedCompanyId = $(this).val();
-            var factorySelect = $('#factory_id');
-
-            console.log("Selected Company ID:", selectedCompanyId);
-
-            // 清空工廠選單
-            factorySelect.empty().append('<option value="">-- 請選擇 --</option>');
-
-            // 找到選擇的公司，然後直接使用 Child 屬性中的工廠列表
-            var selectedCompany = companies.find(company => company.Id == selectedCompanyId);
-
-            // 調試：檢查選擇的公司及其 Child 屬性
-            console.log("Selected Company:", selectedCompany);
-            if (selectedCompany && selectedCompany.Child && selectedCompany.Child.length > 0) {
-                selectedCompany.Child.forEach(function (factory) {
-                    console.log("Adding Factory:", factory);  // 調試：檢查正在添加的工廠
-                    factorySelect.append('<option value="' + factory.Id + '">' + factory.Name + '</option>');
-                });
-            } else {
-                console.warn("No factories found for the selected company. Check if Child contains factories.");
-            }
-        });
-    });
-</script>
-}
 
 <div class="container">
     <div class="card card-primary">
@@ -232,3 +158,112 @@
         </form>
     </div>
 </div>
+
+@section scripts
+{
+    <script>
+    $(document).ready(function () {
+        // 將 JSON 字符串轉換為 JavaScript 對象
+        var enterprises = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.EnterpriseJson)));
+        var companies = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.CompanyJson)));
+        var factories = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.FactoryJson)));
+
+        // 調試輸出數據
+        console.log("Enterprises:", enterprises);
+        console.log("Companies:", companies);
+        console.log("Factories:", factories);
+
+        // 填充企業選單
+        var enterpriseSelect = $('#enterprise_id');
+        enterpriseSelect.empty().append('<option value="">-- 請選擇 --</option>');
+        enterprises.forEach(function (enterprise) {
+            enterpriseSelect.append('<option value="' + enterprise.Id + '">' + enterprise.Name + '</option>');
+        });
+
+        // 當企業選擇改變時，從企業的 Child 中提取公司
+        $('#enterprise_id').change(function () {
+            var selectedEnterpriseId = $(this).val();
+            var companySelect = $('#company_id');
+            var factorySelect = $('#factory_id');
+
+            console.log("Selected Enterprise ID:", selectedEnterpriseId);
+
+            // 清空公司和工廠選單
+            companySelect.empty().append('<option value="">-- 請選擇 --</option>');
+            factorySelect.empty().append('<option value="">-- 請選擇 --</option>');
+
+            // 找到選擇的企業，然後直接使用 Child 屬性中的公司列表
+            var selectedEnterprise = enterprises.find(enterprise => enterprise.Id == selectedEnterpriseId);
+
+            // 調試：檢查選擇的企業及其 Child 屬性
+            console.log("Selected Enterprise:", selectedEnterprise);
+            if (selectedEnterprise && selectedEnterprise.Child && selectedEnterprise.Child.length > 0) {
+                selectedEnterprise.Child.forEach(function (company) {
+                    console.log("Adding Company:", company);  // 調試：檢查正在添加的公司
+                    companySelect.append('<option value="' + company.Id + '">' + company.Name + '</option>');
+                });
+            } else {
+                console.warn("No companies found for the selected enterprise. Check if Child contains companies.");
+            }
+        });
+
+        // 當公司選擇改變時，從公司的 Child 中提取工廠
+        $('#company_id').change(function () {
+            var selectedCompanyId = $(this).val();
+            var factorySelect = $('#factory_id');
+
+            console.log("Selected Company ID:", selectedCompanyId);
+
+            // 清空工廠選單
+            factorySelect.empty().append('<option value="">-- 請選擇 --</option>');
+
+            // 找到選擇的公司，然後直接使用 Child 屬性中的工廠列表
+            var selectedCompany = companies.find(company => company.Id == selectedCompanyId);
+
+            // 調試：檢查選擇的公司及其 Child 屬性
+            console.log("Selected Company:", selectedCompany);
+            if (selectedCompany && selectedCompany.Child && selectedCompany.Child.length > 0) {
+                selectedCompany.Child.forEach(function (factory) {
+                    console.log("Adding Factory:", factory);  // 調試：檢查正在添加的工廠
+                    factorySelect.append('<option value="' + factory.Id + '">' + factory.Name + '</option>');
+                });
+            } else {
+                console.warn("No factories found for the selected company. Check if Child contains factories.");
+            }
+        });
+    });
+
+    $(document).ready(function() {
+        $("#signup-form").submit(function(event) {
+            event.preventDefault(); // 阻止表单的默認提交行為
+            post(); // 調用 post 函数以進行異步提交
+        });
+    });
+
+    $(document).ready(function () {
+        document.forms['signup-form'].reset();
+    });
+
+    function post() {
+        $.ajax({
+            type: "POST",
+            url: "/SignUp/Index",
+            // 註冊頁面url
+            data: $("#signup-form").serialize(),
+            // 使用表單id獲取數據
+            success:function (data) {
+                if (data.error) {
+                    // 顯示錯誤訊息
+                    alert(data.error);
+                } else if (data.message) {
+                    // 顯示成功訊息
+                    alert(data.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            },
+        });
+    }
+</script>
+}

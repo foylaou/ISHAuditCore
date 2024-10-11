@@ -1,0 +1,470 @@
+﻿@using ISHAudit.Models
+@using Newtonsoft.Json
+@using ISHAuditCore.Models
+@model ISHAuditCore.Controllers.UserEditController
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    ViewBag.Title = "修改人員帳號";
+}
+
+@section css{
+    <link rel="stylesheet" href="~/css/loading.css">
+}
+
+@section js{
+
+}
+
+@section page_title{
+
+}
+
+@section location{
+<li class="breadcrumb-item" xmlns="http://www.w3.org/1999/html">@Html.ActionLink("首頁", "Index", "Home")</li>
+<li class="breadcrumb-item active">@Html.ActionLink("登入", "Index", "Login")</li>
+}
+
+
+@section scripts
+{
+    <script>
+        // Grid API: Access to Grid API methods
+        let gridApi;
+
+        // Grid Options: Contains all of the grid configurations
+        const gridOptions = {
+            // Data to be displayed
+            rowData: [],
+            // Columns to be displayed (Should match rowData properties)
+            columnDefs: [
+                { headerName: "排序", field: "id", width: 70, editable: false },
+                { headerName: "帳號", field: "username", width: 150, editable: false },
+                { headerName: "名稱", field: "nickname", width: 200, editable: true },
+                { headerName: "企業", field: "enterprise_id", width: 100, editable: false },
+                { headerName: "公司", field: "company_id", width: 100, editable: false },
+                { headerName: "工廠", field: "factory_id", width: 100, editable: false },
+                { headerName: "權限", field: "authority", width: 200, editable: false,},
+                {
+                    headerName: "修改密碼", width: 150,
+                    cellRenderer: function (params) {
+                        return `<button type='button' onclick='change_password(${params.data.id});' class='btn btn-success'><b>更改密碼</b></button>`;
+                    }
+                }
+            ],
+            defaultColDef: {
+                flex: 1,
+                resizable: true,
+                sortable: true,
+            },
+            pagination: true, // 開啟分頁功能
+            paginationPageSize: 10, // 每頁顯示 10 條數據
+            rowSelection: 'single', // 啟用行選擇
+            domLayout: 'autoHeight', // 動態調整高度
+            overlayNoRowsTemplate: '<span class="ag-overlay-loading-center">Not found</span>', // 無數據顯示模板
+            onGridReady: function(params) {
+                gridApi = params.api; // 獲取 gridApi
+            },
+            onCellClicked: function(event) {
+                if (event.colDef.field === 'enterprise_id' ||event.colDef.field === 'company_id' ||
+                    event.colDef.field === 'factory_id') {
+                    change_enterprise(event.data.id); // 當點擊權限列時，執行 change_authority 函數
+                }
+                if (event.colDef.field === 'authority') {
+                    change_authority(event.data.id); // 當點擊權限列時，執行 change_authority 函數
+                }
+            },
+            getRowId: function(params) {
+                return params.data.id; // 假設 'id' 是唯一識別符
+            }
+        };
+        
+        $(document).ready(function () {
+        
+            const gridDiv = document.querySelector('#myGrid');
+            gridApi = new agGrid.Grid(gridDiv, gridOptions); 
+            
+            document.addEventListener('DOMContentLoaded', function () {
+                const gridDiv = document.querySelector('#myGrid');
+                new agGrid.Grid(gridDiv, gridOptions);
+
+                // 呼叫 get 函數將資料載入到網格中
+                get();
+            });
+
+            
+            // 將 JSON 字符串轉換為 JavaScript 對象
+            var enterprises = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.EnterpriseJson)));
+            var companies = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.CompanyJson)));
+            var factories = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.FactoryJson)));
+
+            // 調試輸出數據
+            console.log("Enterprises:", enterprises);
+            console.log("Companies:", companies);
+            console.log("Factories:", factories);
+
+            // 填充企業選單
+            var enterpriseSelect = $('#enterprise_id');
+            enterpriseSelect.empty().append('<option value="">-- 請選擇 --</option>');
+            enterprises.forEach(function (enterprise) {
+                enterpriseSelect.append('<option value="' + enterprise.Id + '">' + enterprise.Name + '</option>');
+            });
+
+            // 當企業選擇改變時，從企業的 Child 中提取公司
+            $('#enterprise_id').change(function () {
+                var selectedEnterpriseId = $(this).val();
+                var companySelect = $('#company_id');
+                var factorySelect = $('#factory_id');
+
+                console.log("Selected Enterprise ID:", selectedEnterpriseId);
+
+                // 清空公司和工廠選單
+                companySelect.empty().append('<option value="">-- 請選擇 --</option>');
+                factorySelect.empty().append('<option value="">-- 請選擇 --</option>');
+
+                // 找到選擇的企業，然後直接使用 Child 屬性中的公司列表
+                var selectedEnterprise = enterprises.find(enterprise => enterprise.Id == selectedEnterpriseId);
+
+                // 調試：檢查選擇的企業及其 Child 屬性
+                console.log("Selected Enterprise:", selectedEnterprise);
+                if (selectedEnterprise && selectedEnterprise.Child && selectedEnterprise.Child.length > 0) {
+                    selectedEnterprise.Child.forEach(function (company) {
+                        console.log("Adding Company:", company);  // 調試：檢查正在添加的公司
+                        companySelect.append('<option value="' + company.Id + '">' + company.Name + '</option>');
+                    });
+                } else {
+                    console.warn("No companies found for the selected enterprise. Check if Child contains companies.");
+                }
+            });
+
+            // 當公司選擇改變時，從公司的 Child 中提取工廠
+            $('#company_id').change(function () {
+                var selectedCompanyId = $(this).val();
+                var factorySelect = $('#factory_id');
+
+                console.log("Selected Company ID:", selectedCompanyId);
+
+                // 清空工廠選單
+                factorySelect.empty().append('<option value="">-- 請選擇 --</option>');
+
+                // 找到選擇的公司，然後直接使用 Child 屬性中的工廠列表
+                var selectedCompany = companies.find(company => company.Id == selectedCompanyId);
+
+                // 調試：檢查選擇的公司及其 Child 屬性
+                console.log("Selected Company:", selectedCompany);
+                if (selectedCompany && selectedCompany.Child && selectedCompany.Child.length > 0) {
+                    selectedCompany.Child.forEach(function (factory) {
+                        console.log("Adding Factory:", factory);  // 調試：檢查正在添加的工廠
+                        factorySelect.append('<option value="' + factory.Id + '">' + factory.Name + '</option>');
+                    });
+                } else {
+                    console.warn("No factories found for the selected company. Check if Child contains factories.");
+                }
+            });
+        });
+    </script>
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>UserEdit</title>
+
+</head>
+<body>
+
+<div class="container">
+    <div class="card card-primary">
+        <div class="card-header">
+            <h3 class="card-title">修改人員帳號</h3>
+        </div>
+        <br>
+        <button class="btn btn-block btn-success" onclick="get()">查詢資料</button>
+        <br>
+        <div id="myGrid" class="ag-theme-quartz" style="height: 500px"></div>
+    </div>
+</div>
+<script>
+
+    function get() {
+        $.ajax({
+            url: '/UserEdit/GetDataFromDatabase',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                if (gridApi) { // 確保 gridApi 存在
+                    gridApi.setRowData(data); // 使用 gridApi
+                } else {
+                    console.log("gridApi is not initialized yet");
+                }
+            },
+            error: function (error) {
+                console.log("Error fetching data", error);
+            }
+        });
+    }
+
+    function change_password(id){
+      $("#remark_modal_password").modal('show');
+      $("#item_password").val(id)
+    }
+    
+    function send_change_password() {
+        block();
+        $.ajax({
+            url: '/UserEdit/Newpassword',
+            type: "post",
+            data: {id:$("#item_password").val(),password: $("#password").val() },
+            dataType: "json",
+            success: function (data) {
+                $("#jsGrid").jsGrid({data:data});
+                unblock();
+                $("#remark_modal_password").modal('hide');
+                if (data.error) {
+                    // 顯示錯誤訊息
+                    alert(data.error);
+                } else if (data.message) {
+                    // 顯示成功訊息
+                    alert(data.message);
+                }
+            
+            },
+            error: function (XMLHttpRequest, textStatus) {
+                unblock();
+                $("#remark_modal_password").modal('hide');
+                Toast.fire({
+                    icon: 'error',
+                    title: '儲存失敗'
+                });
+            }
+        });
+    }
+    
+    function change_authority(id){
+      $("#remark_modal_authority").modal('show');
+      $("#item_authority").val(id)
+    }
+    
+    function send_change_authority() {
+        block();
+        $.ajax({
+            url: '/UserEdit/Newauthority',
+            type: "post",
+            data: {id:$("#item_authority").val(),Audit:$("#Audit").val(),KPI:$("#KPI").val(),Sys:$("#Sys").val(),Org:$("#Org").val() },
+            dataType: "json",
+            success: function (data) {
+                gridApi.setRowData(data);
+                unblock();
+                $("#remark_modal_authority").modal('hide');
+                if (data.error) {
+                    // 顯示錯誤訊息
+                    alert(data.error);
+                } else if (data.message) {
+                    // 顯示成功訊息
+                    alert(data.message);
+                }
+                Toast.fire({
+                    icon: 'sucess',
+                    title: '儲存成功'
+                });
+            },
+            error: function (XMLHttpRequest, textStatus) {
+                unblock();
+                $("#remark_modal_authority").modal('hide');
+                Toast.fire({
+                    icon: 'error',
+                    title: '儲存失敗'
+                });
+            }
+        });
+    }
+    function change_enterprise(id){
+      $("#remark_modal_enterprise").modal('show');
+      $("#item_enterprise").val(id)
+    }
+      
+    function send_change_enterprise() {
+        block();
+        $.ajax({
+            url: '/UserEdit/Newenterprise',
+            type: "post",
+            data: {id:$("#item_enterprise").val(),enterprise_id: $("#enterprise_id").val(),company_id: $("#company_id").val(),factory_id: $("#factory_id").val() },
+            dataType: "json",
+            success: function (data) {
+                gridApi.setRowData(data);
+                unblock();
+                $("#remark_modal_enterprise").modal('hide');
+                if (data.error) {
+                    // 顯示錯誤訊息
+                    alert(data.error);
+                } else if (data.message) {
+                    // 顯示成功訊息
+                    alert(data.message);
+                }
+                Toast.fire({
+                    icon: 'sucess',
+                    title: '儲存成功'
+                });
+            },
+            error: function (XMLHttpRequest, textStatus) {
+                unblock();
+                $("#remark_modal_enterprise").modal('hide');
+                Toast.fire({
+                    icon: 'error',
+                    title: '儲存失敗'
+                });
+            }
+        });
+    }
+</script>
+@* 更改密碼 *@
+<div class="modal fade" id="remark_modal_password">
+    <div class="modal-dialog">
+        <div class="modal-content bg-default">
+            <div class="modal-header">
+                <h4 class="modal-title">請輸入新的密碼</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="input-group mb-3">
+                        <input id="item_password" type="hidden"/>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">關閉</button>
+                <button type="button" class="btn btn btn-primary" onclick="send_change_password()"> 保存 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 更改權限 -->
+<div class="modal fade" id="remark_modal_authority">
+    <div class="modal-dialog">
+        <div class="modal-content bg-default">
+            <div class="modal-header">
+                <h4 class="modal-title">請選擇新的權限</h4>
+                <input id="item_authority" type="hidden"/>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label class="form-label">Audit權限：</label>
+                            <select class="form-select" name="Audit" id="Audit">
+                                <option value="admin">Admin</option>
+                                <option value="power">Power</option>
+                                <option value="operator">Operator</option>
+                                <option value="none">None</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label class="form-label">KPI權限：</label>
+                            <select class="form-select" name="KPI" id="KPI">
+                                <option value="admin">Admin</option>
+                                <option value="power">Power</option>
+                                <option value="operator">Operator</option>
+                                <option value="none">None</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label class="form-label">Sys權限：</label>
+                            <select class="form-select" name="Sys" id="Sys">
+                                <option value="admin">Admin</option>
+                                <option value="none">None</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label class="form-label">Org權限：</label>
+                            <select class="form-select" name="Org" id="Org">
+                                <option value="admin">Admin</option>
+                                <option value="factory">Factory</option>
+                                <option value="manager">Manager</option>
+                                <option value="enterprise">Enterprise</option>
+                                <option value="company">Company</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">關閉</button>
+                <button type="button" class="btn btn btn-primary" onclick="send_change_authority()"> 保存 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 企業、公司、工廠 -->
+
+<div class="modal fade" id="remark_modal_enterprise" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <input id="item_enterprise" type="hidden"/>
+                <h5 class="modal-title" id="myModalLabel">選擇選項</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- 将你的下拉选择框放在这里 -->
+                <div class="mb-3">
+                    <label for="enterprise_id" class="form-label">企業：</label>
+                    <select id="enterprise_id" name="enterprise_id" class="form-control select2" style="width: 100%;">
+                        <option value="">-- 請選擇 --</option>
+                        @* 企業選項將由 JavaScript 動態更新 *@
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="company_id" class="form-label">公司：</label>
+                    <select id="company_id" name="company_id" class="form-control select2" style="width: 100%;">
+                        <option value="">-- 請選擇 --</option>
+                        @* 公司選項將由 JavaScript 動態更新 *@
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="factory_id" class="form-label">工廠：</label>
+                    <select id="factory_id" name="factory_id" class="form-control select2" style="width: 100%;">
+                        <option value="">-- 請選擇 --</option>
+                        @* 工廠選項將由 JavaScript 動態更新 *@
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">關閉</button>
+                <button type="button" class="btn btn-primary" onclick="send_change_enterprise()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

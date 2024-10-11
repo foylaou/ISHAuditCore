@@ -75,6 +75,8 @@ builder.Services.AddScoped<Authority>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<Codes>(); // 如果 Codes 是每次請求一個實例，使用 Scoped 生命週期
 builder.Services.AddScoped<signUpService>();
+builder.Services.AddScoped<UserEditService>();
+builder.Services.AddScoped<UserData>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

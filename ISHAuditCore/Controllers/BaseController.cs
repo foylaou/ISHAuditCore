@@ -19,7 +19,7 @@ namespace ISHAuditCore.Controllers
 
             if (sController != sBypassController.ToUpper())
             {
-                // AutoLogin();
+                AutoLogin();
 
                 if (HttpContext.Session.GetString("login") == null ||
                     string.IsNullOrWhiteSpace(HttpContext.Session.GetString("login")))

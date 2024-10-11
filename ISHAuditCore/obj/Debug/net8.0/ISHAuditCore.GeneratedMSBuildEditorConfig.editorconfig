@@ -9,51 +9,55 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = ISHAuditCore
 build_property.RootNamespace = ISHAuditCore
-build_property.ProjectDir = /Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C# Projects/ISHAuditCore/ISHAuditCore/
+build_property.ProjectDir = C:\Users\user\RiderProjects\ISHAuditCore\ISHAuditCore\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = /Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C# Projects/ISHAuditCore/ISHAuditCore
+build_property.MSBuildProjectDirectory = C:\Users\user\RiderProjects\ISHAuditCore\ISHAuditCore
 build_property._RazorSourceGeneratorDebug = 
 
-[/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C\# Projects/ISHAuditCore/ISHAuditCore/Views/Home/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9JbmRleC5jc2h0bWw=
+[C:/Users/user/RiderProjects/ISHAuditCore/ISHAuditCore/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C\# Projects/ISHAuditCore/ISHAuditCore/Views/Login/index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTG9naW4vaW5kZXguY3NodG1s
+[C:/Users/user/RiderProjects/ISHAuditCore/ISHAuditCore/Views/Login/index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9naW5caW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C\# Projects/ISHAuditCore/ISHAuditCore/Views/Login/test2.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTG9naW4vdGVzdDIuY3NodG1s
+[C:/Users/user/RiderProjects/ISHAuditCore/ISHAuditCore/Views/Login/test2.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9naW5cdGVzdDIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C\# Projects/ISHAuditCore/ISHAuditCore/Views/Shared/Error.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL0Vycm9yLmNzaHRtbA==
+[C:/Users/user/RiderProjects/ISHAuditCore/ISHAuditCore/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C\# Projects/ISHAuditCore/ISHAuditCore/Views/Shared/_Menu.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19NZW51LmNzaHRtbA==
+[C:/Users/user/RiderProjects/ISHAuditCore/ISHAuditCore/Views/Shared/_Menu.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9NZW51LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C\# Projects/ISHAuditCore/ISHAuditCore/Views/Shared/_ValidationScriptsPartial.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+[C:/Users/user/RiderProjects/ISHAuditCore/ISHAuditCore/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C\# Projects/ISHAuditCore/ISHAuditCore/Views/SignUp/index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2lnblVwL2luZGV4LmNzaHRtbA==
+[C:/Users/user/RiderProjects/ISHAuditCore/ISHAuditCore/Views/SignUp/index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2lnblVwXGluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C\# Projects/ISHAuditCore/ISHAuditCore/Views/_ViewImports.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+[C:/Users/user/RiderProjects/ISHAuditCore/ISHAuditCore/Views/UserEdit/index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlckVkaXRcaW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C\# Projects/ISHAuditCore/ISHAuditCore/Views/_ViewStart.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdTdGFydC5jc2h0bWw=
+[C:/Users/user/RiderProjects/ISHAuditCore/ISHAuditCore/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/foyliu/Library/CloudStorage/OneDrive-Foy365/C\# Projects/ISHAuditCore/ISHAuditCore/Views/Shared/_Layout.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19MYXlvdXQuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = b-fr0u2utdo3
+[C:/Users/user/RiderProjects/ISHAuditCore/ISHAuditCore/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/user/RiderProjects/ISHAuditCore/ISHAuditCore/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-pev8zmwc18

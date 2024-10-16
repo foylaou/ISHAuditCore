@@ -71,6 +71,7 @@
                     }
                 }
             ],
+            onCellValueChanged: onCellValueChanged, // 綁定事件
             defaultColDef: {
                 resizable: true,
                 sortable: true,
@@ -225,7 +226,35 @@
             }
         });
     }
-
+    
+    function onCellValueChanged(event) {
+        if (event.oldValue !== event.newValue) {
+            console.log('Cell value changed from', event.oldValue, 'to', event.newValue);
+            
+            $.ajax({
+                url: '/UserEdit/UpdateUserField',
+                type: 'POST',
+                data: {
+                    id: event.data.id,
+                    field: event.colDef.field, // 被修改的字段
+                    value: event.newValue      // 新值
+                },
+                success: function (response) {
+                    Toast.fire({
+                        icon: 'success',
+                        title: '修改成功'
+                    });
+                },
+                error: function (error) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: '修改失敗'
+                    });
+                }
+            });
+        }
+    }
+    
     function change_password(id){
       $("#remark_modal_password").modal('show');
       $("#item_password").val(id)
@@ -286,7 +315,7 @@
                     alert(data.message);
                 }
                 Toast.fire({
-                    icon: 'sucess',
+                    icon: 'success',
                     title: '儲存成功'
                 });
             },
@@ -322,7 +351,7 @@
                     // 填充工廠下拉選單
                     $('#factory_id').append(`<option value="" disabled selected>${data.factoryName || '-- 請選擇 --'}</option>`);
                 } else {
-                    console.log("NOOO");
+                    console.log("取得資料失敗");
                 }
             },
             error: function () {
@@ -369,7 +398,7 @@
                     alert(data.message);
                 }
                 Toast.fire({
-                    icon: 'sucess',
+                    icon: 'success',
                     title: '儲存成功'
                 });
             },

@@ -236,6 +236,45 @@ namespace ISHAuditCore.Controllers
                 return BadRequest(new { message = "刪除失敗", error = ex.Message });
             }
         }
+        [HttpPost]
+        public JsonResult UpdateUserField(int id, string field, string value)
+        {
+            try
+            {
+                // 根據傳入的 id 找到相應的用戶
+                var user = _db.user_infos.Find(id);
+                if (user == null)
+                {
+                    return Json(new { success = false, message = "User not found." });
+                }
+
+                // 根據 field 更新對應的值，這裡假設只有 nickname 允許修改
+                switch (field.ToLower())
+                {
+                    case "nickname":
+                        user.nickname = value;
+                        break;
+
+                    // 如果有其他可修改的字段，繼續添加 case 分支
+                    // case "otherfield":
+                    //     user.OtherField = value;
+                    //     break;
+
+                    default:
+                        return Json(new { success = false, message = "Invalid field." });
+                }
+
+                // 保存更改到資料庫
+                _db.SaveChanges();
+
+                return Json(new { success = true, message = "User updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                // 捕捉異常並返回錯誤消息
+                return Json(new { success = false, message = "An error occurred.", error = ex.Message });
+            }
+        }
         [HttpGet]
         public JsonResult GetUserDataById(int userId)
         {

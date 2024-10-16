@@ -35,6 +35,26 @@
 @section scripts
 {
     <script>
+        // 將 JSON 字符串轉換為 JavaScript 對象
+        var enterprises = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.EnterpriseJson)));
+
+        // 提取企業名稱
+        const enterpriseNames = enterprises.map(ent => ent.Name);
+
+        // 動態提取公司名稱
+        function getCompanyNames(enterpriseName) {
+            const enterprise = enterprises.find(ent => ent.Name === enterpriseName);
+            return enterprise ? enterprise.Child.map(company => company.Name) : [];
+        }
+
+        // 動態提取工廠名稱
+        function getFactoryNames(companyName, enterpriseName) {
+            const enterprise = enterprises.find(ent => ent.Name === enterpriseName);
+            if (!enterprise) return [];
+            const company = enterprise.Child.find(comp => comp.Name === companyName);
+            return company ? company.Child.map(factory => factory.Name) : [];
+        }
+        
         let gridApi;
         // Grid配置
         const gridOptions = {
@@ -43,9 +63,54 @@
                 { headerName: "排序", field: "id", cellClass: 'size-text', width: 100,editable: false },
                 { headerName: "帳號", field: "username", cellClass: 'size-text', width: 100,editable: false },
                 { headerName: "名稱", field: "nickname", cellClass: 'size-text', width: 150,editable: true },
-                { headerName: "企業", field: "enterpriseName", cellClass: 'size-text', width: 200,editable: false },
-                { headerName: "公司", field: "companyName", cellClass: 'size-text', width: 250,editable: false },
-                { headerName: "工廠", field: "factoryName", cellClass: 'size-text', width: 200,editable: false },
+                {
+                    headerName: "企業",
+                    field: "enterpriseName",
+                    cellClass: 'size-text',
+                    width: 200,
+                    editable: true,
+                    cellEditor: 'agSelectCellEditor', // 使用下拉選單
+                    cellEditorParams: {
+                        values: enterpriseNames // 提供所有企業選項
+                    },
+                    onCellValueChanged: function(params) {
+                        // 當企業選擇改變時，更新對應的公司選項
+                        const selectedEnterprise = params.data.enterpriseName;
+                        const companyOptions = getCompanyNames(selectedEnterprise);
+                        gridOptions.api.getColumnDef('companyName').cellEditorParams.values = companyOptions;
+                        gridOptions.api.refreshCells({ force: true, columns: ['companyName'] });
+                    }
+                },
+                {
+                    headerName: "公司",
+                    field: "companyName",
+                    cellClass: 'size-text',
+                    width: 200,
+                    editable: true,
+                    cellEditor: 'agSelectCellEditor',
+                    cellEditorParams: {
+                        values: [] // 初始狀態下公司列表為空，根據企業動態更新
+                    },
+                    onCellValueChanged: function(params) {
+                        // 當公司選擇改變時，更新對應的工廠選項
+                        const selectedEnterprise = params.data.enterpriseName;
+                        const selectedCompany = params.data.companyName;
+                        const factoryOptions = getFactoryNames(selectedCompany, selectedEnterprise);
+                        gridOptions.api.getColumnDef('factoryName').cellEditorParams.values = factoryOptions;
+                        gridOptions.api.refreshCells({ force: true, columns: ['factoryName'] });
+                    }
+                },
+                {
+                    headerName: "工廠",
+                    field: "factoryName",
+                    cellClass: 'size-text',
+                    width: 200,
+                    editable: true,
+                    cellEditor: 'agSelectCellEditor',
+                    cellEditorParams: {
+                        values: [] // 初始狀態下工廠列表為空，根據公司動態更新
+                    }
+                },
                 { headerName: "權限", field: "authority", cellClass: 'size-text', width: 600,editable: false,
                     valueGetter: (params) => {
                         try {
@@ -76,8 +141,9 @@
                 resizable: true,
                 sortable: true,
             },
+            domLayout: 'autoHeight', // 自適應高度
             pagination: true, // 開啟分頁功能
-            paginationPageSize: 10, // 每頁顯示 10 條數據
+            paginationPageSize: 15, // 每頁顯示 10 條數據
             rowSelection: 'multiple', // 啟用行選擇
             //domLayout: 'autoHeight', // 動態調整高度
             overlayNoRowsTemplate: '<span class="ag-overlay-loading-center">Not found</span>', // 無數據顯示模板
@@ -106,82 +172,20 @@
             document.addEventListener('DOMContentLoaded', function () {
                 const gridDiv = document.querySelector('#myGrid');
                 new agGrid.Grid(gridDiv, gridOptions);
-                // 呼叫 get 函數將資料載入到網格中
                 get();
             });
 
             
-            // 將 JSON 字符串轉換為 JavaScript 對象
-            var enterprises = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.EnterpriseJson)));
-            var companies = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.CompanyJson)));
-            var factories = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.FactoryJson)));
+
 
             // 調試輸出數據
             console.log("Enterprises:", enterprises);
             console.log("Companies:", companies);
             console.log("Factories:", factories);
             
-            // 填充企業選單
-            var enterpriseSelect = $('#enterprise_id');
-            enterpriseSelect.empty().append('<option value="">-- 請選擇 --</option>');
-            
-            
-            enterprises.forEach(function (enterprise) {
-                enterpriseSelect.append('<option value="' + enterprise.Id + '">' + enterprise.Name + '</option>');
-            });
-
-            // 當企業選擇改變時，從企業的 Child 中提取公司
-            $('#enterprise_id').change(function () {
-                var selectedEnterpriseId = $(this).val();
-                var companySelect = $('#company_id');
-                var factorySelect = $('#factory_id');
-
-                console.log("Selected Enterprise ID:", selectedEnterpriseId);
-
-                // 清空公司和工廠選單
-                companySelect.empty().append('<option value="">-- 請選擇 --</option>');
-                factorySelect.empty().append('<option value="">-- 請選擇 --</option>');
-
-                // 找到選擇的企業，然後直接使用 Child 屬性中的公司列表
-                var selectedEnterprise = enterprises.find(enterprise => enterprise.Id == selectedEnterpriseId);
-
-                // 調試：檢查選擇的企業及其 Child 屬性
-                console.log("Selected Enterprise:", selectedEnterprise);
-                if (selectedEnterprise && selectedEnterprise.Child && selectedEnterprise.Child.length > 0) {
-                    selectedEnterprise.Child.forEach(function (company) {
-                        console.log("Adding Company:", company);  // 調試：檢查正在添加的公司
-                        companySelect.append('<option value="' + company.Id + '">' + company.Name + '</option>');
-                    });
-                } else {
-                    console.warn("No companies found for the selected enterprise. Check if Child contains companies.");
-                }
-            });
-
-            // 當公司選擇改變時，從公司的 Child 中提取工廠
-            $('#company_id').change(function () {
-                var selectedCompanyId = $(this).val();
-                var factorySelect = $('#factory_id');
-
-                console.log("Selected Company ID:", selectedCompanyId);
-
-                // 清空工廠選單
-                factorySelect.empty().append('<option value="">-- 請選擇 --</option>');
-
-                // 找到選擇的公司，然後直接使用 Child 屬性中的工廠列表
-                var selectedCompany = companies.find(company => company.Id == selectedCompanyId);
-
-                // 調試：檢查選擇的公司及其 Child 屬性
-                console.log("Selected Company:", selectedCompany);
-                if (selectedCompany && selectedCompany.Child && selectedCompany.Child.length > 0) {
-                    selectedCompany.Child.forEach(function (factory) {
-                        console.log("Adding Factory:", factory);  // 調試：檢查正在添加的工廠
-                        factorySelect.append('<option value="' + factory.Id + '">' + factory.Name + '</option>');
-                    });
-                } else {
-                    console.warn("No factories found for the selected company. Check if Child contains factories.");
-                }
-            });
+          
         });
+    
     </script>
 }
 
@@ -193,7 +197,7 @@
 </head>
 <body>
 
-<div class="container-fluid">
+<section>
     <div class="card card-primary">
         <div class="card-header">
             <h3 class="card-title">修改人員帳號</h3>
@@ -201,11 +205,11 @@
         <br>
         <button class="btn btn-block btn-success" onclick="get()">查詢資料</button>
         <br>
-        <div style="height: 500px;">
-            <div id="myGrid" class="ag-theme-quartz" style="height: 100%;"></div>
+        <div>
+            <div id="myGrid" class="card-body ag-theme-quartz" style="width: 100%;"></div>
         </div>
     </div>
-</div>
+</section>
 
 <script>
 
@@ -330,110 +334,7 @@
         });
     }
     
-    function change_enterprise(id){
-        $("#remark_modal_enterprise").modal('show');
-        $("#item_enterprise").val(id);
-      
-        $.ajax({
-            url: '@Url.Action("GetUserDataById", "UserEdit")',
-            type: 'GET',
-            data: { userId: id },
-            success: function (data) {
-                if (data) {
-                    // 填充選項框
-                    console.log(data);
-                    // 填充企業下拉選單
-                    $('#enterprise_id').append(`<option value="" disabled selected>${data.enterpriseName || '-- 請選擇 --'}</option>`);
 
-                    // 填充公司下拉選單
-                    $('#company_id').append(`<option value="" disabled selected>${data.companyName || '-- 請選擇 --'}</option>`);
-
-                    // 填充工廠下拉選單
-                    $('#factory_id').append(`<option value="" disabled selected>${data.factoryName || '-- 請選擇 --'}</option>`);
-                } else {
-                    console.log("取得資料失敗");
-                }
-            },
-            error: function () {
-                alert('無法加載公司的資訊');
-            }
-        });
-        // 檢查 enterprise_id 最後一個選項是否是 disabled selected 是就刪掉
-        var lastEnterpriseOption = $('#enterprise_id option:last');
-        if (lastEnterpriseOption.is('[disabled][selected]')) {
-            lastEnterpriseOption.remove();
-        }
-
-        // 檢查 company_id 最後一個選項是否是 disabled selected 是就刪掉
-        var lastCompanyOption = $('#company_id option:last');
-        if (lastCompanyOption.is('[disabled][selected]')) {
-            lastCompanyOption.remove();
-        }
-
-        // 檢查 factory_id 最後一個選項是否是 disabled selected 是就刪掉
-        var lastFactoryOption = $('#factory_id option:last');
-        if (lastFactoryOption.is('[disabled][selected]')) {
-            lastFactoryOption.remove();
-        }
-        
-    }
-      
-    function send_change_enterprise() {
-        block();
-        $.ajax({
-            url: '/UserEdit/Newenterprise',
-            type: "post",
-            data: {id:$("#item_enterprise").val(),enterprise_id: $("#enterprise_id").val(),company_id: $("#company_id").val(),factory_id: $("#factory_id").val() },
-            dataType: "json",
-            success: function (data) {
-                console.log("公司修改成功:",data)
-                gridApi.setRowData(data);
-                unblock();
-                $("#remark_modal_enterprise").modal('hide');
-                if (data.error) {
-                    // 顯示錯誤訊息
-                    alert(data.error);
-                } else if (data.message) {
-                    // 顯示成功訊息
-                    alert(data.message);
-                }
-                Toast.fire({
-                    icon: 'success',
-                    title: '儲存成功'
-                });
-            },
-            error: function (XMLHttpRequest, textStatus) {
-                unblock();
-                $("#remark_modal_enterprise").modal('hide');
-                Toast.fire({
-                    icon: 'error',
-                    title: '儲存失敗'
-                });
-            }
-        });
-    }
-    
-    function closeModal() {
-        // 檢查 enterprise_id 最後一個選項是否是 disabled selected 是就刪掉
-        var lastEnterpriseOption = $('#enterprise_id option:last');
-        if (lastEnterpriseOption.is('[disabled][selected]')) {
-            lastEnterpriseOption.remove();
-        }
-
-        // 檢查 company_id 最後一個選項是否是 disabled selected 是就刪掉
-        var lastCompanyOption = $('#company_id option:last');
-        if (lastCompanyOption.is('[disabled][selected]')) {
-            lastCompanyOption.remove();
-        }
-
-        // 檢查 factory_id 最後一個選項是否是 disabled selected 是就刪掉
-        var lastFactoryOption = $('#factory_id option:last');
-        if (lastFactoryOption.is('[disabled][selected]')) {
-            lastFactoryOption.remove();
-        }
-        // 手動關閉模態窗口
-        $('#remark_modal_enterprise').modal('hide');
-    }
 
     
     function delete_data(id,username) {

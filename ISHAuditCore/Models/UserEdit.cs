@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ISHAuditCore.Context;
 using ISHAuditCore.Models;
@@ -13,63 +14,34 @@ namespace ISHAudit.Models
         {
             _db = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
-        
-        public List<Codes> GetCompanyList()
-        {
-            var company = (from companyName in _db.company_names
-                                   join enterpriseName in _db.enterprise_names on companyName.enterprise_id equals enterpriseName.id
-                                   select new Codes
-                                   {
-                                       Id = companyName.id.ToString(),
-                                       Name = companyName.company,
-                                   }).ToList();
-            foreach (var item in company)
-            {
-                var id = int.Parse(item.Id);
-                var factory = (from factoryName in _db.factory_names.AsEnumerable()
-                                       where factoryName.company_id == id
-                                       select new Codes
-                                       {
-                                           Id = factoryName.id.ToString(),
-                                           Name = factoryName.factory
-                                       }).ToList();
-                item.Child = factory;
-            }
-            return company;
-            
-        }
-        public List<Codes> GetFactoryList()
-        {
-            List<Codes> factory = (from factoryName in _db.factory_names
-                                   select new Codes
-                                   {
-                                       Id = factoryName.id.ToString(),
-                                       Name = factoryName.factory,
-                                   }).ToList();
-            return factory;
-        }
+
+        // 取得企業清單，其中每個企業包含公司，且每個公司包含工廠
         public List<Codes> GetEnterpriseList()
         {
-            var enterprise = (from enterpriseName in _db.enterprise_names
-                                      select new Codes
-                                      {
-                                          Id = enterpriseName.id.ToString(),
-                                          Name = enterpriseName.enterprise,
-                                      }).ToList();
-            foreach (var item in enterprise)
-            {
-                var id = int.Parse(item.Id);
-                var company = (from companyName in _db.company_names.AsEnumerable()
-                                       where companyName.enterprise_id == id
-                                       select new Codes
-                                       {
-                                           Id = companyName.id.ToString(),
-                                           Name = companyName.company
-                                       }).ToList();
-                item.Child = company;
-            }
-            return enterprise;
-            
+            // 取得企業清單
+            var enterpriseList = (from enterprise in _db.enterprise_names
+                                  select new Codes
+                                  {
+                                      Id = enterprise.id.ToString(),
+                                      Name = enterprise.enterprise,
+                                      Child = (from company in _db.company_names
+                                               where company.enterprise_id == enterprise.id
+                                               select new Codes
+                                               {
+                                                   Id = company.id.ToString(),
+                                                   Name = company.company,
+                                                   // 查詢每個公司對應的工廠
+                                                   Child = (from factory in _db.factory_names
+                                                            where factory.company_id == company.id
+                                                            select new Codes
+                                                            {
+                                                                Id = factory.id.ToString(),
+                                                                Name = factory.factory
+                                                            }).ToList()
+                                               }).ToList()
+                                  }).ToList();
+
+            return enterpriseList;
         }
     }
 }

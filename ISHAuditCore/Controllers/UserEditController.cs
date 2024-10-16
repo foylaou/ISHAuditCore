@@ -25,12 +25,8 @@ namespace ISHAuditCore.Controllers
         public IActionResult Index()
         {
             var enterprises = _userEditService.GetEnterpriseList();
-            var companies = _userEditService.GetCompanyList();
-            var factories = _userEditService.GetFactoryList();
 
             ViewBag.EnterpriseJson = JsonConvert.SerializeObject(enterprises);
-            ViewBag.CompanyJson = JsonConvert.SerializeObject(companies);
-            ViewBag.FactoryJson = JsonConvert.SerializeObject(factories);
 
             return View();
         }

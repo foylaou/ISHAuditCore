@@ -11,6 +11,11 @@
 
 @section css{
     <link rel="stylesheet" href="~/css/loading.css">
+    <style>
+        .size-text {
+            font-size: 16px; /* 調整字體大小 */
+        }
+    </style>
 }
 
 @section js{
@@ -30,46 +35,58 @@
 @section scripts
 {
     <script>
-        // Grid API: Access to Grid API methods
         let gridApi;
-
-        // Grid Options: Contains all of the grid configurations
+        // Grid配置
         const gridOptions = {
-            // Data to be displayed
             rowData: [],
-            // Columns to be displayed (Should match rowData properties)
             columnDefs: [
-                { headerName: "排序", field: "id", width: 70, editable: false },
-                { headerName: "帳號", field: "username", width: 150, editable: false },
-                { headerName: "名稱", field: "nickname", width: 200, editable: true },
-                { headerName: "企業", field: "enterprise_id", width: 100, editable: false },
-                { headerName: "公司", field: "company_id", width: 100, editable: false },
-                { headerName: "工廠", field: "factory_id", width: 100, editable: false },
-                { headerName: "權限", field: "authority", width: 200, editable: false,},
+                { headerName: "排序", field: "id", cellClass: 'size-text', width: 100,editable: false },
+                { headerName: "帳號", field: "username", cellClass: 'size-text', width: 100,editable: false },
+                { headerName: "名稱", field: "nickname", cellClass: 'size-text', width: 150,editable: true },
+                { headerName: "企業", field: "enterpriseName", cellClass: 'size-text', width: 200,editable: false },
+                { headerName: "公司", field: "companyName", cellClass: 'size-text', width: 250,editable: false },
+                { headerName: "工廠", field: "factoryName", cellClass: 'size-text', width: 200,editable: false },
+                { headerName: "權限", field: "authority", cellClass: 'size-text', width: 600,editable: false,
+                    valueGetter: (params) => {
+                        try {
+                            const data = JSON.parse(params.data.authority);
+                            // 自定義你想要的顯示格式
+                            return `督導權限: ${data.Audit}, 績效指標權限: ${data.KPI}, 系統權限: ${data.Sys}, 組織權限: ${data.Org}`;
+                        } catch (e) {
+                            return 'Invalid JSON'; // 若解析失敗，顯示錯誤
+                        }
+                    }
+
+                },
                 {
                     headerName: "修改密碼", width: 150,
                     cellRenderer: function (params) {
                         return `<button type='button' onclick='change_password(${params.data.id});' class='btn btn-success'><b>更改密碼</b></button>`;
                     }
+                },
+                {
+                    headerName: "刪除", width: 150,
+                    cellRenderer: function (params) {
+                        return `<button type='button' onclick='delete_data(${params.data.id}, "${params.data.username}");' class='btn btn-danger'><b>刪除資料</b></button>`;
+                    }
                 }
             ],
             defaultColDef: {
-                flex: 1,
                 resizable: true,
                 sortable: true,
             },
             pagination: true, // 開啟分頁功能
             paginationPageSize: 10, // 每頁顯示 10 條數據
-            rowSelection: 'single', // 啟用行選擇
-            domLayout: 'autoHeight', // 動態調整高度
+            rowSelection: 'multiple', // 啟用行選擇
+            //domLayout: 'autoHeight', // 動態調整高度
             overlayNoRowsTemplate: '<span class="ag-overlay-loading-center">Not found</span>', // 無數據顯示模板
             onGridReady: function(params) {
                 gridApi = params.api; // 獲取 gridApi
             },
             onCellClicked: function(event) {
-                if (event.colDef.field === 'enterprise_id' ||event.colDef.field === 'company_id' ||
-                    event.colDef.field === 'factory_id') {
-                    change_enterprise(event.data.id); // 當點擊權限列時，執行 change_authority 函數
+                if (event.colDef.field === 'enterpriseName' ||event.colDef.field === 'companyName' ||
+                    event.colDef.field === 'factoryName') {
+                    change_enterprise(event.data.id); // 當點擊權限列時，執行 change_enterprise 函數
                 }
                 if (event.colDef.field === 'authority') {
                     change_authority(event.data.id); // 當點擊權限列時，執行 change_authority 函數
@@ -88,7 +105,6 @@
             document.addEventListener('DOMContentLoaded', function () {
                 const gridDiv = document.querySelector('#myGrid');
                 new agGrid.Grid(gridDiv, gridOptions);
-
                 // 呼叫 get 函數將資料載入到網格中
                 get();
             });
@@ -103,10 +119,12 @@
             console.log("Enterprises:", enterprises);
             console.log("Companies:", companies);
             console.log("Factories:", factories);
-
+            
             // 填充企業選單
             var enterpriseSelect = $('#enterprise_id');
             enterpriseSelect.empty().append('<option value="">-- 請選擇 --</option>');
+            
+            
             enterprises.forEach(function (enterprise) {
                 enterpriseSelect.append('<option value="' + enterprise.Id + '">' + enterprise.Name + '</option>');
             });
@@ -174,7 +192,7 @@
 </head>
 <body>
 
-<div class="container">
+<div class="container-fluid">
     <div class="card card-primary">
         <div class="card-header">
             <h3 class="card-title">修改人員帳號</h3>
@@ -182,9 +200,12 @@
         <br>
         <button class="btn btn-block btn-success" onclick="get()">查詢資料</button>
         <br>
-        <div id="myGrid" class="ag-theme-quartz" style="height: 500px"></div>
+        <div style="height: 500px;">
+            <div id="myGrid" class="ag-theme-quartz" style="height: 100%;"></div>
+        </div>
     </div>
 </div>
+
 <script>
 
     function get() {
@@ -279,9 +300,53 @@
             }
         });
     }
+    
     function change_enterprise(id){
-      $("#remark_modal_enterprise").modal('show');
-      $("#item_enterprise").val(id)
+        $("#remark_modal_enterprise").modal('show');
+        $("#item_enterprise").val(id);
+      
+        $.ajax({
+            url: '@Url.Action("GetUserDataById", "UserEdit")',
+            type: 'GET',
+            data: { userId: id },
+            success: function (data) {
+                if (data) {
+                    // 填充選項框
+                    console.log(data);
+                    // 填充企業下拉選單
+                    $('#enterprise_id').append(`<option value="" disabled selected>${data.enterpriseName || '-- 請選擇 --'}</option>`);
+
+                    // 填充公司下拉選單
+                    $('#company_id').append(`<option value="" disabled selected>${data.companyName || '-- 請選擇 --'}</option>`);
+
+                    // 填充工廠下拉選單
+                    $('#factory_id').append(`<option value="" disabled selected>${data.factoryName || '-- 請選擇 --'}</option>`);
+                } else {
+                    console.log("NOOO");
+                }
+            },
+            error: function () {
+                alert('無法加載公司的資訊');
+            }
+        });
+        // 檢查 enterprise_id 最後一個選項是否是 disabled selected 是就刪掉
+        var lastEnterpriseOption = $('#enterprise_id option:last');
+        if (lastEnterpriseOption.is('[disabled][selected]')) {
+            lastEnterpriseOption.remove();
+        }
+
+        // 檢查 company_id 最後一個選項是否是 disabled selected 是就刪掉
+        var lastCompanyOption = $('#company_id option:last');
+        if (lastCompanyOption.is('[disabled][selected]')) {
+            lastCompanyOption.remove();
+        }
+
+        // 檢查 factory_id 最後一個選項是否是 disabled selected 是就刪掉
+        var lastFactoryOption = $('#factory_id option:last');
+        if (lastFactoryOption.is('[disabled][selected]')) {
+            lastFactoryOption.remove();
+        }
+        
     }
       
     function send_change_enterprise() {
@@ -292,6 +357,7 @@
             data: {id:$("#item_enterprise").val(),enterprise_id: $("#enterprise_id").val(),company_id: $("#company_id").val(),factory_id: $("#factory_id").val() },
             dataType: "json",
             success: function (data) {
+                console.log("公司修改成功:",data)
                 gridApi.setRowData(data);
                 unblock();
                 $("#remark_modal_enterprise").modal('hide');
@@ -316,6 +382,53 @@
                 });
             }
         });
+    }
+    
+    function closeModal() {
+        // 檢查 enterprise_id 最後一個選項是否是 disabled selected 是就刪掉
+        var lastEnterpriseOption = $('#enterprise_id option:last');
+        if (lastEnterpriseOption.is('[disabled][selected]')) {
+            lastEnterpriseOption.remove();
+        }
+
+        // 檢查 company_id 最後一個選項是否是 disabled selected 是就刪掉
+        var lastCompanyOption = $('#company_id option:last');
+        if (lastCompanyOption.is('[disabled][selected]')) {
+            lastCompanyOption.remove();
+        }
+
+        // 檢查 factory_id 最後一個選項是否是 disabled selected 是就刪掉
+        var lastFactoryOption = $('#factory_id option:last');
+        if (lastFactoryOption.is('[disabled][selected]')) {
+            lastFactoryOption.remove();
+        }
+        // 手動關閉模態窗口
+        $('#remark_modal_enterprise').modal('hide');
+    }
+
+    
+    function delete_data(id,username) {
+        const confirmDelete = confirm(`確定要刪除這些資料嗎？\n\n帳號: ${username}`);
+
+        // 如果用戶點擊「確定」，則執行刪除操作
+        if (confirmDelete) {
+            $.ajax({
+                url: '/UserEdit/DeleteData', // 替換為實際的後端API
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify([id]), // 將選中的 ID 以 JSON 格式發送
+                success: function(response) {
+                    alert(`資料已被刪除。\n刪除的帳號: ${username}`);
+                    // 刪除成功後，刷新表格數據或移除選中的行
+                    gridOptions.api.applyTransaction({ remove: [{ id: id }] });
+                },
+                error: function(error) {
+                    console.log('刪除失敗', error);
+                    alert('刪除過程中出現錯誤，請稍後再試。');
+                }
+            });
+
+        }
     }
 </script>
 @* 更改密碼 *@
@@ -438,7 +551,6 @@
                 <div class="mb-3">
                     <label for="enterprise_id" class="form-label">企業：</label>
                     <select id="enterprise_id" name="enterprise_id" class="form-control select2" style="width: 100%;">
-                        <option value="">-- 請選擇 --</option>
                         @* 企業選項將由 JavaScript 動態更新 *@
                     </select>
                 </div>
@@ -446,7 +558,6 @@
                 <div class="mb-3">
                     <label for="company_id" class="form-label">公司：</label>
                     <select id="company_id" name="company_id" class="form-control select2" style="width: 100%;">
-                        <option value="">-- 請選擇 --</option>
                         @* 公司選項將由 JavaScript 動態更新 *@
                     </select>
                 </div>
@@ -454,13 +565,12 @@
                 <div class="mb-3">
                     <label for="factory_id" class="form-label">工廠：</label>
                     <select id="factory_id" name="factory_id" class="form-control select2" style="width: 100%;">
-                        <option value="">-- 請選擇 --</option>
                         @* 工廠選項將由 JavaScript 動態更新 *@
                     </select>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">關閉</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">關閉</button>
                 <button type="button" class="btn btn-primary" onclick="send_change_enterprise()">保存</button>
             </div>
         </div>

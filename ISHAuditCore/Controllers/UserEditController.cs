@@ -38,7 +38,7 @@ namespace ISHAuditCore.Controllers
         [HttpGet]
         public JsonResult GetDataFromDatabase()
         {
-            List<user_info> dataFromDatabase = _userData.DataFromDatabase();
+            List<UserDataSet> dataFromDatabase = _userData.DataFromDatabase();
             return Json(dataFromDatabase);
         }
 
@@ -92,8 +92,8 @@ namespace ISHAuditCore.Controllers
 
                 // 保存到数据库
                 _db.SaveChanges();
-               
-                List<user_info> dataFromDatabase = _userData.DataFromDatabase();
+                
+                List<UserDataSet> dataFromDatabase = _userData.DataFromDatabase();
                 return Json(dataFromDatabase);
             }
             else
@@ -136,8 +136,7 @@ namespace ISHAuditCore.Controllers
 
 
             }
-            
-            List<user_info> dataFromDatabase = _userData.DataFromDatabase();
+            List<UserDataSet> dataFromDatabase = _userData.DataFromDatabase();
             return Json(dataFromDatabase);
         }
 
@@ -172,8 +171,7 @@ namespace ISHAuditCore.Controllers
                 _db.SaveChanges();
 
             }
-            
-            List<user_info> dataFromDatabase = _userData.DataFromDatabase();
+            List<UserDataSet> dataFromDatabase = _userData.DataFromDatabase();
             return Json(dataFromDatabase);
         }
         [HttpPost]
@@ -217,9 +215,50 @@ namespace ISHAuditCore.Controllers
                 _db.SaveChanges();
 
             }
-            
-            List<user_info> dataFromDatabase = _userData.DataFromDatabase();
+            List<UserDataSet> dataFromDatabase = _userData.DataFromDatabase();
             return Json(dataFromDatabase);
+        }
+        [HttpPost]
+        public IActionResult DeleteData([FromBody] List<int> ids)
+        {
+            try
+            {
+                var usersToDelete = _db.user_infos.Where(u => ids.Contains(u.id)).ToList();
+                if (usersToDelete.Any())
+                {
+                    _db.user_infos.RemoveRange(usersToDelete);  // 刪除對應的資料
+                    _db.SaveChanges();  // 保存更改
+                }
+                return Ok(new { message = "刪除成功" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "刪除失敗", error = ex.Message });
+            }
+        }
+        [HttpGet]
+        public JsonResult GetUserDataById(int userId)
+        {
+            // 調用 DataFromDatabase 並根據 userId 過濾
+            var userData = _userData.DataFromDatabase()
+                .Where(user => user.Id == userId)
+                .Select(user => new
+                {
+                    EnterpriseName = user.EnterpriseName != null ? user.EnterpriseName : null, // 防止 null
+                    EnterpriseId = user.EnterpriseId != null ? user.EnterpriseId : (int?)null, 
+                    CompanyName = user.CompanyName != null ? user.CompanyName : null,
+                    CompanyId = user.CompanyId != null ? user.CompanyId : (int?)null, // 防止 null
+                    FactoryName = user.FactoryName != null ? user.FactoryName : null, // 防止 null
+                    FactoryId = user.FactoryId != null ? user.FactoryId : (int?)null
+                    
+                }).FirstOrDefault();
+
+            if (userData != null)
+            {
+                return Json(userData);
+            }
+
+            return Json(null);
         }
     }
 }

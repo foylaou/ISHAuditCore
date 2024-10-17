@@ -38,9 +38,9 @@
         // 將 JSON 字符串轉換為 JavaScript 對象
         var enterprises = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.EnterpriseJson)));
 
-        // 提取企業名稱
+        // 提取企業名稱及ID
         const enterpriseNames = enterprises.map(ent => ent.Name);
-
+        
         // 動態提取公司名稱
         function getCompanyNames(enterpriseName) {
             const enterprise = enterprises.find(ent => ent.Name === enterpriseName);
@@ -71,14 +71,17 @@
                     editable: true,
                     cellEditor: 'agSelectCellEditor', // 使用下拉選單
                     cellEditorParams: {
-                        values: enterpriseNames // 提供所有企業選項
+                        values: [null].concat(enterpriseNames), // 提供所有企業選項
                     },
                     onCellValueChanged: function(params) {
+                        params.data.companyName = ''; // 清空公司名稱
+                        params.data.factoryName = ''; // 清空工廠名稱
                         // 當企業選擇改變時，更新對應的公司選項
                         const selectedEnterprise = params.data.enterpriseName;
-                        const companyOptions = getCompanyNames(selectedEnterprise);
+                        //const companyOptions = getCompanyNames(selectedEnterprise);
+                        const companyOptions = [null].concat(getCompanyNames(selectedEnterprise));
                         gridOptions.api.getColumnDef('companyName').cellEditorParams.values = companyOptions;
-                        gridOptions.api.refreshCells({ force: true, columns: ['companyName'] });
+                        gridOptions.api.refreshCells({ force: true, columns: ['companyName', 'factoryName'] });
                     }
                 },
                 {
@@ -92,10 +95,11 @@
                         values: [] // 初始狀態下公司列表為空，根據企業動態更新
                     },
                     onCellValueChanged: function(params) {
+                        params.data.factoryName = ''; // 清空工廠名稱
                         // 當公司選擇改變時，更新對應的工廠選項
                         const selectedEnterprise = params.data.enterpriseName;
                         const selectedCompany = params.data.companyName;
-                        const factoryOptions = getFactoryNames(selectedCompany, selectedEnterprise);
+                        const factoryOptions = [null].concat(getFactoryNames(selectedCompany, selectedEnterprise));
                         gridOptions.api.getColumnDef('factoryName').cellEditorParams.values = factoryOptions;
                         gridOptions.api.refreshCells({ force: true, columns: ['factoryName'] });
                     }
@@ -111,17 +115,47 @@
                         values: [] // 初始狀態下工廠列表為空，根據公司動態更新
                     }
                 },
-                { headerName: "權限", field: "authority", cellClass: 'size-text', width: 600,editable: false,
-                    valueGetter: (params) => {
-                        try {
-                            const data = JSON.parse(params.data.authority);
-                            // 自定義你想要的顯示格式
-                            return `督導權限: ${data.Audit}, 績效指標權限: ${data.KPI}, 系統權限: ${data.Sys}, 組織權限: ${data.Org}`;
-                        } catch (e) {
-                            return 'Invalid JSON'; // 若解析失敗，顯示錯誤
+                {
+                    headerName: "權限",
+                    headerClass: 'center-header',
+                    children: [
+                        {
+                            headerName: "督導權限",
+                            field: "authority",
+                            cellClass: 'size-text',
+                            width: 150,
+                            valueGetter: (params) => {
+                                return getAuthorityValue(params.data.authority, 'Audit');
+                            }
+                        },
+                        {
+                            headerName: "績效指標權限",
+                            field: "authority",
+                            cellClass: 'size-text',
+                            width: 150,
+                            valueGetter: (params) => {
+                                return getAuthorityValue(params.data.authority, 'KPI');
+                            }
+                        },
+                        {
+                            headerName: "系統權限",
+                            field: "authority",
+                            cellClass: 'size-text',
+                            width: 150,
+                            valueGetter: (params) => {
+                                return getAuthorityValue(params.data.authority, 'Sys');
+                            }
+                        },
+                        {
+                            headerName: "組織權限",
+                            field: "authority",
+                            cellClass: 'size-text',
+                            width: 150,
+                            valueGetter: (params) => {
+                                return getAuthorityValue(params.data.authority, 'Org');
+                            }
                         }
-                    }
-
+                    ]
                 },
                 {
                     headerName: "修改密碼", width: 150,
@@ -136,6 +170,7 @@
                     }
                 }
             ],
+            singleClickEdit: true,
             onCellValueChanged: onCellValueChanged, // 綁定事件
             defaultColDef: {
                 resizable: true,
@@ -145,16 +180,12 @@
             pagination: true, // 開啟分頁功能
             paginationPageSize: 15, // 每頁顯示 10 條數據
             rowSelection: 'multiple', // 啟用行選擇
-            //domLayout: 'autoHeight', // 動態調整高度
             overlayNoRowsTemplate: '<span class="ag-overlay-loading-center">Not found</span>', // 無數據顯示模板
             onGridReady: function(params) {
                 gridApi = params.api; // 獲取 gridApi
+                get();
             },
             onCellClicked: function(event) {
-                if (event.colDef.field === 'enterpriseName' ||event.colDef.field === 'companyName' ||
-                    event.colDef.field === 'factoryName') {
-                    change_enterprise(event.data.id); // 當點擊權限列時，執行 change_enterprise 函數
-                }
                 if (event.colDef.field === 'authority') {
                     change_authority(event.data.id); // 當點擊權限列時，執行 change_authority 函數
                 }
@@ -174,18 +205,11 @@
                 new agGrid.Grid(gridDiv, gridOptions);
                 get();
             });
-
             
-
-
             // 調試輸出數據
             console.log("Enterprises:", enterprises);
-            console.log("Companies:", companies);
-            console.log("Factories:", factories);
-            
           
         });
-    
     </script>
 }
 
@@ -202,9 +226,6 @@
         <div class="card-header">
             <h3 class="card-title">修改人員帳號</h3>
         </div>
-        <br>
-        <button class="btn btn-block btn-success" onclick="get()">查詢資料</button>
-        <br>
         <div>
             <div id="myGrid" class="card-body ag-theme-quartz" style="width: 100%;"></div>
         </div>
@@ -230,10 +251,19 @@
             }
         });
     }
+    function getAuthorityValue(authorityString, key) {
+        try {
+            const data = JSON.parse(authorityString);
+            return data[key] || '無'; // 若沒有對應的權限值，顯示 '無'
+        } catch (e) {
+            return 'Invalid JSON'; // 若解析失敗，顯示錯誤
+        }
+    }
     
     function onCellValueChanged(event) {
         if (event.oldValue !== event.newValue) {
             console.log('Cell value changed from', event.oldValue, 'to', event.newValue);
+            console.log('id', event.data.id, ' field',event.colDef.field, ' value',event.newValue )
             
             $.ajax({
                 url: '/UserEdit/UpdateUserField',

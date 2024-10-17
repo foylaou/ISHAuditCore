@@ -27,7 +27,10 @@ public class UserData
     {
         _db = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }
-
+    /// <summary>
+    /// 從資料庫中取得使用者資料，包括使用者所屬的企業、公司及工廠名稱。
+    /// </summary>
+    /// <returns>回傳一個包含使用者資料的 List，其中包括使用者的基本資訊（如名稱、權限等），以及所屬企業、公司及工廠的名稱及 ID。</returns>
     public List<UserDataSet> DataFromDatabase()
     {
 

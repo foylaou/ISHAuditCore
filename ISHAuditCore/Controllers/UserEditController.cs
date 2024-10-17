@@ -250,12 +250,37 @@ namespace ISHAuditCore.Controllers
                     case "nickname":
                         user.nickname = value;
                         break;
-
-                    // 如果有其他可修改的字段，繼續添加 case 分支
-                    // case "otherfield":
-                    //     user.OtherField = value;
-                    //     break;
-
+                    
+                    case "enterprisename":
+                        // 根據傳入的 enterpriseName 查找對應的 enterpriseID
+                        var enterprise = _db.enterprise_names.FirstOrDefault(e => e.enterprise == value);
+                        if (enterprise == null)
+                        {
+                            return Json(new { success = false, message = "Enterprise not found." });
+                        }
+                        user.enterprise_id = enterprise.id;
+                        break;
+                    
+                    case "companyname":
+                        // 根據傳入的 enterpriseName 查找對應的 enterpriseID
+                        var company = _db.company_names.FirstOrDefault(e => e.company == value);
+                        if (company == null)
+                        {
+                            return Json(new { success = false, message = "Enterprise not found." });
+                        }
+                        user.company_id = company.id;
+                        break;
+                    
+                    case "factoryname":
+                        // 根據傳入的 enterpriseName 查找對應的 enterpriseID
+                        var factory = _db.factory_names.FirstOrDefault(e => e.factory == value);
+                        if (factory == null)
+                        {
+                            return Json(new { success = false, message = "Enterprise not found." });
+                        }
+                        user.factory_id = factory.id;
+                        break;
+                    
                     default:
                         return Json(new { success = false, message = "Invalid field." });
                 }

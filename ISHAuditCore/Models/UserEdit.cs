@@ -14,8 +14,10 @@ namespace ISHAudit.Models
         {
             _db = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
-
-        // 取得企業清單，其中每個企業包含公司，且每個公司包含工廠
+        /// <summary>
+        /// 取得企業清單，其中每個企業包含公司，且每個公司包含工廠。
+        /// </summary>
+        /// <returns>取得企業清單，其中每個企業包含公司，且每個公司包含工廠</returns>
         public List<Codes> GetEnterpriseList()
         {
             // 取得企業清單

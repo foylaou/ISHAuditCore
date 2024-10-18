@@ -1,13 +1,15 @@
 using System.Diagnostics;
+using ISHAudit.Models;
 using ISHAuditCore.Context;
 using Microsoft.AspNetCore.Mvc;
 using ISHAuditCore.Models;
 
 namespace ISHAuditCore.Controllers;
 
-public class homeController(ISHAuditDbcontext dbContext, Authority authorityClass )  //ILogger<homeController> logger  Controller 中看到類似的日誌記錄設置
-    : baseController(dbContext, authorityClass)
+public class homeController(ISHAuditDbcontext dbContext, Authority authorityClass,UserEditService _userEditService )  //ILogger<homeController> logger  Controller 中看到類似的日誌記錄設置
+    : baseController(dbContext, authorityClass, userEditService)
 {
+    private static UserEditService userEditService;
     // private readonly ILogger<homeController> _logger = logger;
     
     public IActionResult Index()

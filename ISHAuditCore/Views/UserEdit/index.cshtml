@@ -71,15 +71,15 @@
                     editable: true,
                     cellEditor: 'agSelectCellEditor', // 使用下拉選單
                     cellEditorParams: {
-                        values: [null].concat(enterpriseNames), // 提供所有企業選項
+                        values: ['--請選擇--'].concat(enterpriseNames), // 提供所有企業選項
                     },
                     onCellValueChanged: function(params) {
-                        params.data.companyName = ''; // 清空公司名稱
-                        params.data.factoryName = ''; // 清空工廠名稱
+                        //params.data.companyName = ''; // 清空公司名稱
+                        //params.data.factoryName = ''; // 清空工廠名稱
                         // 當企業選擇改變時，更新對應的公司選項
                         const selectedEnterprise = params.data.enterpriseName;
                         //const companyOptions = getCompanyNames(selectedEnterprise);
-                        const companyOptions = [null].concat(getCompanyNames(selectedEnterprise));
+                        const companyOptions = ['--請選擇--'].concat(getCompanyNames(selectedEnterprise));
                         gridOptions.api.getColumnDef('companyName').cellEditorParams.values = companyOptions;
                         gridOptions.api.refreshCells({ force: true, columns: ['companyName', 'factoryName'] });
                     }
@@ -95,11 +95,11 @@
                         values: [] // 初始狀態下公司列表為空，根據企業動態更新
                     },
                     onCellValueChanged: function(params) {
-                        params.data.factoryName = ''; // 清空工廠名稱
+                        //params.data.factoryName = ''; // 清空工廠名稱
                         // 當公司選擇改變時，更新對應的工廠選項
                         const selectedEnterprise = params.data.enterpriseName;
                         const selectedCompany = params.data.companyName;
-                        const factoryOptions = [null].concat(getFactoryNames(selectedCompany, selectedEnterprise));
+                        const factoryOptions = ['--請選擇--'].concat(getFactoryNames(selectedCompany, selectedEnterprise));
                         gridOptions.api.getColumnDef('factoryName').cellEditorParams.values = factoryOptions;
                         gridOptions.api.refreshCells({ force: true, columns: ['factoryName'] });
                     }

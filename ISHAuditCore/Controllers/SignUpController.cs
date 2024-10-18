@@ -15,8 +15,8 @@ namespace ISHAuditCore.Controllers
         private readonly ISHAuditDbcontext _db;
         
         // 控制器建構函數，注入 SignUpService 和其他依賴
-        public SignUpController(signUpService signUpService, ISHAuditDbcontext dbContext, Authority authorityClass)
-            : base(dbContext, authorityClass) // 呼叫 baseController 的構造函數
+        public SignUpController(signUpService signUpService, ISHAuditDbcontext dbContext, Authority authorityClass, UserEditService userEditService)
+            : base(dbContext, authorityClass,userEditService) // 呼叫 baseController 的構造函數
         {
             _db = dbContext;
             _signUpService = signUpService ?? throw new ArgumentNullException(nameof(signUpService));

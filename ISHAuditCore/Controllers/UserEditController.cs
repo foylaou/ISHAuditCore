@@ -14,8 +14,8 @@ namespace ISHAuditCore.Controllers
         private readonly UserEditService _userEditService;
         private readonly ISHAuditDbcontext _db;
         private readonly UserData _userData;
-        public UserEditController(UserEditService userEditService, ISHAuditDbcontext dbContext, Authority authorityClass,UserData userData)
-            : base(dbContext, authorityClass) // 呼叫 baseController 的構造函數
+        public UserEditController(ISHAuditDbcontext dbContext, Authority authorityClass,UserData userData, UserEditService userEditService)
+            : base(dbContext, authorityClass,userEditService) // 呼叫 baseController 的構造函數
         {
             _db = dbContext;
             _userData = userData;
@@ -280,7 +280,12 @@ namespace ISHAuditCore.Controllers
                         }
                         user.factory_id = factory.id;
                         break;
-                    
+                        
+                    // 如果有其他可修改的字段，繼續添加 case 分支
+                    // case "otherfield":
+                    //     user.OtherField = value;
+                    //     break;
+
                     default:
                         return Json(new { success = false, message = "Invalid field." });
                 }

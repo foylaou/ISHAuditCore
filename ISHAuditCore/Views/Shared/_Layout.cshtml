@@ -1,6 +1,8 @@
-﻿@using Newtonsoft.Json
+﻿@using ISHAudit.Models
+@using Newtonsoft.Json
 @inject IHttpContextAccessor HttpContextAccessor
 @inject Codes Code
+@inject UserEditService userEditService
 <!DOCTYPE html>
 <!--
 This is a starter template page. Use this page to start your new project from
@@ -125,7 +127,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                             var userId = HttpContextAccessor.HttpContext.Session.GetString("user_id");
                                             if (userId != null && !string.IsNullOrWhiteSpace(userId))
                                             {
-                                                var UserList = Code.GetUserList(userId); // 使用注入的 Code 服務
+                                                var UserList = userEditService.GetUserList(userId); // 使用注入的 Code 服務
                                                 foreach (var data in UserList)
                                                 {
                                                     <option value="@data.id">@data.nickname</option>

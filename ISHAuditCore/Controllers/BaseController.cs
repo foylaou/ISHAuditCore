@@ -73,11 +73,11 @@ namespace ISHAuditCore.Controllers
                 HttpContext.Session.SetString("user_id", user.user_id);
                 HttpContext.Session.SetString("username", user.username);
                 HttpContext.Session.SetString("nickname", user.nickname);
-                HttpContext.Session.SetString("enterprise_id", user.enterprise_id);
-                HttpContext.Session.SetString("company_id", user.company_id);
-                HttpContext.Session.SetString("factory_id", user.factory_id);
-                HttpContext.Session.SetString("factory_name", user.factory_name);
-                HttpContext.Session.SetString("company_name", user.company_name);
+                HttpContext.Session.SetString("enterprise_id", user.enterprise_id?.ToString() ?? string.Empty);
+                HttpContext.Session.SetString("company_id", user.company_id?.ToString() ?? string.Empty);
+                HttpContext.Session.SetString("factory_id", user.factory_id?.ToString() ?? string.Empty);
+                HttpContext.Session.SetString("factory_name", user.factory_name ?? string.Empty);
+                HttpContext.Session.SetString("company_name", user.company_name ?? string.Empty);
 
                 // Check if the authority is already in the session
                 if (HttpContext.Session.GetString("authority") != null)

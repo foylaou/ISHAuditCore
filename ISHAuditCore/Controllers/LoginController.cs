@@ -44,6 +44,35 @@ namespace ISHAuditCore.Controllers
                 return captchaResult.Success;
             }
         }
+        
+        [HttpPost]
+        public JsonResult QueryUser(IFormCollection post)
+        {
+            // 從表單中取得使用者名稱
+            string username = post["username"];
+    
+            // 檢查是否有提供使用者名稱
+            if (string.IsNullOrEmpty(username))
+            {
+                return Json(new { Success = false, Message = "使用者名稱不能為空" });
+            }
+            
+            // 查詢資料庫，尋找是否有對應的使用者
+            var query = dbContext.user_infos.FirstOrDefault(u => u.username == username);
+    
+            // 如果找到該使用者
+            if (query != null)
+            {
+                return Json(new { Success = true, Username = query.username ,Nickname = query.nickname });
+            }
+
+            // 暫停 5 秒
+            System.Threading.Thread.Sleep(5000);
+
+            // 如果找不到使用者
+            return Json(new { Success = false, Message = "找不到使用者" });
+            
+        }
 
         public IActionResult Index()
         {
@@ -148,11 +177,11 @@ namespace ISHAuditCore.Controllers
                 HttpContext.Session.SetString("user_id", user.user_id);
                 HttpContext.Session.SetString("username", user.username);
                 HttpContext.Session.SetString("nickname", user.nickname);
-                HttpContext.Session.SetString("enterprise_id", user.enterprise_id);
-                HttpContext.Session.SetString("company_id", user.company_id);
-                HttpContext.Session.SetString("factory_id", user.factory_id);
-                HttpContext.Session.SetString("factory_name", user.factory_name);
-                HttpContext.Session.SetString("company_name", user.company_name);
+                HttpContext.Session.SetString("enterprise_id", user.enterprise_id?.ToString() ?? string.Empty);
+                HttpContext.Session.SetString("company_id", user.company_id?.ToString() ?? string.Empty);
+                HttpContext.Session.SetString("factory_id", user.factory_id?.ToString() ?? string.Empty);
+                HttpContext.Session.SetString("factory_name", user.factory_name ?? string.Empty);
+                HttpContext.Session.SetString("company_name", user.company_name ?? string.Empty);
 
                 // Check if the authority is already in the session
                 if (HttpContext.Session.GetString("authority") != null)

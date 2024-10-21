@@ -1149,6 +1149,14 @@
       "PackagePath": "staticwebassets\\plugins\\AGgrid\\zh-TW.js"
     },
     {
+      "Id": "C:\\Users\\user\\RiderProjects\\ISHAuditCore\\ISHAuditCore\\wwwroot\\plugins\\LoginStyle\\Login.js",
+      "PackagePath": "staticwebassets\\plugins\\LoginStyle\\Login.js"
+    },
+    {
+      "Id": "C:\\Users\\user\\RiderProjects\\ISHAuditCore\\ISHAuditCore\\wwwroot\\plugins\\LoginStyle\\LoginStyle.css",
+      "PackagePath": "staticwebassets\\plugins\\LoginStyle\\LoginStyle.css"
+    },
+    {
       "Id": "C:\\Users\\user\\RiderProjects\\ISHAuditCore\\ISHAuditCore\\wwwroot\\plugins\\bootstrap-colorpicker\\css\\bootstrap-colorpicker.css",
       "PackagePath": "staticwebassets\\plugins\\bootstrap-colorpicker\\css\\bootstrap-colorpicker.css"
     },

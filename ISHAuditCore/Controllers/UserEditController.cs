@@ -233,7 +233,7 @@ namespace ISHAuditCore.Controllers
             }
         }
         [HttpPost]
-        public JsonResult UpdateUserField(int id, string field, string value)
+        public JsonResult UpdateUserField(int id, string field, string value, string label = null)
         {
             try
             {
@@ -252,35 +252,59 @@ namespace ISHAuditCore.Controllers
                         break;
                     
                     case "enterprisename":
-                        // 根據傳入的 enterpriseName 查找對應的 enterpriseID
-                        var enterprise = _db.enterprise_names.FirstOrDefault(e => e.enterprise == value);
-                        if (enterprise == null)
+                        if (value == "--請選擇--")
                         {
-                            return Json(new { success = false, message = "Enterprise not found." });
+                            user.enterprise_id = null; // 將 enterprise_id 設置為 NULL
                         }
-                        user.enterprise_id = enterprise.id;
+                        else
+                        {
+                            // 根據傳入的 enterpriseName 查找對應的 enterpriseID
+                            var enterprise = _db.enterprise_names.FirstOrDefault(e => e.enterprise == value);
+                            if (enterprise == null)
+                            {
+                                return Json(new { success = false, message = "Enterprise not found." });
+                            }
+                            user.enterprise_id = enterprise.id;
+                        }
                         break;
                     
                     case "companyname":
-                        // 根據傳入的 enterpriseName 查找對應的 enterpriseID
-                        var company = _db.company_names.FirstOrDefault(e => e.company == value);
-                        if (company == null)
+                        if (value == "--請選擇--")
                         {
-                            return Json(new { success = false, message = "Enterprise not found." });
+                            user.company_id = null; // 將 company_id 設置為 NULL
                         }
-                        user.company_id = company.id;
+                        else
+                        {
+                            var company = _db.company_names.FirstOrDefault(e => e.company == value);
+                            if (company == null)
+                            {
+                                return Json(new { success = false, message = "Enterprise not found." });
+                            }
+                            user.company_id = company.id;
+                        }
                         break;
                     
                     case "factoryname":
-                        // 根據傳入的 enterpriseName 查找對應的 enterpriseID
-                        var factory = _db.factory_names.FirstOrDefault(e => e.factory == value);
-                        if (factory == null)
+                        if (value == "--請選擇--")
                         {
-                            return Json(new { success = false, message = "Enterprise not found." });
+                            user.factory_id = null; // 將 company_id 設置為 NULL
                         }
-                        user.factory_id = factory.id;
+                        else
+                        {
+                            var factory = _db.factory_names.FirstOrDefault(e => e.factory == value);
+                            if (factory == null)
+                            {
+                                return Json(new { success = false, message = "Enterprise not found." });
+                            }
+                            user.factory_id = factory.id;
+                        }
+
                         break;
-                        
+                    
+                    case "authority":
+                        user.authority = value;
+                        break;
+                    
                     // 如果有其他可修改的字段，繼續添加 case 分支
                     // case "otherfield":
                     //     user.OtherField = value;
@@ -290,15 +314,15 @@ namespace ISHAuditCore.Controllers
                         return Json(new { success = false, message = "Invalid field." });
                 }
 
-                // 保存更改到資料庫
+                // 保存更改
                 _db.SaveChanges();
 
                 return Json(new { success = true, message = "User updated successfully." });
             }
             catch (Exception ex)
             {
-                // 捕捉異常並返回錯誤消息
-                return Json(new { success = false, message = "An error occurred.", error = ex.Message });
+                // 处理异常
+                return Json(new { success = false, message = ex.Message });
             }
         }
         [HttpGet]

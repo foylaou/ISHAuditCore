@@ -11,27 +11,23 @@ namespace ISHAuditCore.Controllers
 {
     public class SignUpController : baseController
     {
-        private readonly signUpService _signUpService;
+        private readonly UserEditService _userEditService;
         private readonly ISHAuditDbcontext _db;
         
         // 控制器建構函數，注入 SignUpService 和其他依賴
-        public SignUpController(signUpService signUpService, ISHAuditDbcontext dbContext, Authority authorityClass, UserEditService userEditService)
+        public SignUpController(ISHAuditDbcontext dbContext, Authority authorityClass, UserEditService userEditService)
             : base(dbContext, authorityClass,userEditService) // 呼叫 baseController 的構造函數
         {
             _db = dbContext;
-            _signUpService = signUpService ?? throw new ArgumentNullException(nameof(signUpService));
+            _userEditService = userEditService ?? throw new ArgumentNullException(nameof(userEditService));
         }
 
         // 頁面方法
         public IActionResult Index()
         {
-            var enterprises = _signUpService.GetEnterpriseList();
-            var companies = _signUpService.GetCompanyList();
-            var factories = _signUpService.GetFactoryList();
+            var enterprises = _userEditService.GetEnterpriseList();
 
             ViewBag.EnterpriseJson = JsonConvert.SerializeObject(enterprises);
-            ViewBag.CompanyJson = JsonConvert.SerializeObject(companies);
-            ViewBag.FactoryJson = JsonConvert.SerializeObject(factories);
 
             return View();
         }

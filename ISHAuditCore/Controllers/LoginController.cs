@@ -122,8 +122,8 @@ namespace ISHAuditCore.Controllers
 
                 return Json(new { message = "登錄成功", redirectUrl = Url.Action("Index", "Home") });
             }
-
-            Thread.Sleep(5000);
+            //異步延遲
+            await Task.Delay(5000);
             return Json(new { error = "密碼錯誤" });
         }
 

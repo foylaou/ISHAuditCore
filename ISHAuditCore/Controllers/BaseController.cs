@@ -12,7 +12,17 @@ namespace ISHAuditCore.Controllers
         // 通過依賴注入注入 DbContext 和 Authority
 
 
-        // Action Filter: OnActionExecuting
+        /// <summary>
+        /// 這個方法在執行控制器操作之前執行，主要是檢查使用者的登入狀態和權限。
+        /// </summary>
+        /// <param name="filterContext">Action 執行的上下文，包含路由資料和 HTTP 請求的相關資訊。</param>
+        /// <remarks>
+        /// 1. 檢查當前控制器名稱，若不是 'Auditedit' 則進行進一步的權限驗證。
+        /// 2. 檢查使用者的登入狀態，若未登入則重導向到登入頁面。
+        /// 3. 驗證使用者的權限，若使用者沒有足夠的權限訪問某些控制器或操作，將重導向首頁。
+        /// 權限檢查會根據使用者 Session 中儲存的權限資料進行判斷。
+        /// </remarks>
+        /// <exception cref="UnauthorizedAccessException">如果使用者未登入或沒有足夠的權限時，會自動進行頁面重導向。</exception>
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var sController = filterContext.RouteData.Values["controller"].ToString()!.ToUpper();

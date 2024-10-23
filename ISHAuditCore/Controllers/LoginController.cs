@@ -45,30 +45,31 @@ namespace ISHAuditCore.Controllers
             }
         }
         
+        /// <summary>
+        /// 查詢使用者資訊，根據提供的使用者名稱檢查資料庫是否存在對應的使用者。
+        /// </summary>
+        /// <param name="post">包含查詢使用者資訊的表單資料，應該包含使用者名稱。</param>
+        /// <returns>回傳一個 JSON 結果，若找到使用者則回傳使用者名稱和暱稱，否則回傳錯誤訊息。</returns>
+        /// <exception cref="ArgumentException">如果未提供使用者名稱，將回傳錯誤訊息。</exception>
         [HttpPost]
         public JsonResult QueryUser(IFormCollection post)
         {
             // 從表單中取得使用者名稱
             string username = post["username"];
-    
             // 檢查是否有提供使用者名稱
             if (string.IsNullOrEmpty(username))
             {
                 return Json(new { Success = false, Message = "使用者名稱不能為空" });
             }
-            
             // 查詢資料庫，尋找是否有對應的使用者
             var query = dbContext.user_infos.FirstOrDefault(u => u.username == username);
-    
             // 如果找到該使用者
             if (query != null)
             {
                 return Json(new { Success = true, Username = query.username ,Nickname = query.nickname });
             }
-
             // 暫停 5 秒
             System.Threading.Thread.Sleep(5000);
-
             // 如果找不到使用者
             return Json(new { Success = false, Message = "找不到使用者" });
             
@@ -104,56 +105,116 @@ namespace ISHAuditCore.Controllers
         }
 
         // 用於處理登入資料的 POST 請求
+        // [HttpPost]
+        // [ValidateAntiForgeryToken]
+        // public async Task<IActionResult> Index(string username, string password, string cfTurnstileResponse)
+        // {
+        //     if (string.IsNullOrEmpty(cfTurnstileResponse))
+        //     {
+        //         // CAPTCHA 回應為空，拒絕請求
+        //         return Json(new { error = "CAPTCHA 驗證失敗" });
+        //     }
+        //
+        //     // 檢查 CAPTCHA 驗證
+        //     if (!await VerifyCaptcha(cfTurnstileResponse))
+        //     {
+        //         return Json(new { error = "CAPTCHA 驗證失敗" });
+        //     }
+        //
+        //     if (string.IsNullOrEmpty(password))
+        //     {
+        //         return Json(new { error = "密碼不能為空" });
+        //     }
+        //
+        //     var user = await dbContext.user_infos.FirstOrDefaultAsync(u => u.username == username);
+        //     //使用異步查詢 優化反應速度 原（937ms => 1ms)
+        //     if (user == null)
+        //     {
+        //         return Json(new { error = "使用者不存在" });
+        //     }
+        //
+        //     byte[] salt = new byte[128 / 8];
+        //     string hashedPassword = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+        //         password: password,
+        //         salt: salt,
+        //         prf: KeyDerivationPrf.HMACSHA1,
+        //         iterationCount: 10000,
+        //         numBytesRequested: 256 / 8));
+        //
+        //     if (user.password == hashedPassword)
+        //     {
+        //         HttpContext.Session.SetString("login", "login");
+        //         WrSession(user.id);
+        //         if (user.authority != null)
+        //         {
+        //             HttpContext.Session.SetString("authority", user.authority);
+        //         }
+        //
+        //         return Json(new { message = "登錄成功", redirectUrl = Url.Action("Index", "Home") });
+        //     }
+        //     //異步延遲
+        //     await Task.Delay(5000);
+        //     return Json(new { error = "密碼錯誤" });
+        // }
+        
+        //後來
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(string username, string password, string cfTurnstileResponse)
+        public async Task<JsonResult> Index(IFormCollection post)
         {
+            // 建立一個 128-bit 的 salt
+            byte[] salt = new byte[128 / 8];
+            
+            // 從 post 中取得使用者名稱和密碼
+            string username = post["username"];
+            string passwordInput = post["password"];
+            string cfTurnstileResponse = post["captchaToken"];
+
             if (string.IsNullOrEmpty(cfTurnstileResponse))
             {
                 // CAPTCHA 回應為空，拒絕請求
                 return Json(new { error = "CAPTCHA 驗證失敗" });
             }
-
+            
             // 檢查 CAPTCHA 驗證
             if (!await VerifyCaptcha(cfTurnstileResponse))
             {
                 return Json(new { error = "CAPTCHA 驗證失敗" });
             }
-
-            if (string.IsNullOrEmpty(password))
+            
+            if (string.IsNullOrEmpty(passwordInput))
             {
-                return Json(new { error = "密碼不能為空" });
+                return Json(new { Success = false, Message = "密碼不能為空" });
             }
-
-            var user = await dbContext.user_infos.FirstOrDefaultAsync(u => u.username == username);
-            //使用異步查詢 優化反應速度 原（937ms => 1ms)
-            if (user == null)
-            {
-                return Json(new { error = "使用者不存在" });
-            }
-
-            byte[] salt = new byte[128 / 8];
-            string hashedPassword = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                password: password,
-                salt: salt,
+            
+            string password = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                password: passwordInput,
+                salt: salt,  // 記住，這裡的 salt 應該從數據庫取得，暫時這是模擬的靜態值
                 prf: KeyDerivationPrf.HMACSHA1,
                 iterationCount: 10000,
                 numBytesRequested: 256 / 8));
-
-            if (user.password == hashedPassword)
+        
+            // 驗證帳號密碼
+            var query = from user_info in dbContext.user_infos
+                where user_info.username == username
+                select user_info;
+    
+            // 檢查是否有符合的使用者，以及密碼是否正確
+            if (query.Any() && query.First().password == password)
             {
+                // 設定 Session 並返回成功的 JSON 結果
                 HttpContext.Session.SetString("login", "login");
-                WrSession(user.id);
-                if (user.authority != null)
-                {
-                    HttpContext.Session.SetString("authority", user.authority);
-                }
-
-                return Json(new { message = "登錄成功", redirectUrl = Url.Action("Index", "Home") });
+                WrSession(query.First().id);
+                HttpContext.Session.SetString("authority", query.First().authority);
+    
+                // 回傳 JSON，並告知前端要進行頁面跳轉
+                return Json(new { Success = true, RedirectUrl = Url.Action("Index", "Home") });
             }
-            //異步延遲
-            await Task.Delay(5000);
-            return Json(new { error = "密碼錯誤" });
+            
+            // 暫停 5 秒
+            System.Threading.Thread.Sleep(5000);
+            // 返回失敗的 JSON 結果，告知登入失敗
+            return Json(new { Success = false, Message = "密碼錯誤" });
         }
 
         [HttpPost]

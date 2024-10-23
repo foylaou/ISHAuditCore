@@ -26,12 +26,31 @@ namespace ISHAuditCore.Controllers
         public IActionResult Index()
         {
             var enterprises = _userEditService.GetEnterpriseList();
-
             ViewBag.EnterpriseJson = JsonConvert.SerializeObject(enterprises);
-
             return View();
         }
         
+        
+        /// <summary>
+        /// 用於處理使用者註冊的動作，並進行密碼驗證、企業相關資訊處理和儲存註冊資料到資料庫。
+        /// </summary>
+        /// <param name="post">包含使用者輸入的註冊資訊的表單資料。</param>
+        /// <returns>回傳一個包含註冊結果的 JSON 響應，若成功註冊則回傳成功訊息，若有錯誤則回傳錯誤訊息。</returns>
+        /// <remarks>
+        /// 此方法的主要功能為：
+        /// 
+        /// 1. 驗證密碼格式是否符合要求（至少 8-20 位，包含大小寫字母和數字）。
+        /// 2. 根據使用者輸入處理企業（enterprise）、公司（company）、工廠（factory）的 ID 資訊，若沒有輸入則設為 null。
+        /// 3. 生成使用者的權限資訊（Audit、KPI、Sys、Org）並序列化為 JSON 字符串保存。
+        /// 4. 檢查是否已存在相同帳號名稱的使用者，若存在則回傳錯誤訊息。
+        /// 5. 將新註冊的使用者資訊（包括帳號、加密後的密碼、暱稱、權限等）儲存到資料庫中。
+        /// 6. 註冊成功後回傳成功訊息。
+        /// 
+        /// <example>
+        /// 密碼格式驗證的正則表達式為：^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,20}$，至少要包含一個小寫字母、一個大寫字母和一個數字，長度為 8 至 20 位。
+        /// </example>
+        /// </remarks>
+        /// <exception cref="ArgumentException">如果使用者帳號已經存在，將回傳錯誤訊息。</exception>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Index(IFormCollection post)

@@ -243,7 +243,6 @@ namespace ISHAuditCore.Controllers
                 {
                     return Json(new { success = false, message = "User not found." });
                 }
-
                 // 根據 field 更新對應的值，這裡假設只有 nickname 允許修改
                 switch (field.ToLower())
                 {

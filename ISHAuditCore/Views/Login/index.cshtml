@@ -4,343 +4,112 @@ Layout = "~/Views/Shared/_Layout.cshtml";
 @{
 ViewBag.Title = "登入";
 }
+
 @section css{
-<link rel="stylesheet" href="~/css/loading.css">
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-        background-color: #f5f5f5;
-    }
-    .login-container {
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 10px;
-        width: 100%;
-        max-width: 350px;
-        text-align: center;
-        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    .login-container:not(.hidden) {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    .form-group {
-        margin: 20px 0;
-        position: relative;
-    }
-    .form-group input {
-        width: calc(100% - 20px);
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 20px;
-        transition: all 0.3s ease;
-        box-sizing: border-box;
-    }
-    .form-group label {
-        position: absolute;
-        left: 12px;
-        top: 10px;
-        font-size: 16px;
-        color: #999;
-        transition: all 0.3s ease;
-        pointer-events: none;
-    }
-    .form-group input:focus,
-    .form-group input:not(:placeholder-shown) {
-        padding-top: 20px;
-        padding-bottom: 0;
-    }
-    .form-group input:focus + label,
-    .form-group input:not(:placeholder-shown) + label {
-        top: 5px;
-        font-size: 12px;
-        color: #4285f4;
-    }
-    .form-group input:focus {
-        border-color: #4285f4;
-        box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
-    }
-    .next-button,
-    .login-button,
-    .other-button,
-    .option-button,
-    .return-button {
-        width: 100%;
-        padding: 10px;
-        margin-top: 10px;
-        background-color: #4285f4;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s, transform 0.2s;
-    }
-    .next-button:hover,
-    .login-button:hover,
-    .other-button:hover,
-    .option-button:hover,
-    .return-button:hover {
-        background-color: #357ae8;
-        transform: scale(1.05);
-    }
-    .next-button:focus,
-    .login-button:focus,
-    .other-button:focus,
-    .option-button:focus,
-    .return-button:focus {
-        outline: 2px solid #4285f4;
-        outline-offset: 2px;
-    }
-    .return-button {
-        background-color: #f1f3f4;
-        color: #5f6368;
-    }
-    .return-button:hover {
-        background-color: #e8eaed;
-    }
-    .hidden {
-        display: none;
-    }
-    .sr-only {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        border: 0;
-    }
-    .accessibility-message {
-        position: absolute;
-        left: -10000px;
-        top: auto;
-        width: 1px;
-        height: 1px;
-        overflow: hidden;
-    }
-</style>
+<link rel="stylesheet" href="~/plugins/LoginStyle/LoginStyle.css">
 }
 
 @section js{
-
+<script src="~/plugins/LoginStyle/Login.js"></script>
 }
 
 @section page_title{
 
 }
+
 @section location{
 <li class="breadcrumb-item">@Html.ActionLink("首頁", "Index", "Home")</li>
 <li class="breadcrumb-item active">@Html.ActionLink("登入", "Index", "Login")</li>
 }
-@section scripts{
 
+@section scripts{
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script>
-    var widgetId;
 
-    // 當 CAPTCHA 加載後，保存 widgetId
-    window.onload = function() {
-        widgetId = turnstile.render('#captcha', {
-            sitekey: '0x4AAAAAAAgCSXub-CbDkEzy', // 替換為您的 sitekey
-            callback: function(token) {
-                // 將 CAPTCHA 的 token 存入隱藏的 input 中
-                document.getElementById('cf-turnstile-response').value = token;
-                console.log("CAPTCHA passed, token: " + token);
-            }
-        });
-    };
-
-    // 當表單提交失敗後刷新 CAPTCHA
-    function refreshCaptcha() {
-        turnstile.reset(widgetId);  // 使用 widgetId 來重置 CAPTCHA
-    }
-
-    // 攔截表單提交，並使用 AJAX 進行處理
-    $(document).ready(function () {
-        $('form').on('submit', function (e) {
-            e.preventDefault(); // 防止表單默認提交
-
-            // 檢查 CAPTCHA 是否已經通過驗證，確保 token 不為空
-            var token = $('#cf-turnstile-response').val();
-            if (!token) {
-                Swal.fire({
-                    icon: 'error',
-                    title: '錯誤',
-                    text: '請通過 CAPTCHA 驗證',
-                    confirmButtonText: '確定'
-                });
-                return;
-            }
-
-            var form = $(this);
-            var url = form.attr('action');
-            $('#spinner').removeClass('hidden');
-            $('#submit-btn').prop('disabled', true);
-
-            // 發送 AJAX 請求
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: form.serialize(), // 將表單資料序列化，包括 CAPTCHA token
-                success: function (data) {
-                    $('#spinner').addClass('hidden');
-                    $('#submit-btn').prop('disabled', false);
-                    handleResponse(data);
-                },
-                error: function (xhr, status, error) {
-                    $('#spinner').addClass('hidden');
-                    $('#submit-btn').prop('disabled', false);
-                    handleError(xhr, status, error);
-
-                }
-            });
-        });
-    });
-
-    // 處理成功或錯誤的 JSON 響應
-    function handleResponse(data) {
-        if (data.error) {
-            Swal.fire({
-                icon: 'error',
-                title: '錯誤',
-                text: data.error,
-                confirmButtonText: '確定',
-
-            });
-            refreshCaptcha()
-        } else if (data.message) {
-            window.location.href = data.redirectUrl;
+    $('#usernameInput').on('keydown', function(event) {
+        if (event.key === 'Enter' || event.keyCode === 13) {
+            nextStep(); // 呼叫下一步
         }
-}
-
-    function handleError(xhr, status, error) {
-        console.error(error);
-        Swal.fire({
-            icon: 'error',
-            title: '伺服器錯誤',
-            text: '發生錯誤，請稍後再試。',
-            confirmButtonText: '確定'
-        });
-    }
+    });
+    $('#passwordInput').on('keydown', function(event) {
+        if (event.key === 'Enter' || event.keyCode === 13) {
+            Login()
+        }
+    });
 
 
 </script>
 }
-<body>
-<div class="row">
-    <div class="login-box" style="float:none;margin:auto;">
-        <div class="card card-outline card-primary">
-            <div class="card-header text-center">
-                <a class="h5"><b>經濟部產業發展署</b></a><br>
-                <a class="h7">大型石化督導管理系統</a>
-            </div>
-            <div class="card-body">
-                <form action="/Login" method="post">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" id="cf-turnstile-response" name="cfTurnstileResponse" value=""/>
-                    <div class="login-container" id="stepEmail" aria-live="polite">
-                        <div class="form-group">
-                            <input type="text" id="Username" name="Username" placeholder=" " required aria-required="true" aria-describedby="emailHelp">
-                            <label for="Username">輸入您的信箱</label>
-                            <div id="emailHelp" class="sr-only">輸入您的電子郵件地址以繼續</div>
-                        </div>
-                        <button type="button" onclick="nextStep()" class="next-button" aria-label="下一步，繼續輸入密碼">下一步</button>
-                    </div>
 
-                    <div class="login-container hidden" id="stepPassword" aria-live="polite">
-                        <div class="form-group">
-                            <input type="password" id="password" name="password" placeholder=" " required aria-required="true" aria-describedby="passwordHelp">
-                            <label for="password">輸入您的密碼</label>
-                            <div id="passwordHelp" class="sr-only">輸入您的密碼</div>
-                        </div>
-
-                        <!-- CAPTCHA 驗證區 -->
-                        <div class="captcha-container">
-                            <div id="captcha" class="cf-turnstile" data-callback="onTurnstileSuccess" data-theme="light"></div>
-                        </div>
-
-                        <button id="submit-btn" type="submit" class="btn btn-primary btn-block">登入</button>
-                        <button type="button" onclick="otherOptions()" class="other-button" aria-label="其他登入方式">其他登入方式</button>
-                        <button type="button" onclick="returnToEmail()" class="return-button" aria-label="返回電子信箱輸入頁面">返回</button>
-                    </div>
-                </form>
-                <div class="login-container hidden" id="stepOtherOptions" aria-live="polite">
-                    <h2>其他登入方式</h2>
-                    <!-- 電子信箱與簡訊需要CAPTCHA -->
-                    <button onclick="verifyByEmail()" class="option-button" aria-label="透過電子信箱驗證碼登入">電子信箱驗證碼</button>
-                    <button onclick="verifyBySMS()" class="option-button" aria-label="透過簡訊驗證碼登入">簡訊驗證碼</button>
-                    <button onclick="verifyByDevice()" class="option-button" aria-label="透過裝置憑證或 PassKey 驗證登入">裝置憑證/PassKey 驗證</button>
-                    <button onclick="backToPassword()" class="option-button" aria-label="返回密碼登入頁面">密碼登入</button>
+<div class="container-wrapper">
+    <div class="login-container active" id="stepUsername" aria-live="polite">
+        <div class="login-content">
+            <h5><b>經濟部產業發展署</b></h5>
+            <div class="h7" style="color: #669bbc">大型石化督導管理系統</div>
+            <div class="form-group">
+                <input type="text" id="usernameInput" placeholder="輸入您的帳號" required aria-required="true" aria-describedby="usernameHelp">
+                <label for="usernameInput">輸入您的帳號</label>
+                <div id="usernameHelp" class="sr-only">輸入您的帳號以繼續</div>
+                <div class="loader-container">
+                    <div class="loader"></div>
+                    <div id="errorMessage" style="color: red"></div>
                 </div>
 
-                <div id="accessibilityMessage" class="accessibility-message" aria-live="polite"></div>
+            </div>
+            <div class="button-group">
+                <button onclick="nextStep()" class="main-button" aria-label="下一步，繼續輸入密碼">下一步</button>
+            </div>
+            <div class="hidden-buttons" style="height: 50px">
+
             </div>
         </div>
     </div>
+
+    @Html.AntiForgeryToken()
+    <div class="login-container hidden" id="stepPassword" aria-live="polite">
+        <!-- 用來存儲 CAPTCHA token 的隱藏字段 -->
+        <input type="hidden" id="cf-turnstile-response" name="cfTurnstileResponse" value="" />
+        <div class="login-content">
+                <h5><b>經濟部產業發展署</b></h5>
+                <div class="h7" style="color: #669bbc">大型石化督導管理系統</div>
+                <div id="Nickname"></div>
+                <div class="form-group">
+                    <input type="password" id="passwordInput" placeholder="輸入您的密碼" required aria-required="true" aria-describedby="passwordHelp">
+                    <label for="passwordInput">輸入您的密碼</label>
+                    <div id="passwordHelp" class="sr-only">輸入您的帳號密碼</div>
+                    <div class="loader-container">
+                        <div class="loader"></div>
+                        <div id="errorPassword" style="color: red"></div>
+                    </div>
+                </div>
+            <!-- Cloudflare Turnstile CAPTCHA -->
+            <div id="captcha" class="cf-turnstile" data-callback="onTurnstileSuccess" data-theme="light"></div>
+            <div class="button-group">
+                <button class="main-button" onclick="Login()" aria-label="登入帳號">登入</button>
+                <div class="secondary-buttons">
+                    <button onclick="otherOptions()" class="secondary-button" aria-label="其他登入方式">其他登入方式</button>
+                    <button onclick="returnToUsername()" class="secondary-button" aria-label="返回電子信箱輸入頁面">返回</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="login-container hidden" id="stepOtherOptions" aria-live="polite">
+        <div class="login-content">
+            <h2>其他登入方式</h2>
+            <button onclick="" class="option-button" aria-label="透過電子信箱驗證碼登入">
+                <i class="fas fa-envelope"></i>電子信箱驗證碼
+            </button>
+            <button onclick="" class="option-button" aria-label="透過簡訊驗證碼登入">
+                <i class="fas fa-sms"></i>簡訊驗證碼
+            </button>
+            <button onclick="" class="option-button" aria-label="透過裝置憑證或 PassKey 驗證登入">
+                <i class="fas fa-mobile-alt"></i>裝置憑證/PassKey 驗證
+            </button>
+            <div class="button-group">
+                <button onclick="backToPassword()" class="secondary-button" aria-label="返回密碼登入頁面">返回密碼登入</button>
+            </div>
+        </div>
+    </div>
+
 </div>
-<script>
-    function nextStep() {
-        document.getElementById('stepEmail').classList.add('hidden');
-        document.getElementById('stepPassword').classList.remove('hidden');
-        announceChange('密碼輸入頁面已載入');
-    }
-
-    function returnToEmail() {
-        document.getElementById('stepPassword').classList.add('hidden');
-        document.getElementById('stepEmail').classList.remove('hidden');
-        announceChange('返回電子信箱輸入頁面');
-    }
-
-    function otherOptions() {
-        document.getElementById('stepPassword').classList.add('hidden');
-        document.getElementById('stepOtherOptions').classList.remove('hidden');
-        announceChange('其他登入方式頁面已載入');
-    }
-
-    function verifyByEmail() {
-        alert('發送電子信箱驗證碼...');
-        announceChange('電子信箱驗證碼已發送');
-    }
-
-    function verifyBySMS() {
-        alert('發送簡訊驗證碼...');
-        announceChange('簡訊驗證碼已發送');
-    }
-
-    function verifyByDevice() {
-        alert('裝置憑證驗證中...');
-        announceChange('正在進行裝置憑證驗證');
-    }
-
-    function backToPassword() {
-        document.getElementById('stepOtherOptions').classList.add('hidden');
-        document.getElementById('stepPassword').classList.remove('hidden');
-        announceChange('回到密碼輸入頁面');
-    }
-
-    function announceChange(message) {
-        const accessibilityMessage = document.getElementById('accessibilityMessage');
-        accessibilityMessage.textContent = message;
-    }
-
-    // 初始化頁面時顯示第一個容器
-    window.onload = function() {
-        document.getElementById('stepEmail').classList.remove('hidden');
-        announceChange('登入頁面已載入，請輸入您的電子郵件地址');
-    }
-
-    // Cloudflare Turnstile callback function
-    function onTurnstileSuccess(token) {
-        document.getElementById("cf-turnstile-response").value = token;
-    }
-</script>
-</body>

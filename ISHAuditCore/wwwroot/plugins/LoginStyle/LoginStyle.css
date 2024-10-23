@@ -1,0 +1,303 @@
+:root {
+    --primary-color: #669bbc;
+    --primary-hover: #5287a7;
+    --secondary-color: #E9C46A;
+    --secondary-hover: #F4A261;
+    --accent-color: #E76F51;
+    --background-color: #ffffff;
+    --surface-color: #ffffff;
+    --text-primary: #264653;
+    --text-secondary: #2A9D8F;
+    --text-placeholder: #b1b1b1;
+    --input:#1f1f1f;
+}
+
+
+
+.container-wrapper {
+    position: relative;
+    width: 100%;
+    height: 60vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1500px;
+    overflow: hidden;
+}
+
+.login-container {
+    background-color: var(--surface-color);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.2),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 320px;
+    height: 450px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.login-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+}
+
+.login-container.slide-left {
+    transform: translate(50%, -50%);
+    opacity: 0;
+}
+
+.login-container.slide-right {
+    transform: translate(-150%, -50%);
+    opacity: 0;
+}
+
+.login-container.active {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+}
+
+.form-group {
+    margin: 1.5rem 0;
+    position: relative;
+    width: 100%;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 1rem 0.75rem;
+    border: 2px solid var(--text-placeholder);
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background-color: transparent;
+    box-sizing: border-box;
+    color: var(--text-primary);
+}
+
+.form-group input::placeholder {
+    color: transparent;
+}
+
+.form-group input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    color: var(--text-primary);
+}
+
+.form-group label {
+    position: absolute;
+    left: 0.75rem;
+    top: 1rem;
+    font-size: 1rem;
+    color: var(--text-placeholder);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    background-color: var(--surface-color);
+    padding: 0 0.25rem;
+    pointer-events: none;
+}
+
+.form-group input:focus + label,
+.form-group input:not(:placeholder-shown) + label {
+    top: -0.01rem;
+    font-size: 0.875rem;
+    transform: translateY(-50%);
+}
+
+/* New styles for label color change */
+.form-group input:focus + label {
+    color: var(--primary-color);
+}
+
+.form-group input:not(:focus):not(:placeholder-shown) + label {
+    color: var(--text-placeholder);
+}
+
+/* Rest of the CSS remains unchanged */
+.button-group {
+    width: 100%;
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.main-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 0.75rem;
+}
+
+.main-button:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(102, 155, 188, 0.2);
+}
+
+.secondary-button {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.secondary-button:hover {
+    color: var(--primary-color);
+}
+
+.secondary-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.option-button {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.option-button i {
+    margin-right: 0.5rem;
+    width: 20px;
+    text-align: center;
+}
+
+.option-button:hover {
+    color: var(--primary-color);
+}
+
+.hidden {
+    display: none;
+}
+
+h2 {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    width: 100%;
+    text-align: left;
+}
+
+.welcome-message {
+    font-size: 1.8rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.nickname {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.nickname:hover {
+    transform: scale(1.05);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+/* 添加一个简单的动画效果 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#stepPassword .login-content {
+    animation: fadeIn 0.5s ease-out;
+}
+/* loading 動畫控制 */
+.loader {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    display: none;
+    margin: 5px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loader-container {
+    text-align: center;
+    margin: 10px;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+button {
+    padding: 8px 16px;
+    font-size: 14px;
+    margin-top: 8px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+/* RWD 媒體查詢 */
+@media screen and (max-width: 600px) {
+    .loader {
+        width: 40px;
+        height: 40px;
+        border-width: 6px;
+    }
+
+    button {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}
+
+@media screen and (min-width: 601px) and (max-width: 1024px) {
+    .loader {
+        width: 50px;
+        height: 50px;
+        border-width: 7px;
+    }
+}

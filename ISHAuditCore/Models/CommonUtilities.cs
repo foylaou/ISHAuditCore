@@ -135,6 +135,10 @@ namespace ISHAudit.Models
             return cityList;
         }
         
+        /// <summary>
+        /// 根據企業代碼 "FPG" 查詢對應的公司及其工廠，並返回公司與工廠之間的階層結構。
+        /// </summary>
+        /// <returns>返回一個包含公司及其下屬工廠的 <see cref="List{Codes}"/> 集合，每個公司對應一個或多個工廠。</returns>
         public List<Codes> CompanyKpi()
         {
             var company = (from company_name in _db.company_names
@@ -161,7 +165,11 @@ namespace ISHAudit.Models
 
             return company;
         }
-
+        
+        /// <summary>
+        /// 查詢建議類別、建議類型及其項目，並返回這些類別、類型及項目之間的階層結構。
+        /// </summary>
+        /// <returns>返回一個包含建議類別、類型及其項目的 <see cref="List{Codes}"/> 集合，每個類別對應一個或多個類型，類型下包含相關的項目。</returns>
         public List<Codes> SuggestCategory()
         {
             var suggestCategory = (from q in _db.suggest_categories
@@ -201,6 +209,7 @@ namespace ISHAudit.Models
             return suggestCategory;
         }
 
+        
         public List<Codes> Company()
         {
             var company = (from company_name in _db.company_names
@@ -239,10 +248,13 @@ namespace ISHAudit.Models
         }
 
 
-
+        /// <summary>
+        /// 根據指定的使用者 ID 取得使用者列表，並排除指定的使用者。
+        /// </summary>
+        /// <param name="userid">要排除的使用者 ID，為字串格式。</param>
+        /// <returns>返回一個 <see cref="List{user_info}"/>，包含所有不等於指定 ID 的使用者資料。</returns>
         public List<user_info> GetUserList(string userid)
         {
-            // Console.WriteLine(userid);
             var data = new List<user_info>();
 
             var query = from user_info in _db.user_infos

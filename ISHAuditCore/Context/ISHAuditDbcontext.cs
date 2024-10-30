@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using ISHAuditCore.Migrations.Model;
+using ISHAuditCore.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ISHAuditCore.Context;
@@ -34,6 +34,8 @@ public partial class ISHAuditDbcontext : DbContext
 
     public virtual DbSet<audit_detail_info> audit_detail_infos { get; set; }
 
+    public virtual DbSet<audit_improvement_datum> audit_improvement_data { get; set; }
+
     public virtual DbSet<audit_improvement_doc> audit_improvement_docs { get; set; }
 
     public virtual DbSet<audit_report_commit> audit_report_commits { get; set; }
@@ -43,6 +45,8 @@ public partial class ISHAuditDbcontext : DbContext
     public virtual DbSet<audit_response_file_log> audit_response_file_logs { get; set; }
 
     public virtual DbSet<audit_suggest> audit_suggests { get; set; }
+
+    public virtual DbSet<audit_suggest_log> audit_suggest_logs { get; set; }
 
     public virtual DbSet<audit_type> audit_types { get; set; }
 
@@ -82,6 +86,8 @@ public partial class ISHAuditDbcontext : DbContext
 
     public virtual DbSet<factory_name> factory_names { get; set; }
 
+    public virtual DbSet<improve_type_tb> improve_type_tbs { get; set; }
+
     public virtual DbSet<industrial_area_info> industrial_area_infos { get; set; }
 
     public virtual DbSet<psm_kpi_datum> psm_kpi_data { get; set; }
@@ -100,6 +106,8 @@ public partial class ISHAuditDbcontext : DbContext
 
     public virtual DbSet<result_suggestion_type> result_suggestion_types { get; set; }
 
+    public virtual DbSet<review_queue> review_queues { get; set; }
+
     public virtual DbSet<set_system> set_systems { get; set; }
 
     public virtual DbSet<suggest_category> suggest_categories { get; set; }
@@ -116,7 +124,7 @@ public partial class ISHAuditDbcontext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=202.12.79.12;Database=isha_sys_dev;User Id=foylaou0326;Password=t0955787053S;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Server=59.127.84.234;Database=test_db;User Id=sa;Password=Isha0486;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -188,6 +196,11 @@ public partial class ISHAuditDbcontext : DbContext
         modelBuilder.Entity<audit_suggest>(entity =>
         {
             entity.HasKey(e => e.uuid).HasName("PK__audit_su__7F427930BEA72FCA");
+        });
+
+        modelBuilder.Entity<audit_suggest_log>(entity =>
+        {
+            entity.HasKey(e => e.id).HasName("PK__audit_su__3213E83F3F6546DF");
         });
 
         modelBuilder.Entity<audit_type>(entity =>
@@ -339,6 +352,25 @@ public partial class ISHAuditDbcontext : DbContext
             entity.HasKey(e => e.id).HasName("PK__result_s__3213E83FCE84C254");
 
             entity.Property(e => e.id).ValueGeneratedNever();
+        });
+
+        modelBuilder.Entity<review_queue>(entity =>
+        {
+            entity.HasKey(e => e.id).HasName("PK__review_q__3213E83F48676AA1");
+
+            entity.Property(e => e.approval_time).HasComment("驗證碼存在時間\r\n");
+            entity.Property(e => e.approvedBy).HasComment("審核者\r\n");
+            entity.Property(e => e.company_id).HasComment("哪一間公司\r\n");
+            entity.Property(e => e.createdAt).HasComment("審核時間");
+            entity.Property(e => e.email).HasComment("被審核人員電子郵件\r\n");
+            entity.Property(e => e.enterprise_domain).HasComment("其單位使用網域");
+            entity.Property(e => e.enterprise_id).HasComment("哪一間企業\r\n");
+            entity.Property(e => e.factory_id).HasComment("哪一間工廠\r\n");
+            entity.Property(e => e.phone).HasComment("被審核人員電話");
+            entity.Property(e => e.status).HasComment("人員審核狀態(0:未審核, 1:審核通過, 2:審核不通過)");
+            entity.Property(e => e.username).HasComment("被審核人員名稱\r\n");
+            entity.Property(e => e.verification_code).HasComment("驗證碼or連結\r\n");
+            entity.Property(e => e.verification_status).HasComment("email/phone審核狀態(0:未審核, 1:審核通過, 2:審核不通過)\r\n");
         });
 
         modelBuilder.Entity<set_system>(entity =>

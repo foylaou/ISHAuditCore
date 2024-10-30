@@ -1,5 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using ISHAudit.Models;
 using ISHAuditCore.Context;
 using ISHAuditCore.Migrations.Model;
 using ISHAuditCore.Models;
@@ -74,7 +73,7 @@ namespace ISHAuditCore.Controllers
                     data.nickname = viewModel.nickname;
                     data.update_at = parsedDate;
 
-                    // 保存到数据库
+                    // 保存到資料庫
                     _db.SaveChanges();
 
                     return Json(new { message = "更新成功" });
@@ -82,11 +81,11 @@ namespace ISHAuditCore.Controllers
             }
             if (data != null)
             {
-                // 更新数据
+                // 更新數據
                 data.nickname = viewModel.nickname;
                 data.update_at = parsedDate;
-
-                // 保存到数据库
+            
+                // 保存到資料庫
                 _db.SaveChanges();
                 
                 List<UserDataSet> dataFromDatabase = _userData.DataFromDatabase();
@@ -102,7 +101,6 @@ namespace ISHAuditCore.Controllers
         [HttpPost]
         public ActionResult Newpassword(IFormCollection post)
         {
-
             if (!Regex.IsMatch(post["password"], @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,20}$"))
             {
                 var errorResponse = new { error = "密碼不符合規則:" + post["password"] + "\n 請最少輸入8-20位大小寫混和英文與數字" };
@@ -129,8 +127,6 @@ namespace ISHAuditCore.Controllers
                 data.password = password;
                 data.update_at = parsedDate;
                 _db.SaveChanges();
-
-
             }
             List<UserDataSet> dataFromDatabase = _userData.DataFromDatabase();
             return Json(dataFromDatabase);

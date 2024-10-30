@@ -4,8 +4,10 @@ using System.Linq;
 using ISHAuditCore.Context;
 using ISHAuditCore.Migrations.Model;
 using ISHAuditCore.Models;
+using factory_name = ISHAuditCore.Entities.factory_name;
+using user_info = ISHAuditCore.Entities.user_info;
 
-namespace ISHAudit.Models
+namespace ISHAuditCore.Models
 {
     public class UserEditService
     {
@@ -255,7 +257,7 @@ namespace ISHAudit.Models
         /// <returns>返回一個 <see cref="List{user_info}"/>，包含所有不等於指定 ID 的使用者資料。</returns>
         public List<user_info> GetUserList(string userid)
         {
-            var data = new List<user_info>();
+            var data = new List<ISHAuditCore.Entities.user_info>();
 
             var query = from user_info in _db.user_infos
                     select user_info
@@ -302,7 +304,8 @@ namespace ISHAudit.Models
             return userSessionInfo;
         }
         
-        }
+        
     }
+}
 
 

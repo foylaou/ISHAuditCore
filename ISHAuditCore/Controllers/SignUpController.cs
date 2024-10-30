@@ -1,11 +1,11 @@
 using System.Text.RegularExpressions;
-using ISHAudit.Models;
 using ISHAuditCore.Context;
 using ISHAuditCore.Migrations.Model;
 using ISHAuditCore.Models;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using user_info = ISHAuditCore.Entities.user_info;
 
 namespace ISHAuditCore.Controllers
 {
@@ -119,7 +119,7 @@ namespace ISHAuditCore.Controllers
                 DateTime? parsedDate = DateTime.TryParse(formattedDate, out DateTime result)
                     ? (DateTime?)result
                     : null;
-                user_info newUser = new user_info
+                user_info newUser = new user_info()
                 {
                     username = username,
                     password = password,

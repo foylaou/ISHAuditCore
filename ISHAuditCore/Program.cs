@@ -1,7 +1,6 @@
 using System.Text;
-using ISHAudit.Models;
-using ISHAuditCore.Context;
 using ISHAuditCore.Models;
+using ISHAuditCore.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
@@ -76,6 +75,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<Codes>(); // 如果 Codes 是每次請求一個實例，使用 Scoped 生命週期
 builder.Services.AddScoped<UserEditService>();
 builder.Services.AddScoped<UserData>();
+builder.Services.AddScoped<Audit>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

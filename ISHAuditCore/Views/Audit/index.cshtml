@@ -1,0 +1,711 @@
+﻿@using Newtonsoft.Json;
+@using ISHAuditCore.Models
+
+@{
+ViewBag.Title = "石化督導資料綜合查詢";
+}
+@section css{
+<link rel="stylesheet" href="~/plugins/chat/style.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,1,0" />
+}
+
+@section js{
+
+}
+@section location{
+<li class="breadcrumb-item">@Html.ActionLink("首頁", "Index", "Home")</li>
+<li class="breadcrumb-item active">@Html.ActionLink("大型石化廠公共安全管理聯合督導", "Index", "Audit")</li>
+}
+@section scripts{
+<!--chatbot start-->
+
+<!--chatbot end-->
+<script>
+    
+    $(document).ready(function () {
+        var city = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.CityListJson)));
+        var company = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.CompanyJson)));
+        var auditType = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.AuditTypeJson)));
+        var auditCause = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.AuditCauseJson)));
+        var disasterType = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.DisasterTypeJson)));
+        
+        // 動態填入縣市選項
+        city.forEach(city => {
+            $('#city').append(new Option(city.Name, city.Name));
+        });
+        // 當選擇縣市時，更新鄉鎮選單
+        $('#city').on('change', function () {
+            var selectedCity = $(this).val();
+            $('#township').empty().append(new Option('-- 請選擇 --', ''));
+            $('#industrial_area').empty().append(new Option('-- 請選擇 --', ''));
+            // 獲取所選縣市的鄉鎮列表
+            var townships = city.find(city => city.Name === selectedCity)?.Child || [];
+            townships.forEach(township => {
+                $('#township').append(new Option(township.Name, township.Name));
+            });
+        });
+
+        // 當選擇鄉鎮時，更新工業區選單
+        $('#township').on('change', function () {
+            var selectedCity = $('#city').val();
+            var selectedTownship = $(this).val();
+            $('#industrial_area').empty().append(new Option('-- 請選擇 --', ''));
+            // 獲取所選鄉鎮的工業區列表
+            var industrialAreas = city.find(city => city.Name === selectedCity)
+                ?.Child.find(town => town.Name === selectedTownship)
+                ?.Child || [];
+
+            industrialAreas.forEach(industrial => {
+                $('#industrial_area').append(new Option(industrial.Name, industrial.Name));
+            });
+        });
+        // 動態填入公司選項
+        company.forEach(company => {
+            $('#company').append(new Option(company.Name, company.Name));
+        });
+        // 當選擇公司時，更新工廠選單
+        $('#company').on('change', function () {
+            var selectedCompany = $(this).val();
+            $('#factory').empty().append(new Option('-- 請選擇 --', ''));
+            // 獲取所選縣市的鄉鎮列表
+            var factorys = company.find(company => company.Name === selectedCompany)?.Child || [];
+            factorys.forEach(factory => {
+                $('#factory').append(new Option(factory.Name, factory.Name));
+            });
+        });
+        // 動態填入督導種類選項
+        auditType.forEach(auditType => {
+            $('#audit_type').append(new Option(auditType.Name, auditType.Name));
+        });
+        // 動態填入督導原因選項
+        auditCause.forEach(auditCause => {
+            $('#audit_cause').append(new Option(auditCause.Name, auditCause.Name));
+        });
+        // 動態填入災害類型選項
+        disasterType.forEach(disasterType => {
+            $('#disaster_type').append(new Option(disasterType.Name, disasterType.Name));
+        });
+    });
+    // 定義全域變數
+    let API_KEY;
+    let ssid;
+    function chat() {
+        $("#chatbox").prop("hidden", false);
+        API_KEY = "5TDQ63V-WRN4X7V-P0XG23D-CQV27SG"; // 設置全域變數的值
+        
+
+    }
+
+
+    document.forms['audit_data'].reset();
+    var townships;
+    var industrial_areas;
+    var factory;
+
+
+    var SuggestCategoryData = JSON.parse('@Html.Raw(ViewBag.SuggestCategoryJson)');
+    var SuggestTypeData;
+    var SuggestItemData;
+    function findJsonData(data,val) {
+        var index = -1;
+        data.find(function (item, i) {
+            if (item.id === val) {
+                index = i;
+                return index;
+            }
+        });
+        return data[index];
+    }
+    $('#suggest_category').on('change', function () {
+        SuggestTypeData = undefined;
+        SuggestItemData = undefined;
+        $('#suggest_type').empty();
+        $('#suggest_type').append($("<option></option>").attr("value", '').text("-- 請選擇 --"));
+        $('#suggest_item').empty();
+        $('#suggest_item').append($("<option></option>").attr("value", '').text("-- 請選擇 --"));
+        if ($('#suggest_category').val() == '')
+            return;
+        SuggestTypeData = findJsonData(SuggestCategoryData, $('#suggest_category').val()).child;
+        for (var i = 0; i < SuggestTypeData.length; i++) {
+            $('#suggest_type').append($("<option></option>").attr("value", SuggestTypeData[i].id).text(SuggestTypeData[i].name));
+        }
+    });
+    $('#suggest_type').on('change', function () {
+        SuggestItemData = undefined;
+        $('#suggest_item').empty();
+        $('#suggest_item').append($("<option></option>").attr("value", '').text("-- 請選擇 --"));
+        if ($('#suggest_type').val() == '')
+            return;
+        SuggestItemData = findJsonData(SuggestTypeData, $('#suggest_type').val()).child;
+        for (var i = 0; i < SuggestItemData.length; i++) {
+            $('#suggest_item').append($("<option></option>").attr("value", SuggestItemData[i].id).text(SuggestItemData[i].name));
+        }
+    });
+
+    var SelectedItemauditbasic = "";
+    $("#basicGrid").jsGrid({
+        width: "100%",
+        editing: true,
+        autoload: true,
+        sorting: true,
+        paging: true,
+        noDataContent: "Not found",
+        selecting: true,
+        pageSize: 10,
+        rowClick: function (args) {
+            var selectedRow = $("#basicGrid").find('table tr.highlight');
+            selectedRow.removeClass('highlight');
+            var $row = this.rowByItem(args.item);
+            $row.toggleClass("highlight");
+            SelectedItemauditbasic = args.item;
+        },
+        data: [],
+        fields: [
+            { name: "id", css: "hide", width: 15 },
+            { name: "uuid", css: "hide", width: 15 },
+            { title: "工業區", name: "industrial_area", type: "text", width: 50 },
+            { title: "公司", name: "company", type: "text", width: 50 },
+            { title: "工廠", name: "factory", type: "text", width: 50 },
+            { title: "督導種類", name: "audit_type", type: "text", width: 30 },
+            { title: "災害類型", name: "disater_types", type: "text", width: 30 },
+            {
+                title: "事故時間", name: "incident_datetime", width: 20, align: "center", itemTemplate: function StringToDate(DateData) {
+                    if (DateData == "" || DateData == null || DateData == undefined)
+                        return "";
+                    var myDate = moment.utc(DateData);
+                    const date = new Date(+new Date(myDate) + 8 * 3600 * 1000);
+                    return date.toISOString().substring(0, 10);
+                }
+            },
+            {
+                title: "督導時間", name: "audit_start_date", width: 20, align: "center", itemTemplate: function StringToDate(DateData) {
+                    if (DateData == "" || DateData == null || DateData == undefined)
+                        return "";
+                    var myDate = moment.utc(DateData);
+                    const date = new Date(+new Date(myDate) + 8 * 3600 * 1000);
+                    return date.toISOString().substring(0, 10);
+                }
+            },
+            { title: "督導原因", name: "audit_cause", type: "text", width: 20 },
+            { title: "督導說明", name: "incident_description", css: "hide", type: "text", width: 10 },
+            { title: "停工?", name: "sd", type: "text", width: 10 },
+            { title: "裁罰?", name: "penalty", type: "text", width: 10 },
+            { title: "裁罰", name: "penalty_detail", css: "hide", type: "text", width: 20 },
+        ]
+    });
+    function auditInfo() {
+        window.open('/Audit/AuditInfo/' + SelectedItemauditbasic.uuid, '_blank');
+    }
+    function queryaudit() {
+        block();
+        $.ajax({
+            url:'/Audit/Query',
+            type: "post",
+            data: $("#audit_data").serialize(),
+            dataType: "json",
+            success: function (data) {
+
+                unblock();
+                $('#example2').DataTable().clear();
+                $('#example2').DataTable().rows.add(data[1]);
+                $('#example2').DataTable().draw();
+                $('#example2').DataTable({
+                    "responsive": true,
+                    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                }).buttons().container().appendTo('#example2_wrapper .col-md-6:eq(0)');
+
+                //var column = $('#example2').DataTable().column([3]);
+                //$('#example2').DataTable().columns.adjust().draw(false);
+                //column.visible(!column.visible());
+                $("#basicGrid").jsGrid("reset");
+                $("#basicGrid").jsGrid({ data: data[0] });
+                Toast.fire({
+                    icon: 'success',
+                    title: '載入完畢，共' + data[0].length + "筆"
+                });
+
+
+            },
+            error:function(XMLHttpRequest, textStatus){
+                unblock();
+                Toast.fire({
+                    icon: 'error',
+                    title: '加載失敗'
+                });
+            }
+        });
+    }
+
+    //new $.fn.dataTable.FixedHeader($('#example2').DataTable());
+    $.fn.dataTable.ext.errMode = 'none';
+    $(document).ready(function () {
+        var table = $('#example2').DataTable({
+            data: [],
+            columns: [
+                { title: "工廠", data: "factory", type: "text", width: 20 },
+                { title: "督導種類", data: "audit_type", type: "text", width: 20 },
+                { title: "建議種類", data: "suggest_category", type: "text", width: 20 },
+                { title: "建議類型", data: "suggest_type", type: "text", width: 20 },
+                { title: "建議項目", data: "suggest_item", type: "text", width: 20 },
+                { title: "委員建議", data: "suggest", type: "text", width: 200 },
+                { title: "參採", data: "participate", type: "text", width: 20 },
+                { title: "說明/執行方式", data: "action", type: "text", width: 200 },
+                { title: "短期", data: "short_term", type: "text", width: 20 },
+                { title: "中期", data: "Mid_term", type: "text", width: 20 },
+                { title: "長期", data: "long_term", type: "text", width: 20 },
+                { title: "辦理情形", data: "handling_situation", type: "text", width: 200 },
+                { title: "完成?", data: "improve_status", type: "text", width: 20 },
+                { title: "負責單位", data: "responsible_unit", type: "text", width: 20 },
+                //{ title: "預算", data: "budget_val", type: "text", width: 20 },
+                { title: "預算說明", data: "budget", type: "text", width: 20 }
+            ],
+            "columnDefs": [
+                {
+                    //"targets": [0, 1, 2],
+                    //"visible": false,
+                    "searchable": false
+                }
+            ],
+            "paging": true,
+            "lengthChange": false,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "responsive": true,
+            "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#example2_wrapper .col-md-6:eq(0)');
+
+        new $.fn.dataTable.FixedHeader(table);
+
+    });
+    //$.fn.dataTable.ext.errMode = 'none';
+
+
+    // 選取與聊天機器人相關的 DOM 元素
+    const chatbotToggler = document.querySelector(".chatbot-toggler"); // 聊天機器人切換按鈕
+    const closeBtn = document.querySelector(".close-btn"); // 關閉按鈕
+    const chatInput = document.querySelector(".chat-input textarea"); // 聊天輸入框
+    const sendChatbtn = document.querySelector(".chat-input span"); // 送出聊天訊息按鈕
+    const chatbox = document.querySelector(".chatbox"); // 聊天框
+
+    let userMessage = null; // 儲存使用者訊息的變數
+    const inputInitHeight = chatInput.scrollHeight; // 輸入框的初始高度
+
+    // 創建聊天 <li> 元素，包含傳入的訊息和 class 名稱
+    const createChatLi = (message, className) => {
+        const chatLi = document.createElement("li"); // 創建 <li> 元素
+        chatLi.classList.add("chat", className); // 添加 class 名稱
+        let chatContent = className === "outgoing" // 判斷是輸出訊息還是輸入訊息
+            ? `<p>${message}</p>` // 如果是輸出訊息，直接顯示訊息
+            : `<span class="material-symbols-outlined"><svg xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" clip-rule="evenodd" viewBox="0 0 500 500" id="star"><path fill="#ffd600" d="M250,25L317.308,182.692L442.308,250L317.308,317.308L250,475L182.692,317.308L57.692,250L182.692,182.692L250,25Z"></path></svg></span><p></p>`;
+        // 如果是輸入訊息，創建 <span> 和 <p> 元素
+        chatLi.innerHTML = chatContent; // 設置聊天內容的 HTML
+        if (className !== "outgoing") {
+            chatLi.querySelector("p").innerHTML = ""; // 設置初始訊息內容為空
+            const words = splitMessage(message);
+            typeMessage(chatLi.querySelector("p"), words); // 開始逐字顯示訊息
+        }
+        return chatLi; // 返回創建的 <li> 元素
+    };
+
+    // 分離 HTML 標籤和文字的函數
+    const splitMessage = (message) => {
+        return message.split(/(<[^>]+>|[^<]+)/).filter(Boolean);
+    };
+
+    // 逐字顯示訊息的函數
+    const typeMessage = (element, words) => {
+        let index = 0;
+        const typingSpeed = 50; // 設定較快的打字速度，單位：毫秒
+
+        const type = () => {
+            if (index < words.length) {
+                element.innerHTML += words[index];
+                index++;
+                setTimeout(type, typingSpeed); // 使用 setTimeout 並設置打字速度
+            } else {
+                // 確保滾動到最新的消息
+                chatbox.scrollTo(0, chatbox.scrollHeight);
+            }
+        };
+
+        type();
+    };
+
+    // 處理回應資料，添加換行、大小寫和代碼顯示
+    const processResponseData = (data) => {
+        // 換行處理
+        let processedData = data.replace(/\n/g, '<br/>');
+
+        // 代碼顯示處理
+        processedData = processedData.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+
+        // 大小寫處理（例如：全部轉為小寫）
+        // processedData = processedData.toLowerCase();
+
+        return processedData;
+    };
+
+    const generateResponse = (incomingChatli) => {
+        // 確認 userMessage 非空
+        if (!userMessage) {
+            console.error("userMessage 參數為空。");
+            return;
+        }
+
+        const API_URL = `https://llm.isafe.org.tw/api/v1/workspace/${ssid}/chat`; // 使用模板字串設置 API URL
+        const messageElement = incomingChatli.querySelector("p"); // 選取訊息元素
+
+        const requestOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "accept": "application/json",
+                "Authorization": `Bearer ${API_KEY}`, // 使用模板字串設置授權標頭
+            },
+            body: JSON.stringify({
+                message: userMessage, // 使用者的訊息
+                mode: "chat", // 模式設置為 "chat"
+            }),
+        };
+
+        // 發送請求並處理回應
+        fetch(API_URL, requestOptions)
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.textResponse) {
+                    const processedData = processResponseData(data.textResponse.trim());
+                    const words = splitMessage(processedData);
+                    typeMessage(messageElement, words); // 逐字顯示處理後的回應訊息
+                } else {
+                    messageElement.classList.add("error"); // 添加錯誤樣式
+                    messageElement.innerHTML = "未收到有效回應。"; // 錯誤提示訊息
+                }
+            })
+            .catch(() => {
+                messageElement.classList.add("error"); // 添加錯誤樣式
+                messageElement.innerHTML = "發生錯誤，請檢查 API_KEY 並再次嘗試。"; // 錯誤提示訊息
+            })
+            .finally(() => chatbox.scrollTo(0, chatbox.scrollHeight)); // 滾動到聊天框底部
+    };
+
+    // 處理聊天訊息
+    // 確保 userMessage 已正確設置並非空
+    const handleChat = () => {
+        userMessage = chatInput.value.trim(); // 取得使用者輸入的訊息並去除多餘的空白
+        if (!userMessage) return; // 如果訊息為空，則返回
+
+        // 清空輸入框並將其高度設置為初始高度
+        chatInput.value = "";
+        chatInput.style.height = `${inputInitHeight}px`;
+
+        // 將使用者訊息添加到聊天框
+        const outgoingChatli = createChatLi(userMessage, "outgoing");
+        chatbox.appendChild(outgoingChatli);
+        chatbox.scrollTo(0, chatbox.scrollHeight); // 滾動到聊天框底部
+
+        setTimeout(() => {
+            // 等待回應時顯示 "Typing..." 訊息
+            const incomingChatli = createChatLi("", "incoming");
+            chatbox.appendChild(incomingChatli);
+            generateResponse(incomingChatli); // 生成機器人回應
+        }, 600); // 600 毫秒後顯示 "Typing..."
+    };
+
+    // 輸入框內容變化時調整其高度
+    chatInput.addEventListener("input", () => {
+        chatInput.style.height = `${inputInitHeight}px`; // 設置為初始高度
+        chatInput.style.height = `${chatInput.scrollHeight}px`; // 調整為內容高度
+    });
+
+    // 按下 Enter 鍵時處理聊天訊息
+    chatInput.addEventListener("keydown", (e) => {
+        // 如果按下 Enter 鍵且未按下 Shift 鍵並且視窗寬度大於 767px，則處理聊天訊息
+        if (e.key === "Enter" && !e.shiftKey && window.innerWidth > 767) {
+            e.preventDefault(); // 防止換行
+            handleChat(); // 處理聊天訊息
+        }
+    });
+
+    // 點擊送出按鈕時處理聊天訊息
+    sendChatbtn.addEventListener("click", handleChat);
+
+    // 點擊關閉按鈕時隱藏聊天機器人
+    closeBtn.addEventListener("click", () =>
+        document.body.classList.remove("show-chatbot")
+    );
+
+    // 點擊聊天機器人切換按鈕時顯示或隱藏聊天機器人
+    chatbotToggler.addEventListener("click", () =>
+        document.body.classList.toggle("show-chatbot")
+    );
+
+
+
+
+
+
+</script>
+}
+@section page_title{
+<h1 class="m-0">石化督導資料綜合查詢<small></small></h1>
+}
+
+<div class="row">
+    <div class="col-12 col-sm-12">
+        <div class="card card-primary card-outline card-outline-tabs">
+            <div class="card-header p-0 border-bottom-0">
+                <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="query_tabs" data-toggle="pill" href="#query_tab" role="tab" aria-controls="query_tab" aria-selected="true">資料查詢</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="basic_tabs" data-toggle="pill" href="#basic_tab" role="tab" aria-controls="basic_tab" aria-selected="true">督導資訊</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="execute_tabs" data-toggle="pill" href="#execute_tab" role="tab" aria-controls="execute_tab" aria-selected="true">執行規劃</a>
+                    </li>
+                    @*<li class="nav-item">
+                        <a class="nav-link" id="improve_tabs" data-toggle="pill" href="#improve_tab" role="tab" aria-controls="improve_tab" aria-selected="true">改善計畫</a>
+                    </li>*@
+                </ul>
+            </div>
+            <div class="card-body">
+                <form id="audit_data">
+                    @Html.AntiForgeryToken()
+                    <div class="tab-content" id="custom-tabs-four-tabContent">
+                        <div class="tab-pane fade show active" id="query_tab" role="tabpanel" aria-labelledby="query_tab">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>所在縣市</label>
+                                            <select id="city" name="city" class="form-control select2" style="width: 100%;">
+                                                <option value="">-- 請選擇 --</option>
+                                               
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>所在地區</label>
+                                            <select id="township" name="township" class="form-control select2" style="width: 100%;">
+                                                <option value="">-- 請選擇 --</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>所屬工業區</label>
+                                            <select id="industrial_area" name="industrial_area" class="form-control select2" style="width: 100%;">
+                                                <option value="">-- 請選擇 --</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>督導種類</label>
+                                            <select id="audit_type" name="audit_type" class="form-control select2" style="width: 100%;">
+                                                <option value="">-- 請選擇 --</option>
+                                                
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>督導原因(必填)</label>
+                                            <select id="audit_cause" name="audit_cause" class="form-control select2" style="width: 100%;">
+                                                <option value="">-- 請選擇 --</option>
+                                               
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>災害類型</label>
+                                            <select id="disaster_type" name="disaster_type" multiple="multiple" data-placeholder="-- 請選擇 --" class="form-control select2" style="width: 100%;">
+                                               
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>督導年份</label>
+                                            <select id="audit_year" name="audit_year" class="form-control select2" style="width: 100%;">
+                                                <option value="">-- 請選擇 --</option>
+                                                @{
+                                                DateTime CurrTime = DateTime.Now;
+                                                int year = (CurrTime.Year) - 1911;
+                                                for (int i = 106; i < year + 1; i++)
+                                                {
+                                                string sVal = i + "年";
+                                                int iVal = i + 1911;
+                                                <option value=@iVal>@sVal</option>
+                                                }
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>公司名稱</label>
+                                            <select id="company" name="company" class="form-control select2" style="width: 100%;">
+                                                <option value="">-- 請選擇 --</option>
+                                                
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-3">
+
+                                        <div class="form-group">
+                                            <label>工廠名稱</label>
+                                            <select id="factory" name="factory" class="form-control select2" style="width: 100%;">
+                                                <option value="">-- 請選擇 --</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>建議種類</label>
+                                            <select id="suggest_category" name="suggest_category" class="form-control select2" style="width: 100%;">
+                                                <option value="">-- 請選擇 --</option>
+                                               
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>建議類型</label>
+                                            <select id="suggest_type" name="suggest_type" class="form-control select2" style="width: 100%;">
+                                                <option value="">-- 請選擇 --</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>建議項目</label>
+                                            <select id="suggest_item" name="suggest_item" class="form-control select2" style="width: 100%;">
+                                                <option value="">-- 請選擇 --</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>是否停工</label>
+                                            <select id="shut_down" name="shut_down" class="form-control select2" style="width: 100%;">
+                                                <option value="">-- 請選擇 --</option>
+                                                <option value="Y">是</option>
+                                                <option value="N">否</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>是否裁罰</label>
+                                            <select id="penalty" name="penalty" class="form-control select2" style="width: 100%;">
+                                                <option value="">-- 請選擇 --</option>
+                                                <option value="Y">是</option>
+                                                <option value="N">否</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>完成改善</label>
+                                            <select id="improve_status" name="improve_status" class="form-control select2" style="width: 100%;">
+                                                <option value="">-- 請選擇 --</option>
+                                                <option value="Y">是</option>
+                                                <option value="N">否</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer clearfix">
+                                <button type="button" onclick="queryaudit()" class="btn btn-info float-right"><i class="fas fa-search"></i> 查詢</button>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="basic_tab" role="tabpanel" aria-labelledby="basic_tab">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12 col-sm-12">
+                                        <h5>督導資訊</h5>
+                                        <div id="basicGrid"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer clearfix">
+                                <div class="row">
+                                    <div id="next_btn" class="col-12 col-sm-12">
+                                        <button type="button" onclick="auditInfo()" class="btn btn-info float-right">詳細資訊</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="execute_tab" role="tabpanel" aria-labelledby="execute_tab">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12 col-sm-12">
+                                        <h5>執行規劃</h5>
+                                        <div class="card-footer clearfix">
+                                            <div class="row">
+                                                <div id="chatbox_btn" class="col-12 col-sm-12">
+                                                    <button type="button" onclick="chat()" class="btn btn-info float-right">我要問問題</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <table id="example2" class="table table-bordered table-striped">
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+
+
+                <div class="fast" id ="chatbox" hidden="true">
+                    <button class="chatbot-toggler">
+                        <span class="material-symbols-rounded">mode_comment</span>
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                    <div class="chatbot">
+                        <header>
+                            <h2>智慧工安</h2>
+                            <span class="close-btn material-symbols-outlined"><svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" id="close"><path d="M437.5 386.6L306.9 256l130.6-130.6c14.1-14.1 14.1-36.8 0-50.9-14.1-14.1-36.8-14.1-50.9 0L256 205.1 125.4 74.5c-14.1-14.1-36.8-14.1-50.9 0-14.1 14.1-14.1 36.8 0 50.9L205.1 256 74.5 386.6c-14.1 14.1-14.1 36.8 0 50.9 14.1 14.1 36.8 14.1 50.9 0L256 306.9l130.6 130.6c14.1 14.1 36.8 14.1 50.9 0 14-14.1 14-36.9 0-50.9z"></path></svg></span>
+                        </header>
+                        <ul class="chatbox">
+                            <li class="chat incoming">
+                            <span class="material-symbols-outlined">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" clip-rule="evenodd" viewBox="0 0 500 500" id="star"><path fill="#ffd600" d="M250,25L317.308,182.692L442.308,250L317.308,317.308L250,475L182.692,317.308L57.692,250L182.692,182.692L250,25Z"></path></svg>
+                            </span>
+                                <p>你好 &#128079; <br />今天想問些什麼?</p>
+                            </li>
+                            <!-- <li class="chat outgoing">
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                            </li>  -->
+                        </ul>
+                        <div class="chat-input">
+                        <textarea placeholder="請輸入你想問的問題"
+                                  spellcheck="false"
+                                  required></textarea>
+                            <span id="send-btn" class="material-symbols-outlined">送出</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

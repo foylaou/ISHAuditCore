@@ -3,7 +3,7 @@
     --primary-hover: #5287a7;
     --secondary-color: #E9C46A;
     --secondary-hover: #F4A261;
-    --accent-color: #E76F51;
+    --accent-color: #ed664b;
     --background-color: #ffffff;
     --surface-color: #ffffff;
     --text-primary: #264653;
@@ -132,7 +132,7 @@
     flex-direction: column;
     align-items: center;
 }
-
+/* 主按鈕樣式 */
 .main-button {
     background-color: var(--primary-color);
     color: white;
@@ -143,36 +143,86 @@
     font-weight: 500;
     width: 100%;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
     margin-bottom: 0.75rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.main-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
 }
 
 .main-button:hover {
     background-color: var(--primary-hover);
     transform: translateY(-2px);
-    box-shadow: 0 4px 6px -1px rgba(102, 155, 188, 0.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.main-button:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.main-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.main-button:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 155, 188, 0.5);
+}
+
+/* 次要按鈕樣式 */
 .secondary-button {
     background: none;
     border: none;
     color: var(--text-secondary);
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 1.5rem;
     font-size: 0.9rem;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.secondary-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--primary-color);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+    z-index: -1;
 }
 
 .secondary-button:hover {
-    color: var(--primary-color);
+    color: white;
 }
 
-.secondary-buttons {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
+.secondary-button:hover::before {
+    transform: scaleX(1);
 }
 
+.secondary-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(102, 155, 188, 0.3);
+}
+/* 選項按鈕樣式 */
 .option-button {
     background: none;
     border: none;
@@ -180,22 +230,53 @@
     padding: 0.75rem 1.5rem;
     font-size: 1rem;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     margin-top: 0.75rem;
     display: flex;
     align-items: center;
     justify-content: flex-start;
     width: 100%;
+    position: relative;
+    overflow: hidden;
 }
 
 .option-button i {
     margin-right: 0.5rem;
     width: 20px;
     text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.option-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background-color: var(--primary-color);
+    transition: all 0.5s ease;
+    z-index: -1;
 }
 
 .option-button:hover {
-    color: var(--primary-color);
+    color: white;
+}
+
+.option-button:hover::before {
+    left: 0;
+}
+
+.option-button:hover i {
+    transform: scale(1.2);
+}
+
+/*無障礙虛線 css */
+.main-button:focus,
+.secondary-button:focus,
+.option-button:focus {
+    outline: 4px dashed var(--secondary-hover);
+    box-shadow: none;
 }
 
 .hidden {
@@ -246,8 +327,8 @@ h2 {
     border: 5px solid #f3f3f3;
     border-top: 5px solid #3498db;
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     animation: spin 1s linear infinite;
     display: none;
     margin: 5px auto;
@@ -301,3 +382,4 @@ button:hover {
         border-width: 7px;
     }
 }
+

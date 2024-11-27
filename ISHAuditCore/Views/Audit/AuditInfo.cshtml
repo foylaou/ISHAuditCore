@@ -1,0 +1,2039 @@
+﻿@using Newtonsoft.Json;
+@using ISHAuditCore.Models
+@{
+    ViewBag.AuditDetailInfoJson = JsonConvert.SerializeObject(ViewBag.AuditDetailInfo);
+    ViewBag.AuditDateJson = JsonConvert.SerializeObject(ViewBag.AuditDate);
+    ViewBag.SuggestJson = JsonConvert.SerializeObject(ViewBag.Suggest);
+    ViewBag.AuditControlYuanJson = JsonConvert.SerializeObject(ViewBag.AuditControlYuan);
+    ViewBag.AuditImprovementDocJson = JsonConvert.SerializeObject(ViewBag.audit_improvement_doc);
+}
+@{
+    ViewBag.Title = "督導資訊";
+}
+@section css{
+    <link rel="stylesheet" href="~/plugins/daterangepicker/daterangepicker.css">
+<style>
+    .ag-header-cell-label {
+        font-size: 16px; /* 設定表頭字型大小 */
+        font-weight: bold;
+    }
+</style>
+}
+
+@section js{
+
+}
+@section location{
+    <li class="breadcrumb-item">@Html.ActionLink("首頁", "Index", "Home")</li>
+    <li class="breadcrumb-item active">@Html.ActionLink("督導資訊", "Index", "Audit")</li>
+}
+@section scripts{
+    <script src="~/src/DateFormat.js"></script>
+    <script>
+        
+        $('#audit_detail_date_view').datetimepicker({
+            format: "YYYY-MM-DD",
+            locale: "zh-tw"
+        });
+        $('#come_time_view').datetimepicker({
+            format: "YYYY-MM-DD",
+            locale: "zh-tw"
+        });
+        $('#back_time_view').datetimepicker({
+            format: "YYYY-MM-DD",
+            locale: "zh-tw"
+        });
+        $('#receive_date_view').datetimepicker({
+            format: "YYYY-MM-DD",
+            locale: "zh-tw",
+            language: 'zh-TW'
+        });
+        $('#audit_date_range').daterangepicker({
+            ranges: {
+                "今天": [moment(), moment()],
+                "昨天": [moment().subtract(1, "days"), moment().subtract(1, "days")],
+                "過去 7 天": [moment().subtract(6, "days"), moment()],
+                "過去 30 天": [moment().subtract(29, "days"), moment()],
+                "本月": [moment().startOf("month"), moment().endOf("month")],
+                "上個月": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")]
+            },
+            locale: {
+                format: 'YYYY/MM/DD',
+                applyLabel: '確認',
+                cancelLabel: '取消',
+                fromLabel: '從',
+                toLabel: '到',
+                weekLabel: 'W',
+                customRangeLabel: '選擇時間',
+                daysOfWeek: ["日", "一", "二", "三", "四", "五", "六"],
+                monthNames: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+            }
+        });
+        var AuditDetailInfo_Data = JSON.parse('@Html.Raw(ViewBag.AuditDetailInfoJson)');
+        $(function () {
+            document.getElementById("control_yuan_come_upload_form").reset();
+            document.getElementById("control_yuan_back_upload_form").reset();
+            document.getElementById("upload_form").reset();
+            bsCustomFileInput.init();
+            document.forms['audit_data'].reset();
+            var AuditDate = JSON.parse('@Html.Raw(ViewBag.AuditDateJson)');
+            statusView(AuditDate);
+        });
+
+        var SelectedItemControlYuan= "";
+        $("#ControlYuanGrid").jsGrid({
+            width: "100%",
+            editing: true,
+            autoload: true,
+            sorting: true,
+            paging: true,
+            noDataContent: "Not found",
+            selecting: true,
+            pageSize: 10,
+            deleteConfirm: "確定刪除?",
+            onItemDeleting: function (args) {
+                block();
+                $.ajax({
+                    type: 'post',
+                    url: '/Audit/DeleteControlYuanData',
+                    data: {
+                        control_yuan_id: args.item.id
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        SelectedItemControlYuan = "";
+                        unblock();
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Success'
+                        });
+                    },
+                    error: function (data) {
+                        unblock();
+                        Toast.fire({
+                            icon: 'error',
+                            title: '系統錯誤，請洽管理員'
+                        });
+                    }
+                });
+            },
+            rowClick: function (args) {
+                var selectedRow = $("#ControlYuanGrid").find('table tr.highlight');
+                selectedRow.removeClass('highlight');
+                var $row = this.rowByItem(args.item);
+                $row.toggleClass("highlight");
+                SelectedItemControlYuan = args.item;
+            },
+            data: @Html.Raw(ViewBag.AuditControlYuanJson),
+            fields: [
+                { name: "id", css: "hide", width: 15 },
+                {
+                    title: "來文日期", name: "come_date", type: "text", width: 10, itemTemplate: function (value, item) {
+                        if (value == "" || value == null) {
+                            return "--";
+                        } else {
+                            const date = new Date(+new Date(value) + 8 * 3600 * 1000);
+                            return date.toISOString().substring(0, 10);
+                        }
+                    }
+                },
+                { title: "說明", name: "description", type: "text", width: 15 },
+                {
+                    title: "來文檔案", name: "come_doc", type: "text", width: 20, itemTemplate: function (value, item) {
+                        if (item.come_doc_text == "" || item.come_doc_text == null) {
+                            return "無資料";
+                        } else {
+                            return "<a href='" + "/Audit/ControlYuanFileCome/" + item.come_doc_uuid + "' target='_blank'>" + item.come_doc_text + item.come_doc_type + "</a>";
+                        }
+                    }
+                },
+                {
+                    title: "回文日期", name: "back_date", type: "text", width: 10, itemTemplate: function (value, item) {
+                        if (value == "" || value == null) {
+                            return "--";
+                        } else {
+                            const date = new Date(+new Date(value) + 8 * 3600 * 1000);
+                            return date.toISOString().substring(0, 10);;
+                        }
+                    }
+                },
+                {
+                    title: "回文檔案", name: "back_doc", type: "text", width: 20, itemTemplate: function (value, item) {
+                        if (item.back_doc_text == "" || item.back_doc_text == null) {
+                            return "無資料";
+                        } else {
+                            return "<a href='" + "/Audit/ControlYuanFileBack/" + item.back_doc_uuid +"' target='_blank'>" + item.back_doc_text + item.back_doc_type + "</a>";
+                        }
+                    }
+                },
+                { title: "備註", name: "remark", type: "text", width: 15 }
+            ]
+        });
+        
+
+        //new $.fn.dataTable.FixedHeader($('#example2').DataTable());
+        $.fn.dataTable.ext.errMode = 'none';
+        $(document).ready(function () {
+
+            var enter = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.enterTypeJson)));
+            enter.forEach(enter => {
+                $('#enter_type').append(new Option(enter.Name, enter.Id));
+            });
+            
+            var table = $('#example2').DataTable({
+                data:  @Html.Raw(ViewBag.SuggestJson),
+                columns: [
+                    { title: "進廠類型", data: "suggest.enter_type", type: "text", width: 20 },
+                    { title: "建議種類", data: "suggest_category.suggest_category1", type: "text", width: 20 },
+                    { title: "建議主項", data: "suggest.suggest", type: "text", width: 200 },
+                    { title: "建議子項", data: "suggest.sub_suggest", type: "text", width: 200 },
+                    { title: "參採", data: "suggest.participate", type: "text", width: 20 },
+                    { title: "說明/執行方式", data: "suggest.action", type: "text", width: 200 },
+                    { title: "短期", data: "suggest.short_term", type: "text", width: 20 },
+                    { title: "中期", data: "suggest.Mid_term", type: "text", width: 20 },
+                    { title: "長期", data: "suggest.long_term", type: "text", width: 20 },
+                    { title: "辦理情形", data: "suggest.handling_situation", type: "text", width: 200 },
+                    { title: "完成?", data: "suggest.improve_status", type: "text", width: 20 },
+                    { title: "負責單位", data: "suggest.responsible_unit", type: "text", width: 20 },
+                    { title: "預算", data: "suggest.budget_val", type: "text", width: 20 },
+                    { title: "預算說明", data: "suggest.budget", type: "text", width: 20 }
+                ],
+                "columnDefs": [
+                    {
+                        //"targets": [0, 1, 2],
+                        //"visible": false,
+                        "searchable": false
+                    }
+                ],
+                "paging": true,
+                "lengthChange": false,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "responsive": true,
+                "autoWidth": false,
+                "buttons": ["copy", "csv", "excel", "print", "colvis"]
+            }).buttons().container().appendTo('#example2_wrapper .col-md-6:eq(0)');
+            //new $.fn.dataTable.FixedHeader(table);
+
+        });
+        //$.fn.dataTable.ext.errMode = 'none';
+
+        function findJsonData(data, val) {
+            var jsonObj=[];
+            x = 0;
+            data.find(function (item, i) {
+                if (item.audit_detail_id === val) {
+                    jsonObj[x] = data[i];
+                    x += 1;
+                }
+            });
+            return jsonObj;
+        }
+        function DeleteReport(detail_id) {
+            if (detail_id == "" || detail_id == undefined) {
+                Toast.fire({
+                    icon: 'warning',
+                    title: '發生錯誤'
+                });
+            } else {
+                block();
+                $.ajax({
+                    type: 'post',
+                    url: '/Audit/DeleteReportFile',
+                    data: { detail_id: detail_id },
+                    dataType: "json",
+                    success: function (data) {
+                        unblock();
+                        document.getElementById("detail_report_" + detail_id).innerHTML = "無。";
+                        document.getElementById("detail_report_" + detail_id).href = "";
+                        document.getElementById("detail_report_" + detail_id).target = "";
+                        document.getElementById("delete_report_" + detail_id).setAttribute("class", "");
+                        document.getElementById("delete_report_" + detail_id).setAttribute("style", "");
+                        document.getElementById("delete_report_" + detail_id).setAttribute("onclick", "");
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Success'
+                        });
+                    },
+                    error: function (data) {
+                        unblock();
+                        Toast.fire({
+                            icon: 'error',
+                            title: '系統錯誤，請洽管理員'
+                        });
+                    }
+                });
+            }
+        }
+        function DeleteFile(detail_id) {
+            if (detail_id == "" || detail_id==undefined) {
+                Toast.fire({
+                    icon: 'warning',
+                    title: '發生錯誤'
+                });
+            } else {
+                block();
+                $.ajax({
+                    type: 'post',
+                    url: '/Audit/DeleteResponseFile',
+                    data: { detail_id: detail_id },
+                    dataType: "json",
+                    success: function (data) {
+                        unblock();
+                        document.getElementById("detail_file_" + detail_id).innerHTML = "無。";
+                        document.getElementById("detail_file_" + detail_id).href = "";
+                        document.getElementById("detail_file_" + detail_id).target = "";
+                        document.getElementById("delete_file_" + detail_id).setAttribute("class", "");
+                        document.getElementById("delete_file_" + detail_id).setAttribute("style", "");
+                        document.getElementById("delete_file_" + detail_id).setAttribute("onclick", "");
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Success'
+                        });
+                    },
+                    error: function (data) {
+                        unblock();
+                        Toast.fire({
+                            icon: 'error',
+                            title: '系統錯誤，請洽管理員'
+                        });
+                    }
+                });
+            }
+        }
+        function statusView(AuditDate) {
+            if (AuditDetailInfo_Data.length == 0)
+                return;
+            for (i = 0; i < AuditDetailInfo_Data.length; i++) {
+                var DateData = findJsonData(AuditDate, AuditDetailInfo_Data[i].id);
+                appendHtmlView("div", "detail_status_timeline", "time_line_times_" + i, "time-label", "", "");
+                appendHtmlView("span", "time_line_times_" + i, "", "bg-red", "", AuditDetailInfo_Data[i].start_date);
+                masterId = "master_parent_" + i;
+                appendHtmlView("div", "detail_status_timeline", masterId, "", "", "");
+                appendHtmlView("i", masterId, "", "fas fa-user bg-green", "", "");
+                appendHtmlView("div", masterId, "timeline_item_" + i, "timeline-item", "", "");
+                appendHtmlView("span", "timeline_item_" + i, "timeline_item_" + i + "time_" + i, "time", "", "");
+                appendHtmlView("i", "timeline_item_" + i + "time_" + i, "", "fas fa-clock", "", AuditDetailInfo_Data[i].start_date +"　~　");
+                appendHtmlView("span", "timeline_item_" + i, "timeline_item_" + i + "time_" + i, "time", "", "");
+                appendHtmlView("i", "timeline_item_" + i + "time_" + i, "", "fas fa-clock", "", AuditDetailInfo_Data[i].end_date + "　");
+                appendHtmlView("i", "timeline_item_" + i + "time_" + i, "", "fas fa-trash", "", "", "cursor: pointer;", "DeleteDetail('" + AuditDetailInfo_Data[i].id + "')");
+                appendHtmlView("h3", "timeline_item_" + i, "timeline_item_" + i + "timeline-header_" + i, "timeline-header", "");//格式
+                document.getElementById("timeline_item_" + i + "timeline-header_" + i).innerHTML = "#" + (i + 1) + "." + AuditDetailInfo_Data[i].enter_type + "　<button type='button' class='btn btn-primary btn-xs' onclick='CreateDetailDate(" + AuditDetailInfo_Data[i].id + ");'>新增進廠日期</button>" +
+                    "　<button type='button' class='btn btn-primary btn-xs' onclick='CreateDetailReport(" + AuditDetailInfo_Data[i].id + ");'>新增督導報告</button>";
+                var details = "";
+
+                if (DateData.length == 0) {
+                    details = "無進廠資訊";
+                    if (AuditDetailInfo_Data[i].reportname_uuid == "") {
+                        details = details + "<br>" + "督導報告:<a id='detail_report_" + AuditDetailInfo_Data[i].id + "' href='#' target=''>無。</a>" + "　" + "<i id= 'delete_report_" + AuditDetailInfo_Data[i].id + "' style=';' class=''></i>";
+                    } else {
+                        details = details + "<br>" + "督導報告:<a id='detail_report_" + AuditDetailInfo_Data[i].id + "' href='/Audit/DownloadReportDocument/" + AuditDetailInfo_Data[i].reportname_uuid + "' target='_blank'>" + AuditDetailInfo_Data[i].reportname +
+                            "</a>" + "　" + "<i id= 'delete_report_" + AuditDetailInfo_Data[i].id + "' style='cursor: pointer;' class='fas fa-trash'></i>";
+                    }
+                    if (AuditDetailInfo_Data[i].filename_uuid == "") {
+                        details = details + "<br>" + "改善建議與回復說明:<a id='detail_file_" + AuditDetailInfo_Data[i].id + "' href='#' target=''>無。</a>" + "　" + "<i id= 'delete_file_" + AuditDetailInfo_Data[i].id + "' style=';' class=''></i>";
+                    } else {
+                        details = details + "<br>" + "改善建議與回復說明:<a id='detail_file_" + AuditDetailInfo_Data[i].id + "' href='/Audit/DownloadDocument/" + AuditDetailInfo_Data[i].filename_uuid + "' target='_blank'>" + AuditDetailInfo_Data[i].filename +
+                            "</a>" + "　" + "<i id= 'delete_file_" + AuditDetailInfo_Data[i].id + "' style='cursor: pointer;' class='fas fa-trash'></i>";
+                    }
+
+                    appendHtmlView("div", "timeline_item_" + i, "timeline_item_" + i + "timeline-body_" + i, "timeline-body", "", details);
+                    if (AuditDetailInfo_Data[i].filename_uuid != "")
+                        document.getElementById("delete_file_" + AuditDetailInfo_Data[i].id).setAttribute("onclick", "DeleteFile('" + AuditDetailInfo_Data[i].id + "')");
+                    if (AuditDetailInfo_Data[i].reportname_uuid != "")
+                        document.getElementById("delete_report_" + AuditDetailInfo_Data[i].id).setAttribute("onclick", "DeleteReport('" + AuditDetailInfo_Data[i].id + "')");
+                } else {
+                    for (n = 0; n < DateData.length; n++) {
+                        details = details + "#" + (i + 1) + "-" + (n + 1) + "　進廠日期:" + DateData[n].audit_date1 + "　<i id= 'delete_date_" + DateData[n].id + "' style='cursor: pointer;' class='fas fa-trash'></i>";
+
+                        if (n == (DateData.length - 1)) {
+                            if (AuditDetailInfo_Data[i].reportname_uuid == "") {
+                                details = details + "<br>" + "督導報告:<a id='detail_report_" + AuditDetailInfo_Data[i].id + "' href='#' target=''>無。</a>" + "　" + "<i id= 'delete_report_" + AuditDetailInfo_Data[i].id + "' style=';' class=''></i>";
+                            } else {
+                                details = details + "<br>" + "督導報告:<a id='detail_report_" + AuditDetailInfo_Data[i].id + "' href='/Audit/DownloadReportDocument/" + AuditDetailInfo_Data[i].reportname_uuid + "' target='_blank'>" + AuditDetailInfo_Data[i].reportname +
+                                    "</a>" + "　" + "<i id= 'delete_report_" + AuditDetailInfo_Data[i].id + "' style='cursor: pointer;' class='fas fa-trash'></i>";
+                            }
+                            if (AuditDetailInfo_Data[i].filename_uuid == "") {
+                                details = details + "<br>" + "改善建議與回復說明:<a id='detail_file_" + AuditDetailInfo_Data[i].id + "' href='#' target=''>無。</a>" + "　" + "<i id= 'delete_file_" + AuditDetailInfo_Data[i].id + "' style=';' class=''></i>";
+                            } else {
+                                details = details + "<br>" + "改善建議與回復說明:<a id='detail_file_" + AuditDetailInfo_Data[i].id + "' href='/Audit/DownloadDocument/" + AuditDetailInfo_Data[i].filename_uuid + "' target='_blank'>" + AuditDetailInfo_Data[i].filename +
+                                    "</a>" + "　" + "<i id= 'delete_file_" + AuditDetailInfo_Data[i].id+"' style='cursor: pointer;' class='fas fa-trash'></i>";
+                            }
+                            appendHtmlView("div", "timeline_item_" + i, "timeline_item_" + i + "timeline-body_" + i, "timeline-body", "", details);
+                            document.getElementById("delete_date_" + DateData[n].id).setAttribute("onclick", "DeleteDate('" + DateData[n].id + "')");
+                            if (AuditDetailInfo_Data[i].filename_uuid != "")
+                                document.getElementById("delete_file_" + AuditDetailInfo_Data[i].id).setAttribute("onclick", "DeleteFile('" + AuditDetailInfo_Data[i].id + "')");
+                            if (AuditDetailInfo_Data[i].reportname_uuid != "")
+                                document.getElementById("delete_report_" + AuditDetailInfo_Data[i].id).setAttribute("onclick", "DeleteReport('" + AuditDetailInfo_Data[i].id + "')");
+                        } else {
+                            details = details + "<br>";
+                        }
+                    }
+                }
+
+
+                //添加footer
+                appendHtmlView("div", "timeline_item_" + i, "footer" + i, "card-footer clearfix", "", "");
+                appendHtmlView("div", "footer" + i, "footer_div" + i , "btn-group", "", "");
+                //添加footer的按鈕
+                appendHtmlView("button", "footer" + i, "footer_btn" + i, "btn btn-info float-right", "", "上傳/更新改善建議與回復說明", "button", "upload_modal_show('" + AuditDetailInfo_Data[i].id + "')");
+                appendHtmlView("button", "footer_div" + i, "footer_btn" + i, "btn btn-primary float-left", "", "匯入督導數據", "button", "ImportDetailDataModal('" + AuditDetailInfo_Data[i].id + "')");
+                appendHtmlView("button", "footer_div" + i, "footer_btn" + i, "btn btn-danger float-left", "", "刪除督導數據", "button", "DeleteDetailDataModal('" + AuditDetailInfo_Data[i].id + "')");
+            }
+            appendHtmlView("div", "detail_status_timeline", "master_parent_Clock", "", "", "");
+            appendHtmlView("i", "master_parent_Clock", "", "fas fa-clock bg-gray", "", "");
+        }
+
+        function appendHtmlView(viewtype, parentId, subDivId, classname, style, title,type, onclick) {
+            var parent = document.getElementById(parentId);
+            var subDiv = document.createElement(viewtype);
+            //設定 div 屬性，如 id
+            if (subDivId != "" && subDivId != undefined) {
+                subDiv.setAttribute("id", subDivId);
+            };
+            if (classname != "" && classname != undefined) {
+                subDiv.setAttribute("class", classname);
+            };
+            if (style != "" && style != undefined) {
+                subDiv.setAttribute("style", style);
+            };
+            if (title != "" && title != undefined) {
+                subDiv.innerHTML = title;
+            };
+            if (type != "" && type!=undefined) {
+                subDiv.setAttribute("type", type);
+            };
+            if (onclick != "" && onclick != undefined) {
+                subDiv.setAttribute("onclick", onclick);
+            };
+            parent.appendChild(subDiv);
+        }
+        function upload_modal_show(DetailId) {
+            $("#upload_detail_id").val(DetailId);
+            $("#upload_modal").modal('show');
+        }
+        function report_uploadFile() {
+            if ($("#audit_detail_id_report").val() == "") {
+                Toast.fire({
+                    icon: 'warning',
+                    title: '發生錯誤'
+                });
+            } else {
+                block();
+                var formData = new FormData($('#report_upload_form')[0]);
+                formData.append('detail_id', $("#audit_detail_id_report").val());
+                $.ajax({
+                    type: 'post',
+                    url: '/Audit/AuditUploadReportFile',
+                    data: formData,
+                    cache: false,
+                    dataType: "json",
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        unblock();
+                        if (data == "false") {
+                            Toast.fire({
+                                icon: 'error',
+                                title: '上傳失敗'
+                            });
+                        } else {
+                            document.getElementById("detail_report_" + $("#audit_detail_id_report").val()).innerHTML = data.filename + data.filetype;
+                            document.getElementById("detail_report_" + $("#audit_detail_id_report").val()).href = "/Audit/DownloadReportDocument/" + data.uuid;
+                            document.getElementById("detail_report_" + $("#audit_detail_id_report").val()).target = '_blank';
+                            document.getElementById("delete_report_" + $("#audit_detail_id_report").val()).setAttribute("class", "fas fa-trash");
+                            document.getElementById("delete_report_" + $("#audit_detail_id_report").val()).setAttribute("style", 'cursor: pointer;');
+                            document.getElementById("delete_report_" + $("#audit_detail_id_report").val()).setAttribute("onclick", "DeleteReport('" + $("#audit_detail_id_report").val() + "')");
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Success'
+                            });
+                            $("#audit_detail_report_modal").modal('hide');
+                        }
+                    },
+                    error: function (data) {
+                        unblock();
+                        Toast.fire({
+                            icon: 'error',
+                            title: '系統錯誤，請洽管理員'
+                        });
+                    }
+                });
+            }
+        }
+        function uploadFile() {
+            if ($("#upload_detail_id").val() == "" ) {
+                Toast.fire({
+                    icon: 'warning',
+                    title: '發生錯誤'
+                });
+            } else {
+                block();
+                var formData = new FormData($('#upload_form')[0]);
+                formData.append('detail_id', $("#upload_detail_id").val());
+                $.ajax({
+                    type: 'post',
+                    url: '/Audit/AuditUploadResponseFile',
+                    data: formData,
+                    cache: false,
+                    dataType: "json",
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        unblock();
+                        if (data == "false") {
+                            Toast.fire({
+                                icon: 'error',
+                                title: '上傳失敗'
+                            });
+                        } else {
+                            document.getElementById("detail_file_" + $("#upload_detail_id").val()).innerHTML = data.filename + data.filetype;
+                            document.getElementById("detail_file_" + $("#upload_detail_id").val()).href = "/Audit/DownloadDocument/" + data.uuid;
+                            document.getElementById("detail_file_" + $("#upload_detail_id").val()).target = '_blank';
+                            document.getElementById("delete_file_" + $("#upload_detail_id").val()).setAttribute("class", "fas fa-trash");
+                            document.getElementById("delete_file_" + $("#upload_detail_id").val()).setAttribute("style", 'cursor: pointer;');
+                            document.getElementById("delete_file_" + $("#upload_detail_id").val()).setAttribute("onclick", "DeleteFile('" + $("#upload_detail_id").val() + "')");
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Success'
+                            });
+                            $("#upload_modal").modal('hide');
+                        }
+                    },
+                    error: function (data) {
+                        unblock();
+                        Toast.fire({
+                            icon: 'error',
+                            title: '系統錯誤，請洽管理員'
+                        });
+                    }
+                });
+            }
+        }
+
+        function AddControlYuan() {
+            document.getElementById("control_yuan_come_upload_form").reset();
+            document.getElementById("control_yuan_back_upload_form").reset();
+            $("#control_yuan_id").val("");
+            $("#come_time").val("");
+            $("#back_time").val("")
+            ClearBackFile();
+            ClearComeFile();
+            $("#control_yuan_modal").modal('show');
+        }
+        function ClearBackFile() {
+            $("#doc_back_uuid").val("");
+            $("#doc_back_text").val("");
+            $("#doc_back_type").val("");
+            document.getElementById("back_url").innerHTML = "無。";
+            document.getElementById("back_url").href = "javascript: void (0)";
+            document.getElementById("back_url").target = "";
+            document.getElementById("back_url_delete").style = "";
+            document.getElementById("back_url_delete").setAttribute("class", "");
+        }
+        function ClearComeFile() {
+            $("#doc_come_uuid").val("");
+            $("#doc_come_text").val("");
+            $("#doc_come_type").val("");
+            document.getElementById("come_url").innerHTML = "無。";
+            document.getElementById("come_url").href = "javascript: void (0)";
+            document.getElementById("come_url").target = "";
+            document.getElementById("come_url_delete").style = "";
+            document.getElementById("come_url_delete").setAttribute("class", "");
+        }
+        function deleteControlYuanFile(Doctype) {
+            if (Doctype == "back") {
+                ClearBackFile();
+            } else if (Doctype == "come") {
+                ClearComeFile();
+            }
+        }
+        
+        function control_yuan_uploadFile(Doctype) {
+            block();
+            var formData = undefined;
+            if (Doctype == "back" && $('#control_yuan_file_back').val() != "") {
+                formData = new FormData($('#control_yuan_back_upload_form')[0]);
+            } else if (Doctype == "come" && $('#control_yuan_file_come').val() != "" ) {
+                formData = new FormData($('#control_yuan_come_upload_form')[0]);
+            } else {
+                Toast.fire({
+                    icon: 'error',
+                    title: '上傳失敗'
+                });
+                unblock();
+                return;
+            }
+            $.ajax({
+                type: 'post',
+                url: '/Audit/ControlYuanUploadFile',
+                data: formData,
+                cache: false,
+                dataType: "json",
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    if (data == "false") {
+                        Toast.fire({
+                            icon: 'error',
+                            title: '上傳失敗'
+                        });
+                    } else {
+                        if (Doctype == "back") {
+                            $("#doc_back_uuid").val(data[0].uuid);
+                            $("#doc_back_text").val(data[0].text);
+                            $("#doc_back_type").val(data[0].type);
+                            document.getElementById("back_url").innerHTML = data[0].text + data[0].type;
+                            document.getElementById("back_url").href = "javascript: void (0)";
+                            document.getElementById("back_url").target = "";
+                            document.getElementById("back_url_delete").style = "cursor: pointer;";
+                            document.getElementById("back_url_delete").setAttribute("class", "fas fa-trash");
+                            document.getElementById("back_url_delete").setAttribute("onclick", "deleteControlYuanFile('back');");
+                            document.getElementById("control_yuan_back_upload_form").reset();
+                        } else if (Doctype == "come") {
+                            $("#doc_come_uuid").val(data[0].uuid);
+                            $("#doc_come_text").val(data[0].text);
+                            $("#doc_come_type").val(data[0].type);
+                            document.getElementById("come_url").innerHTML = data[0].text + data[0].type;
+                            document.getElementById("come_url").href = "javascript: void (0)";
+                            document.getElementById("come_url").target = "";
+                            document.getElementById("come_url_delete").style = "cursor: pointer;";
+                            document.getElementById("come_url_delete").setAttribute("class", "fas fa-trash");
+                            document.getElementById("come_url_delete").setAttribute("onclick", "deleteControlYuanFile('come');");
+                            document.getElementById("control_yuan_come_upload_form").reset();
+                        }
+                        unblock();
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Success'
+                        });
+                    }
+                },
+                error: function (data) {
+                    unblock();
+                    Toast.fire({
+                        icon: 'error',
+                        title: '系統錯誤，請洽管理員'
+                    });
+                }
+            });
+        }
+
+        function StringToDate(DateData) {
+            if (DateData == "" || DateData == null || DateData == undefined)
+                return "";
+            const date = new Date(+new Date(DateData) + 8 * 3600 * 1000);
+            return date.toISOString().substring(0, 10);
+        }
+        function EditControlYuan() {
+            if (SelectedItemControlYuan == "" || SelectedItemControlYuan == undefined) {
+                Toast.fire({
+                    icon: 'warning',
+                    title: '請選擇編輯項目'
+                });
+            } else {
+                document.getElementById("control_yuan_come_upload_form").reset();
+                document.getElementById("control_yuan_back_upload_form").reset();
+                $("#control_yuan_id").val(SelectedItemControlYuan.id);
+                $("#description").val(SelectedItemControlYuan.description);
+                $("#come_time").val(StringToDate(SelectedItemControlYuan.come_date));
+                $("#back_time").val(StringToDate(SelectedItemControlYuan.back_date));
+                $("#doc_come_uuid").val(SelectedItemControlYuan.come_doc_uuid);
+                $("#doc_come_text").val(SelectedItemControlYuan.come_doc_text);
+                $("#doc_come_type").val(SelectedItemControlYuan.come_doc_type);
+                $("#doc_back_uuid").val(SelectedItemControlYuan.back_doc_uuid);
+                $("#doc_back_text").val(SelectedItemControlYuan.back_doc_text);
+                $("#doc_back_type").val(SelectedItemControlYuan.back_doc_type);
+                if (SelectedItemControlYuan.come_doc_text == "" || SelectedItemControlYuan.come_doc_text == null || SelectedItemControlYuan.come_doc_text == undefined) {
+                    document.getElementById("come_url").innerHTML = "無。";
+                    document.getElementById("come_url").href = "javascript: void (0)";
+                    document.getElementById("come_url").target = "";
+                    document.getElementById("come_url_delete").style = "";
+                    document.getElementById("come_url_delete").setAttribute("class", "");
+                } else {
+                    document.getElementById("come_url").innerHTML = SelectedItemControlYuan.come_doc_text + SelectedItemControlYuan.come_doc_type;
+                    document.getElementById("come_url").href = "/Audit/ControlYuanFile/" + SelectedItemControlYuan.come_doc_uuid;
+                    document.getElementById("come_url").target = "_blank";
+                    document.getElementById("come_url_delete").style = "cursor: pointer;";
+                    document.getElementById("come_url_delete").setAttribute("class", "fas fa-trash");
+                    document.getElementById("come_url_delete").setAttribute("onclick", "deleteControlYuanFile('come');");
+                }
+                if (SelectedItemControlYuan.back_doc_text == "" || SelectedItemControlYuan.back_doc_text == null || SelectedItemControlYuan.back_doc_text == undefined) {
+                    document.getElementById("back_url").innerHTML = "無。";
+                    document.getElementById("back_url").href = "javascript: void (0)";
+                    document.getElementById("back_url").target = "";
+                    document.getElementById("back_url_delete").style = "";
+                    document.getElementById("back_url_delete").setAttribute("class", "");
+                } else {
+                    document.getElementById("back_url").innerHTML = SelectedItemControlYuan.back_doc_text + SelectedItemControlYuan.back_doc_type;
+                    document.getElementById("back_url").href = "/Audit/ControlYuanFile/" + SelectedItemControlYuan.back_doc_uuid;
+                    document.getElementById("back_url").target = "_blank";
+                    document.getElementById("back_url_delete").style = "cursor: pointer;";
+                    document.getElementById("back_url_delete").setAttribute("class", "fas fa-trash");
+                    document.getElementById("back_url_delete").setAttribute("onclick", "deleteControlYuanFile('back');");
+                }
+
+
+                $("#control_yuan_modal").modal('show');
+            }
+        }
+        function DeleteControlYuan() {
+            if (SelectedItemControlYuan == "" || SelectedItemControlYuan == undefined) {
+                Toast.fire({
+                    icon: 'warning',
+                    title: '請選擇刪除項目'
+                });
+            } else {
+                $("#ControlYuanGrid").jsGrid("deleteItem", SelectedItemControlYuan);
+                SelectedItemControlYuan = "";
+            }
+        }
+        function SaveControlYuanData() {
+            var audit_basic_id = @ViewBag.audit_basic_id;
+            $.ajax({
+                type: 'post',
+                url: '/Audit/SaveControlYuanData',
+                data: {
+                    audit_basic_id: audit_basic_id,
+                    control_yuan_id: $("#control_yuan_id").val(),
+                    description: $("#description").val(),
+                    come_time: $("#come_time").val(),
+                    back_time: $("#back_time").val(),
+                    doc_back_uuid:$("#doc_back_uuid").val(),
+                    doc_back_text:$("#doc_back_text").val(),
+                    doc_back_type: $("#doc_back_type").val(),
+                    doc_come_uuid:$("#doc_come_uuid").val(),
+                    doc_come_text:$("#doc_come_text").val(),
+                    doc_come_type: $("#doc_come_type").val(),
+                    remark: $("#remark").val()
+                },
+                dataType: "json",
+                success: function (data) {
+                    if ($("#control_yuan_id").val() == "" || $("#control_yuan_id").val() == null || $("#control_yuan_id").val() == undefined) {
+                        $("#ControlYuanGrid").jsGrid("insertItem", data);
+                    } else {
+                        $("#ControlYuanGrid").jsGrid("updateItem", SelectedItemControlYuan, data);
+                    }
+                    $("#ControlYuanGrid").jsGrid("sort", { field: "come_date", order: "asc" });
+                    unblock();
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Success'
+                    });
+                    $("#control_yuan_modal").modal('hide');
+                    SelectedItemControlYuan = "";
+                },
+                error: function (data) {
+                    unblock();
+                    Toast.fire({
+                        icon: 'error',
+                        title: '系統錯誤，請洽管理員'
+                    });
+                }
+            });
+
+        }
+        function AddImprovement() {
+            $("#improvement_modal").modal('show');
+            $("#improvement_id").val("");
+            ClearImprovementFile();
+            document.getElementById("improvement_upload_form").reset();
+        }
+        function ClearImprovementFile() {
+            $("#doc_improvement_uuid").val("");
+            $("#doc_improvement_text").val("");
+            $("#doc_improvement_type").val("");
+            document.getElementById("improvement_url").innerHTML = "無。";
+            document.getElementById("improvement_url").href = "javascript: void (0)";
+            document.getElementById("improvement_url").target = "";
+            document.getElementById("improvement_url_delete").style = "";
+            document.getElementById("improvement_url_delete").setAttribute("class", "");
+        }
+        var SelectedItemImprovement = "";
+        @*$("#ImprovementGrid").jsGrid({
+            width: "100%",
+            editing: true,
+            autoload: true,
+            sorting: true,
+            paging: true,
+            noDataContent: "Not found",
+            selecting: true,
+            pageSize: 10,
+            deleteConfirm: "確定刪除?",
+            onItemDeleting: function (args) {
+                block();
+                $.ajax({
+                    type: 'post',
+                    url: '/Audit/DeleteImprovementData',
+                    data: {
+                        uuid: args.item.uuid
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        SelectedItemImprovement = "";
+                        unblock();
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Success'
+                        });
+                    },
+                    error: function (data) {
+                        unblock();
+                        Toast.fire({
+                            icon: 'error',
+                            title: '系統錯誤，請洽管理員'
+                        });
+                    }
+                });
+            },
+            rowClick: function (args) {
+                var selectedRow = $("#ImprovementGrid").find('table tr.highlight');
+                selectedRow.removeClass('highlight');
+                var $row = this.rowByItem(args.item);
+                $row.toggleClass("highlight");
+                SelectedItemImprovement = args.item;
+            },
+            data: @Html.Raw(ViewBag.AuditImprovementDocJson),
+            fields: [
+                { name: "uuid", css: "hide", width: 15 },
+                {
+                    title: "日期", name: "receive_date", type: "text", width: 20, itemTemplate: function (value, item) {
+                        if (value == "" || value == null) {
+                            return "--";
+                        } else {
+                            const date = new Date(+new Date(value) + 8 * 3600 * 1000);
+                            return date.toISOString().substring(0, 10);
+                        }
+                    }
+                },
+                {
+                    title: "改善計畫", name: "doc", type: "text", width: 80, itemTemplate: function (value, item) {
+                        if (item.doc_text == "" || item.doc_text == null) {
+                            return "無資料";
+                        } else {
+                            return "<a href='" + "/Audit/ImprovementFile/" + item.doc_uuid + "'>" + item.doc_text + item.doc_type + "</a>";
+                        }
+                    }
+                }
+            ]
+        });*@
+
+
+        let gridApi;
+        const rowData = @Html.Raw(ViewBag.AuditImprovementDocJson);
+        const gridOptions = {
+            localeText: AG_GRID_LOCALE_TW,
+            rowData: rowData,
+            columnDefs: [
+                { headerName: "UUID", field: "uuid", hide: true }, // 隱藏 UUID 列
+                {
+                    headerName: "日期",
+                    field: "receive_date",
+                    width: 150,
+                    valueFormatter: (params) => {
+                        if (!params.value) return "--";
+                        const date = new Date(+new Date(params.value) + 8 * 3600 * 1000);
+                        return date.toISOString().substring(0, 10);
+                    }
+                },
+                {
+                    headerName: "改善計畫",
+                    field: "doc_text",
+                    width: 300,
+                    cellRenderer: (params) => {
+                        const item = params.data;
+                        if (!item.doc_text) {
+                            return "無資料";
+                        }
+                        return `<a href='/Audit/ImprovementFile/${item.doc_uuid}'>${item.doc_text}${item.doc_type}</a>`;
+                    }
+                }
+            ],
+            rowSelection: 'single',
+            domLayout: 'autoHeight', // 自適應高度
+            pagination: true, // 開啟分頁功能
+            paginationPageSize: 15, // 每頁顯示 10 條數據
+            defaultColDef: {
+                sortable: true,
+                filter: true,
+                resizable: true,
+                editable: true
+            },
+            onGridReady: function(params) {
+                gridApi = params.api; // 獲取 gridApi
+            },
+            onRowClicked: (event) => {
+                const selectedRow = document.querySelector("#ImprovementGrid .ag-row-selected");
+                if (selectedRow) selectedRow.classList.remove("highlight");
+                event.node.setSelected(true);
+                selectedRow.classList.add("highlight");
+                SelectedItemImprovement = event.data;
+            },
+            onCellEditingStopped: (event) => {
+                console.log("Cell editing stopped:", event.data);
+            },
+            onRowSelected: (event) => {
+                if (event.node.isSelected()) {
+                    SelectedItemImprovement = event.data;
+                }
+            },
+            overlayNoRowsTemplate: '<span class="no-rows-overlay">Not found</span>'
+        }
+        $(document).ready(function () {
+            const gridDiv = document.querySelector('#ImprovementGrid');
+            gridApi = new agGrid.Grid(gridDiv, gridOptions);
+
+            document.addEventListener('DOMContentLoaded', function () {
+                const gridDiv = document.querySelector('#ImprovementGrid');
+                new agGrid.Grid(gridDiv, gridOptions);
+                // 自定義刪除功能
+                @*gridApi.addEventListener("rowSelected", (event) => {
+                    if (event.node.isSelected()) { 
+                        SelectedItemImprovement = event.data;
+                    }
+                });
+
+                const deleteRow = (rowData) => {
+                    block();
+                    $.ajax({
+                        type: 'post',
+                        url: '/Audit/DeleteImprovementData',
+                        data: { uuid: rowData.uuid },
+                        dataType: "json",
+                        success: function () {
+                            unblock();
+                            Toast.fire({ icon: 'success', title: 'Success' });
+                            gridApi.applyTransaction({ remove: [rowData] });
+                        },
+                        error: function () {
+                            unblock();
+                            Toast.fire({ icon: 'error', title: '系統錯誤，請洽管理員' });
+                        }
+                    });
+                };
+
+                // 綁定刪除按鈕（或其他觸發條件）
+                document.querySelector("#deleteButton").addEventListener("click", () => {
+                    if (SelectedItemImprovement) {
+                        if (confirm("確定刪除?")) {
+                            deleteRow(SelectedItemImprovement);
+                        }
+                    } else {
+                        alert("請先選擇一行數據");
+                    }
+                });*@
+            });
+        });
+        
+        
+        function deleteImprovementFile() {
+            ClearImprovementFile();
+        }
+        function DeleteImprovement() {
+            if (SelectedItemImprovement == "" || SelectedItemImprovement == undefined) {
+                Toast.fire({
+                    icon: 'warning',
+                    title: '請選擇刪除項目'
+                });
+                return;
+            } else {
+                @*$("#ImprovementGrid").jsGrid("deleteItem", SelectedItemImprovement);
+                SelectedItemImprovement = "";*@
+                if (confirm("確定刪除?")) {
+                    block(); // 顯示加載狀態
+                    $.ajax({
+                        type: 'post',
+                        url: '/Audit/DeleteImprovementData',
+                        data: { uuid: SelectedItemImprovement.uuid },
+                        dataType: "json",
+                        success: function () {
+                            unblock(); // 隱藏加載狀態
+                            Toast.fire({
+                                icon: 'success',
+                                title: '刪除成功'
+                            });
+
+                            // 從 ag-Grid 中刪除選定的項目
+                            const transaction = { remove: [SelectedItemImprovement] };
+                            const gridOptions = agGrid.GridOptions; // 取得 grid 的全局設定
+                            gridOptions.api.applyTransaction(transaction);
+
+                            // 清空選定項目
+                            SelectedItemImprovement = "";
+                        },
+                        error: function () {
+                            unblock(); // 隱藏加載狀態
+                            Toast.fire({
+                                icon: 'error',
+                                title: '系統錯誤，請洽管理員'
+                            });
+                        }
+                    });
+                }
+            }
+        }
+        function EditImprovement() {
+            if (SelectedItemImprovement == "" || SelectedItemImprovement == undefined) {
+                Toast.fire({
+                    icon: 'warning',
+                    title: '請選擇編輯項目'
+                });
+                return;
+            }
+            $("#receive_date").val(StringToDate(SelectedItemImprovement.receive_date));
+            $("#improvement_id").val(SelectedItemImprovement.uuid);
+            $("#doc_improvement_uuid").val(SelectedItemImprovement.doc_uuid);
+            $("#doc_improvement_text").val(SelectedItemImprovement.doc_text);
+            $("#doc_improvement_type").val(SelectedItemImprovement.doc_type);
+            if (SelectedItemImprovement.doc_text == "" && SelectedItemImprovement.doc_type == "") {
+                document.getElementById("improvement_url").innerHTML = "無。";
+                document.getElementById("improvement_url").href = "javascript: void (0)";
+                document.getElementById("improvement_url").target = "";
+                document.getElementById("improvement_url_delete").style = "";
+                document.getElementById("improvement_url_delete").setAttribute("class", "");
+            } else {
+                document.getElementById("improvement_url").innerHTML = SelectedItemImprovement.doc_text + SelectedItemImprovement.doc_type;
+                document.getElementById("improvement_url").href = "/Audit/ImprovementFile/" + SelectedItemImprovement.doc_uuid;
+                document.getElementById("improvement_url").target = "_blank";
+                document.getElementById("improvement_url_delete").style = "cursor: pointer;";
+                document.getElementById("improvement_url_delete").setAttribute("class", "fas fa-trash");
+                document.getElementById("improvement_url_delete").setAttribute("onclick", "deleteImprovementFile();");
+            }
+            document.getElementById("improvement_upload_form").reset();
+            $("#improvement_modal").modal('show');
+        }
+        function SaveImprovement() {
+            var audit_basic_id = @ViewBag.audit_basic_id;
+            $.ajax({
+                type: 'post',
+                url: '/Audit/SaveImprovementData',
+                data: {
+                    audit_basic_id: audit_basic_id,
+                    improvement_id: $("#improvement_id").val(),
+                    receive_date: $("#receive_date").val(),
+                    doc_improvement_uuid: $("#doc_improvement_uuid").val(),
+                    doc_improvement_text: $("#doc_improvement_text").val(),
+                    doc_improvement_type: $("#doc_improvement_type").val(),
+                },
+                dataType: "json",
+                success: function (data) {
+                    if ($("#improvement_id").val() == "" || $("#improvement_id").val() == null || $("#improvement_id").val() == undefined) {
+                        @*$("#ImprovementGrid").jsGrid("insertItem", data);*@
+                        // 如果 `improvement_id` 為空，新增項目
+                        const addTransaction = { add: [data] };
+                        gridApi.applyTransaction(addTransaction);
+                    } else {
+                        @*$("#ImprovementGrid").jsGrid("updateItem", SelectedItemImprovement, data);*@
+                        // 如果 `improvement_id` 有值，更新選中的項目
+                        const updatedRows = [];
+                        gridApi.forEachNode((node) => {
+                            if (node.data.uuid === SelectedItemImprovement.uuid) {
+                                node.data = { ...node.data, ...data }; // 更新選中項目數據
+                                updatedRows.push(node.data);
+                            }
+                        });
+                        gridApi.applyTransaction({ update: updatedRows });
+                    }
+                    @*$("#ImprovementGrid").jsGrid("sort", { field: "receive_date", order: "asc" });*@
+                    gridApi.setSortModel([{ colId: "receive_date", sort: "asc" }]);
+                    
+                    unblock();
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Success'
+                    });
+                    $("#improvement_modal").modal('hide');
+                    SelectedItemImprovement = "";
+                },
+                error: function (data) {
+                    unblock();
+                    Toast.fire({
+                        icon: 'error',
+                        title: '系統錯誤，請洽管理員'
+                    });
+                }
+            });
+        }
+
+        function improvement_uploadFile() {
+            block();
+            var formData = new FormData($('#improvement_upload_form')[0]);
+            $.ajax({
+                type: 'post',
+                url: '/Audit/ImprovementUploadFile',
+                data: formData,
+                cache: false,
+                dataType: "json",
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    if (data == "false") {
+                        Toast.fire({
+                            icon: 'error',
+                            title: '上傳失敗'
+                        });
+                    } else {
+                        $("#doc_improvement_uuid").val(data[0].uuid);
+                        $("#doc_improvement_text").val(data[0].text);
+                        $("#doc_improvement_type").val(data[0].type);
+                        document.getElementById("improvement_url").innerHTML = data[0].text + data[0].type;
+                        document.getElementById("improvement_url").href = "javascript: void (0)";
+                        document.getElementById("improvement_url").target = "";
+                        document.getElementById("improvement_url_delete").style = "cursor: pointer;";
+                        document.getElementById("improvement_url_delete").setAttribute("class", "fas fa-trash");
+                        document.getElementById("improvement_url_delete").setAttribute("onclick", "deleteImprovementFile();");
+                        document.getElementById("improvement_upload_form").reset();
+                        unblock();
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Success'
+                        });
+                    }
+                },
+                error: function (data) {
+                    unblock();
+                    Toast.fire({
+                        icon: 'error',
+                        title: '系統錯誤，請洽管理員'
+                    });
+                }
+            });
+        }
+        function CreateDetail() {
+            $("#audit_detail_modal").modal('show');
+            //block();
+            //document.getElementById("detail_status_timeline").innerHTML="";
+            //unblock();
+        }
+        function CreateDetailReport(detailid) {
+            $("#audit_detail_id_report").val(detailid);
+            $("#audit_detail_report_modal").modal('show');
+        }
+
+        function CreateDetailDate(detailid) {
+            $("#audit_detail_id_date").val(detailid);
+            $("#audit_detail_date_modal").modal('show');
+        }
+        function CreateAuditDetail() {
+            if ($("#audit_date_range").val() == "" || $("#enter_type").val() == "") {
+                Toast.fire({
+                    icon: 'warning',
+                    title: '請確實填寫內容'
+                });
+                return;
+            }
+            var audit_basic_id = @ViewBag.audit_basic_id;
+            $.ajax({
+                type: 'post',
+                url: '/Audit/CreateAuditDetail',
+                data: {
+                    audit_basic_id: audit_basic_id,
+                    audit_date_range: $("#audit_date_range").val(),
+                    enter_type: $("#enter_type").val(),
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data == "false") {
+                        Toast.fire({
+                            icon: 'error',
+                            title: '上傳失敗'
+                        });
+                    } else {
+                        document.getElementById("detail_status_timeline").innerHTML = "";
+                        AuditDetailInfo_Data = data[0];
+                        statusView(data[1]);
+                        unblock();
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Success'
+                        });
+                        $("#audit_detail_modal").modal('hide');
+                    }
+                },
+                error: function (data) {
+                    unblock();
+                    Toast.fire({
+                        icon: 'error',
+                        title: '系統錯誤，請洽管理員'
+                    });
+                }
+            });
+
+            //block();
+            //document.getElementById("detail_status_timeline").innerHTML="";
+            //unblock();
+        }
+        function DeleteDate(id) {
+            block();
+            $.ajax({
+                type: 'post',
+                url: '/Audit/DeleteAuditDetailDate',
+                data: {
+                    audit_detail_date_id: id
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data == "false") {
+                        Toast.fire({
+                            icon: 'error',
+                            title: '刪除失敗'
+                        });
+                    } else {
+                        document.getElementById("detail_status_timeline").innerHTML = "";
+                        AuditDetailInfo_Data = data[0];
+                        statusView(data[1]);
+                        unblock();
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Success'
+                        });
+                    }
+                },
+                error: function (data) {
+                    unblock();
+                    Toast.fire({
+                        icon: 'error',
+                        title: '系統錯誤，請洽管理員'
+                    });
+                }
+            });
+        }
+        function CreateAuditDetailDate() {
+            if ($("#audit_detail_date").val() == "") {
+                Toast.fire({
+                    icon: 'warning',
+                    title: '請確實填寫內容'
+                });
+                return;
+            } else {
+                var audit_basic_id = @ViewBag.audit_basic_id;
+                $.ajax({
+                    type: 'post',
+                    url: '/Audit/CreateAuditDetailDate',
+                    data: {
+                        audit_basic_id: audit_basic_id,
+                        audit_detail_id: $("#audit_detail_id_date").val(),
+                        audit_detail_date: $("#audit_detail_date").val(),
+                        due: $("#due").val(),
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data == "false") {
+                            Toast.fire({
+                                icon: 'error',
+                                title: '發生錯誤'
+                            });
+                        } else {
+                            document.getElementById("detail_status_timeline").innerHTML = "";
+                            AuditDetailInfo_Data = data[0];
+                            statusView(data[1]);
+                            unblock();
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Success'
+                            });
+                            $("#audit_detail_date_modal").modal('hide');
+                        }
+                    },
+                    error: function (data) {
+                        unblock();
+                        Toast.fire({
+                            icon: 'error',
+                            title: '系統錯誤，請洽管理員'
+                        });
+                    }
+                });
+            }
+
+        }
+        var delete_detail_id = undefined;
+        function DeleteDetailDataModal(id) {
+            delete_detail_id = id;
+            $("#delete_confirm_modal").modal('show');
+        }
+        function DeleteDetailData() {
+            block();
+            $.ajax({
+                type: 'post',
+                url: '/Audit/DeleteAuditDetail',
+                data: {
+                    delete_detail_id: delete_detail_id
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data == "false") {
+                        Toast.fire({
+                            icon: 'error',
+                            title: '刪除失敗'
+                        });
+                    } else {
+                        document.getElementById("detail_status_timeline").innerHTML = "";
+                        AuditDetailInfo_Data = data[0];
+                        statusView(data[1]);
+                        $('#example2').DataTable().clear();
+                        $('#example2').DataTable().rows.add(data[2]);
+                        $('#example2').DataTable().draw();
+                        $('#example2').DataTable({
+                            "responsive": true,
+                            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                        }).buttons().container().appendTo('#example2_wrapper .col-md-6:eq(0)');
+                        unblock();
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Success'
+                        });
+                        $("#delete_confirm_modal").modal('hide');
+                    }
+                },
+                error: function (data) {
+                    unblock();
+                    Toast.fire({
+                        icon: 'error',
+                        title: '系統錯誤，請洽管理員'
+                    });
+                }
+            });
+        }
+        var deleteDetailDataId = undefined;
+        function ImportDetailDataModal(Id) {
+            var importDetailId = Id;
+            document.getElementById("import_upload_form").reset();
+            $("#delete_detaildata_confirm_modal").modal('show');
+        }
+        function DeleteDetailSuggestData() {
+            block();
+            $.ajax({
+                type: 'post',
+                url: '/Audit/DeleteAuditDetailData',
+                data: {
+                    delete_detail_id: delete_detail_id
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data == "false") {
+                        Toast.fire({
+                            icon: 'error',
+                            title: '刪除失敗'
+                        });
+                    } else {
+                        document.getElementById("detail_status_timeline").innerHTML = "";
+                        AuditDetailInfo_Data = data[0];
+                        statusView(data[1]);
+                        $('#example2').DataTable().clear();
+                        $('#example2').DataTable().rows.add(data[2]);
+                        $('#example2').DataTable().draw();
+                        $('#example2').DataTable({
+                            "responsive": true,
+                            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                        }).buttons().container().appendTo('#example2_wrapper .col-md-6:eq(0)');
+                        unblock();
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Success'
+                        });
+                        $("#delete_detaildata_confirm_modal").modal('hide');
+                    }
+                },
+                error: function (data) {
+                    unblock();
+                    Toast.fire({
+                        icon: 'error',
+                        title: '系統錯誤，請洽管理員'
+                    });
+                }
+            });
+        }
+        var importDetailId = undefined;
+        function ImportDetailDataModal(Id) {
+            importDetailId = Id;
+            document.getElementById("import_upload_form").reset();
+            $("#import_modal").modal('show');
+        }
+        function ImportDetailData() {
+            var formData = new FormData($('#import_upload_form')[0]);
+            formData.append('detail_id', importDetailId);
+            $.ajax({
+                type: 'post',
+                url: '/Audit/ImportUploadFile',
+                data: formData,
+                cache: false,
+                dataType: "json",
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    if (data[0] == "true") {
+                        $('#example2').DataTable().clear();
+                        $('#example2').DataTable().rows.add(data[1]);
+                        $('#example2').DataTable().draw();
+                        $('#example2').DataTable({
+                            "responsive": true,
+                            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                        }).buttons().container().appendTo('#example2_wrapper .col-md-6:eq(0)');
+                        unblock();
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Success'
+                        });
+                        $("#import_modal").modal('hide');
+                    } else {
+                        unblock();
+                        Toast.fire({
+                            icon: 'error',
+                            title: data[0]
+                        });
+                    }
+                },
+                error: function (data) {
+                    unblock();
+                    Toast.fire({
+                        icon: 'error',
+                        title: '系統錯誤，請洽管理員'
+                    });
+                }
+            });
+        }
+    </script>
+}
+@section page_title{
+    <h1 class="m-0">@ViewBag.factory @ViewBag.audit_type 督導資訊</h1>
+}
+
+<div class="container">
+
+    
+</div>
+
+<div class="row">
+    <div class="col-12 col-sm-12">
+        <div class="card card-primary card-outline card-outline-tabs">
+            <div class="card-header p-0 border-bottom-0">
+                <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="query_tabs" data-toggle="pill" href="#query_tab" role="tab" aria-controls="query_tab" aria-selected="true">督導資訊</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="basic_tabs" data-toggle="pill" href="#basic_tab" role="tab" aria-controls="basic_tab" aria-selected="true">督導歷程</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="audit_control_yuan_tabs" data-toggle="pill" href="#audit_control_yuan_tab" role="tab" aria-controls="audit_control_yuan_tab" aria-selected="true">監察院來文</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="execute_tabs" data-toggle="pill" href="#execute_tab" role="tab" aria-controls="execute_tab" aria-selected="true">執行規劃</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="improve_tabs" data-toggle="pill" href="#improve_tab" role="tab" aria-controls="improve_tab" aria-selected="true">改善計畫</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <form id="audit_data">
+                    @Html.AntiForgeryToken()
+                    <div class="tab-content" id="custom-tabs-four-tabContent">
+                        <div class="tab-pane fade show active" id="query_tab" role="tabpanel" aria-labelledby="query_tab">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>工業區:</label>
+                                            <input class="form-control" type="text" value="@ViewBag.industrial_area" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>公司:</label>
+                                            <input class="form-control" type="text" value="@ViewBag.company" readonly>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>工廠:</label>
+                                            <input class="form-control" type="text" value="@ViewBag.factory" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>督導種類:</label>
+                                            <input class="form-control" type="text" value="@ViewBag.audit_type" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>督導原因:</label>
+                                            <input class="form-control" type="text" value="@ViewBag.audit_cause" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>事故時間:</label>
+                                            <input class="form-control" type="text" value="@ViewBag.incident_datetime" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>災害類型:</label>
+                                            <input class="form-control" type="text" value="@ViewBag.disater_types" readonly>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>是否停工?:</label>
+                                            <input class="form-control" type="text" value="@ViewBag.sd" readonly>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>是否裁罰?:</label>
+                                            <input class="form-control" type="text" value="@ViewBag.penalty" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>參採率(%)</label>
+                                            <input class="form-control" type="text" value="@ViewBag.participate_status" readonly>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-group">
+                                            <label>改善完成率(%)</label>
+                                            <input class="form-control" type="text" value="@ViewBag.improve_status" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-sm-12">
+                                        <div class="form-group">
+                                            <label>督導說明</label>
+                                            <textarea class="form-control" rows="3" placeholder="無" readonly>@ViewBag.incident_description</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-sm-12">
+                                        <div class="form-group">
+                                            <label>裁罰</label>
+                                            <textarea class="form-control" rows="3" placeholder="無" readonly>@ViewBag.penalty_detail</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="basic_tab" role="tabpanel" aria-labelledby="basic_tab">
+                            <div class="card card-info card-outline">
+                                <div class="card-header">
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-primary btn-xs" onclick="CreateDetail();">新增督導歷程</button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <section class="col-lg-12 connectedSortable ui-sortable">
+                                            <div class="col-md-12">
+                                                <div class="timeline" id="detail_status_timeline"></div>
+                                            </div>
+                                        </section>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="audit_control_yuan_tab" role="tabpanel" aria-labelledby="audit_control_yuan_tab">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12 col-md-12">
+                                        <nav class="navbar navbar-expand navbar-info navbar-dark">
+                                            <!-- Left navbar links -->
+                                            <ul class="navbar-nav">
+                                                <li class="nav-item d-none d-sm-inline-block">
+                                                    <div class="btn-group">
+                                                        <button type="button" class="btn btn-default" onclick="AddControlYuan();"><i class="fas fa-plus mr-1"></i></button>
+                                                        <button type="button" class="btn btn-default" onclick="EditControlYuan();"><i class="fas fa-pencil-alt mr-1"></i></button>
+                                                        <button type="button" class="btn btn-default" onclick="DeleteControlYuan();"><i class="fas fa-trash-alt mr-1"></i></button>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-sm-12">
+                                        <div id="ControlYuanGrid"></div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="execute_tab" role="tabpanel" aria-labelledby="execute_tab">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12 col-sm-12">
+                                        <h5>執行規劃</h5>
+                                        <table id="example2" class="table table-bordered table-striped"></table>
+                                        @*<div id="auditdetailGrid"></div>*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="improve_tab" role="tabpanel" aria-labelledby="improve_tab">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12 col-md-12">
+                                        <nav class="navbar navbar-expand navbar-info navbar-dark">
+                                            <!-- Left navbar links -->
+                                            <ul class="navbar-nav">
+                                                <li class="nav-item d-none d-sm-inline-block">
+                                                    <div class="btn-group">
+                                                        <button type="button" class="btn btn-default" onclick="AddImprovement();"><i class="fas fa-plus mr-1"></i></button>
+                                                        <button type="button" class="btn btn-default" onclick="EditImprovement();"><i class="fas fa-pencil-alt mr-1"></i></button>
+                                                        <button type="button" class="btn btn-default" onclick="DeleteImprovement();"><i class="fas fa-trash-alt mr-1"></i></button>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-sm-12">
+                                        <div id="ImprovementGrid" class="ag-theme-quartz" style="width: 100%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="upload_modal">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content bg-default">
+            <div class="modal-header">
+                <h4 class="modal-title">上傳/更新檔案</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="upload_detail_id" name="upload_detail_id">
+                <form id="upload_form" enctype="multipart/form-data" target="nm_iframe">
+                    @Html.AntiForgeryToken()
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="file" name="file">
+                                        <label class="custom-file-label" for="exampleInputFile">Choose file</label>
+                                    </div>
+                                    <div class="input-group-append">
+                                        <button type="button" class="input-group-text" onclick="uploadFile();">Upload</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-info" data-dismiss="modal">關閉</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="control_yuan_modal">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content bg-default">
+            <div class="modal-header">
+                <h4 class="modal-title">監察院來文 & 回文</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <input type="hidden" id="control_yuan_id" name="control_yuan_id">
+
+                <strong style="font-size: 22px;"><i class="far fa-file-alt mr-1"></i> 監察院來文</strong>
+                <br>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+
+                            <label>來文日期</label>
+                            <div class="form-group">
+                                <div class="input-group date" id="come_time_view" data-target-input="nearest">
+                                    <input id="come_time" neme="come_time" type="text" class="form-control datetimepicker-input" data-target="#come_time_view" placeholder="YYYY-MM-DD" />
+                                    <div class="input-group-append" data-target="#come_time_view" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-12">
+                        <div class="form-group">
+                            <label>說明</label>
+                            <input id="description" name="description" class="form-control" type="text" placeholder="請輸入說明內容">
+                        </div>
+                    </div>
+                </div>
+                <label>來文檔案:</label>
+                <input type="hidden" id="doc_come_uuid" name="doc_come_uuid">
+                <input type="hidden" id="doc_come_text" name="doc_come_text">
+                <input type="hidden" id="doc_come_type" name="doc_come_type">
+                <a id="come_url" href="javascript: void (0)" target="">無。</a>　<i id="come_url_delete" style="" class=""></i>
+                <form id="control_yuan_come_upload_form" enctype="multipart/form-data" target="control_yuan_nm_iframe">
+                    @Html.AntiForgeryToken()
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="control_yuan_file_come" name="control_yuan_file_come">
+                                        <label class="custom-file-label" for="exampleInputFile">請選擇來文檔案...</label>
+                                    </div>
+                                    <div class="input-group-append">
+                                        <button type="button" class="input-group-text" onclick="control_yuan_uploadFile('come');">Upload</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <hr>
+                <strong style="font-size: 22px;"><i class="far fa-file-alt mr-1"></i> 工業局回文</strong>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>回文日期</label>
+                            <input type="hidden" id="doc_back_uuid" name="doc_back_uuid">
+                            <input type="hidden" id="doc_back_text" name="doc_back_text">
+                            <input type="hidden" id="doc_back_type" name="doc_back_type">
+                            <div class="form-group">
+                                <div class="input-group date" id="back_time_view" data-target-input="nearest">
+                                    <input id="back_time" neme="back_time" type="text" class="form-control datetimepicker-input" data-target="#back_time_view" placeholder="YYYY-MM-DD" />
+                                    <div class="input-group-append" data-target="#back_time_view" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <label>回文檔案:</label>
+                <input type="hidden" id="Doc_come_uuid" name="Doc_come_uuid">
+                <input type="hidden" id="Doc_come_text" name="Doc_come_text">
+                <input type="hidden" id="Doc_come_type" name="Doc_come_type">
+                <a id="back_url" href="javascript: void (0)" target="">無。</a>　<i id="back_url_delete" style="" class=""></i>
+                <form id="control_yuan_back_upload_form" enctype="multipart/form-data" target="control_yuan_nm_iframe">
+                    @Html.AntiForgeryToken()
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="control_yuan_file_back" name="control_yuan_file_back">
+                                        <label class="custom-file-label" for="exampleInputFile">請選擇回文檔案...</label>
+                                    </div>
+                                    <div class="input-group-append">
+                                        <button type="button" class="input-group-text" onclick="control_yuan_uploadFile('back');">Upload</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="row">
+                    <div class="col-12 col-sm-12">
+                        <div class="form-group">
+                            <label>備註</label>
+                            <textarea id="remark" name="remark" class="form-control" rows="3" placeholder="請輸入備註說明"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-info" data-dismiss="modal">關閉</button>
+                <button type="button" class="btn btn-success float-right" onclick="SaveControlYuanData()">儲存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="improvement_modal">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content bg-default">
+            <div class="modal-header">
+                <h4 class="modal-title">改善計畫</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="improvement_id" name="improvement_id">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>回復日期</label>
+                            <div class="form-group">
+                                <div class="input-group date" id="receive_date_view" data-target-input="nearest">
+                                    <input id="receive_date" neme="receive_date" type="text" class="form-control datetimepicker-input" data-target="#receive_date_view" placeholder="YYYY-MM-DD" />
+                                    <div class="input-group-append" data-target="#receive_date_view" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <label>改善計畫:</label>
+                <input type="hidden" id="doc_improvement_uuid" name="doc_improvement_uuid">
+                <input type="hidden" id="doc_improvement_text" name="doc_improvement_text">
+                <input type="hidden" id="doc_improvement_type" name="doc_improvement_type">
+                <a id="improvement_url" href="javascript: void (0)" target="">無。</a>　<i id="improvement_url_delete" style="" class=""></i>
+                <form id="improvement_upload_form" enctype="multipart/form-data" target="improvement_nm_iframe">
+                    @Html.AntiForgeryToken()
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="improvement_file" name="improvement_file">
+                                        <label class="custom-file-label" for="exampleInputFile">請選擇改善計畫檔案...</label>
+                                    </div>
+                                    <div class="input-group-append">
+                                        <button type="button" class="input-group-text" onclick="improvement_uploadFile();">Upload</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-info" data-dismiss="modal">關閉</button>
+                <button type="button" class="btn btn-success float-right" onclick="SaveImprovement()">儲存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="audit_detail_report_modal">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content bg-default">
+            <div class="modal-header">
+                <h4 class="modal-title">建立督導報告</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="audit_detail_id_report" name="audit_detail_id_report">
+                <form id="report_upload_form" enctype="multipart/form-data" target="improvement_nm_iframe">
+                    @Html.AntiForgeryToken()
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="reportt_file" name="report_file">
+                                        <label class="custom-file-label" for="exampleInputFile">請選擇督導報告...</label>
+                                    </div>
+                                    <div class="input-group-append">
+                                        <button type="button" class="input-group-text" onclick="report_uploadFile();">Upload</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-info" data-dismiss="modal">關閉</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="audit_detail_modal">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content bg-default">
+            <div class="modal-header">
+                <h4 class="modal-title">建立督導歷程</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>督導起訖時間(必填)</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="far fa-clock"></i></span>
+                                </div>
+                                <input type="text" class="form-control float-right" id="audit_date_range">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-3">
+                        <div class="form-group">
+                            <label>督導類型(必填)</label>
+                            <select id="enter_type" name="enter_type" class="form-control select2" style="width: 100%;">
+                                <option value="">-- 請選擇 --</option>
+                                @* @{ *@
+                                @*     Codes Code = new Codes(); *@
+                                @*     List<Codes> EnterType = Code.EnterType(); *@
+                                @*     foreach (var code in EnterType) *@
+                                @*     { *@
+                                @*         <option value=@code.id>@code.name</option> *@
+                                @*     } *@
+                                @* } *@
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-info" data-dismiss="modal">關閉</button>
+                <button type="button" class="btn btn-success float-right" onclick="CreateAuditDetail()">建立</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="audit_detail_date_modal">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content bg-default">
+            <div class="modal-header">
+                <h4 class="modal-title">建立進廠日期</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="audit_detail_id_date" name="audit_detail_id_date">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>進廠日期(必填)</label>
+                            <div class="form-group">
+                                <div class="input-group date" id="audit_detail_date_view" data-target-input="nearest">
+                                    <input id="audit_detail_date" neme="audit_detail_date" type="text" class="form-control datetimepicker-input" data-target="#audit_detail_date_view" placeholder="YYYY-MM-DD" />
+                                    <div class="input-group-append" data-target="#audit_detail_date_view" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-sm-3">
+                        <div class="form-group">
+                            <label>時間(必填)</label>
+                            <select id="due" name="due" class="form-control select2" style="width: 100%;">
+                                <option value="整日" selected="selected">整日</option>
+                                <option value="上午">上午</option>
+                                <option value="下午">下午</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-info" data-dismiss="modal">關閉</button>
+                <button type="button" class="btn btn-success float-right" onclick="CreateAuditDetailDate()">建立</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="delete_confirm_modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">警告</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>確定刪除督導資訊?</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">否</button>
+                <button type="button" onclick="DeleteDetailData();" class="btn btn-danger">是</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="delete_detaildata_confirm_modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">警告</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>確定刪除此次進廠建議事項?</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">否</button>
+                <button type="button" onclick="DeleteDetailSuggestData();" class="btn btn-danger">是</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="import_modal">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content bg-default">
+            <div class="modal-header">
+                <h4 class="modal-title">匯入資訊</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="import_upload_form" enctype="multipart/form-data" target="import_nm_iframe">
+                    @Html.AntiForgeryToken()
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="import_file" name="import_file">
+                                        <label class="custom-file-label" for="exampleInputFile">請選擇匯入資訊Excel檔案...</label>
+                                    </div>
+                                    <div class="input-group-append">
+                                        <button type="button" class="input-group-text" onclick="ImportDetailData();">Import</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-info" data-dismiss="modal">關閉</button>
+            </div>
+        </div>
+    </div>
+</div>

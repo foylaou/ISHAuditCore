@@ -367,7 +367,8 @@
             data: {id:$("#item_password").val(),password: $("#password").val() },
             dataType: "json",
             success: function (data) {
-                $("#jsGrid").jsGrid({data:data});
+                gridApi.setRowData(data);
+                @*$("#jsGrid").jsGrid({data:data});*@
                 unblock();
                 $("#remark_modal_password").modal('hide');
                 if (data.error) {

@@ -8,6 +8,21 @@ ViewBag.Title = "石化督導資料綜合查詢";
 <link rel="stylesheet" href="~/plugins/chat/style.css" />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,1,0" />
+<style>
+.ag-header-cell-label {
+font-size: 16px; /* 設定表頭字型大小 */
+font-weight: bold;
+}
+
+.ag-cell {
+font-size: 16px; /* 設定資料列字型大小 */
+}
+
+.no-rows-overlay {
+    font-size: 18px; /* 設定字型大小 */
+    text-align: center;
+}
+</style>
 }
 
 @section js{
@@ -18,21 +33,31 @@ ViewBag.Title = "石化督導資料綜合查詢";
 <li class="breadcrumb-item active">@Html.ActionLink("大型石化廠公共安全管理聯合督導", "Index", "Audit")</li>
 }
 @section scripts{
-<!--chatbot start-->
+    <!--chatbot start-->
 
-<!--chatbot end-->
-<script>
+    <!--chatbot end-->
+    <script>
     
     $(document).ready(function () {
+        const gridDiv = document.querySelector('#basicGrid');
+        gridApi = new agGrid.Grid(gridDiv, gridOptions);
+        document.addEventListener('DOMContentLoaded', function () {
+            const gridDiv = document.querySelector('#basicGrid');
+            new agGrid.Grid(gridDiv, gridOptions);
+            
+        });
+        
         var city = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.CityListJson)));
         var company = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.CompanyJson)));
         var auditType = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.AuditTypeJson)));
         var auditCause = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.AuditCauseJson)));
         var disasterType = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.DisasterTypeJson)));
+        var category = JSON.parse(@Html.Raw(JsonConvert.SerializeObject(ViewBag.CategoryListJson)));
+        
         
         // 動態填入縣市選項
         city.forEach(city => {
-            $('#city').append(new Option(city.Name, city.Name));
+            $('#city').append(new Option(city.Name, city.Id));
         });
         // 當選擇縣市時，更新鄉鎮選單
         $('#city').on('change', function () {
@@ -40,9 +65,9 @@ ViewBag.Title = "石化督導資料綜合查詢";
             $('#township').empty().append(new Option('-- 請選擇 --', ''));
             $('#industrial_area').empty().append(new Option('-- 請選擇 --', ''));
             // 獲取所選縣市的鄉鎮列表
-            var townships = city.find(city => city.Name === selectedCity)?.Child || [];
+            var townships = city.find(city => city.Id === selectedCity)?.Child || [];
             townships.forEach(township => {
-                $('#township').append(new Option(township.Name, township.Name));
+                $('#township').append(new Option(township.Name, township.Id));
             });
         });
 
@@ -52,39 +77,69 @@ ViewBag.Title = "石化督導資料綜合查詢";
             var selectedTownship = $(this).val();
             $('#industrial_area').empty().append(new Option('-- 請選擇 --', ''));
             // 獲取所選鄉鎮的工業區列表
-            var industrialAreas = city.find(city => city.Name === selectedCity)
-                ?.Child.find(town => town.Name === selectedTownship)
+            var industrialAreas = city.find(city => city.Id === selectedCity)
+                ?.Child.find(town => town.Id === selectedTownship)
                 ?.Child || [];
 
             industrialAreas.forEach(industrial => {
-                $('#industrial_area').append(new Option(industrial.Name, industrial.Name));
+                $('#industrial_area').append(new Option(industrial.Name, industrial.Id));
             });
         });
         // 動態填入公司選項
         company.forEach(company => {
-            $('#company').append(new Option(company.Name, company.Name));
+            $('#company').append(new Option(company.Name, company.Id));
         });
         // 當選擇公司時，更新工廠選單
         $('#company').on('change', function () {
             var selectedCompany = $(this).val();
             $('#factory').empty().append(new Option('-- 請選擇 --', ''));
             // 獲取所選縣市的鄉鎮列表
-            var factorys = company.find(company => company.Name === selectedCompany)?.Child || [];
+            var factorys = company.find(company => company.Id === selectedCompany)?.Child || [];
             factorys.forEach(factory => {
-                $('#factory').append(new Option(factory.Name, factory.Name));
+                $('#factory').append(new Option(factory.Name, factory.Id));
             });
         });
         // 動態填入督導種類選項
         auditType.forEach(auditType => {
-            $('#audit_type').append(new Option(auditType.Name, auditType.Name));
+            $('#audit_type').append(new Option(auditType.Name, auditType.Id));
         });
         // 動態填入督導原因選項
         auditCause.forEach(auditCause => {
-            $('#audit_cause').append(new Option(auditCause.Name, auditCause.Name));
+            $('#audit_cause').append(new Option(auditCause.Name, auditCause.Id));
         });
         // 動態填入災害類型選項
         disasterType.forEach(disasterType => {
-            $('#disaster_type').append(new Option(disasterType.Name, disasterType.Name));
+            $('#disaster_type').append(new Option(disasterType.Name, disasterType.Id));
+        });
+        
+        // 動態填入建議種類選項
+        category.forEach(category => {
+            $('#suggest_category').append(new Option(category.Name, category.Id));
+        });
+        // 當選擇建議種類時，更新建議類型選單
+        $('#suggest_category').on('change', function () {
+            var selectedCategory = $(this).val();
+            $('#suggest_type').empty().append(new Option('-- 請選擇 --', ''));
+            $('#suggest_item').empty().append(new Option('-- 請選擇 --', ''));
+            // 獲取所選種類的類型列表
+            var types = category.find(category => category.Id === selectedCategory)?.Child || [];
+            types.forEach(type => {
+                $('#suggest_type').append(new Option(type.Name, type.Id));
+            });
+        });
+
+        // 當選擇建議類型時，更新建議項目選單
+        $('#suggest_type').on('change', function () {
+            var selectedCategory = $('#suggest_category').val();
+            var selectedType = $(this).val();
+            $('#suggest_item').empty().append(new Option('-- 請選擇 --', ''));
+            // 獲取所選類型的項目列表
+            var items = category.find(category => category.Id === selectedCategory)
+                ?.Child.find(type => type.Id === selectedType)
+                ?.Child || [];
+            items.forEach(item => {
+                $('#suggest_item').append(new Option(item.Name, item.Id));
+            });
         });
     });
     // 定義全域變數
@@ -94,106 +149,84 @@ ViewBag.Title = "石化督導資料綜合查詢";
         $("#chatbox").prop("hidden", false);
         API_KEY = "5TDQ63V-WRN4X7V-P0XG23D-CQV27SG"; // 設置全域變數的值
         
-
     }
-
 
     document.forms['audit_data'].reset();
-    var townships;
-    var industrial_areas;
-    var factory;
-
-
-    var SuggestCategoryData = JSON.parse('@Html.Raw(ViewBag.SuggestCategoryJson)');
-    var SuggestTypeData;
-    var SuggestItemData;
-    function findJsonData(data,val) {
-        var index = -1;
-        data.find(function (item, i) {
-            if (item.id === val) {
-                index = i;
-                return index;
-            }
-        });
-        return data[index];
-    }
-    $('#suggest_category').on('change', function () {
-        SuggestTypeData = undefined;
-        SuggestItemData = undefined;
-        $('#suggest_type').empty();
-        $('#suggest_type').append($("<option></option>").attr("value", '').text("-- 請選擇 --"));
-        $('#suggest_item').empty();
-        $('#suggest_item').append($("<option></option>").attr("value", '').text("-- 請選擇 --"));
-        if ($('#suggest_category').val() == '')
-            return;
-        SuggestTypeData = findJsonData(SuggestCategoryData, $('#suggest_category').val()).child;
-        for (var i = 0; i < SuggestTypeData.length; i++) {
-            $('#suggest_type').append($("<option></option>").attr("value", SuggestTypeData[i].id).text(SuggestTypeData[i].name));
-        }
-    });
-    $('#suggest_type').on('change', function () {
-        SuggestItemData = undefined;
-        $('#suggest_item').empty();
-        $('#suggest_item').append($("<option></option>").attr("value", '').text("-- 請選擇 --"));
-        if ($('#suggest_type').val() == '')
-            return;
-        SuggestItemData = findJsonData(SuggestTypeData, $('#suggest_type').val()).child;
-        for (var i = 0; i < SuggestItemData.length; i++) {
-            $('#suggest_item').append($("<option></option>").attr("value", SuggestItemData[i].id).text(SuggestItemData[i].name));
-        }
-    });
-
+    
     var SelectedItemauditbasic = "";
-    $("#basicGrid").jsGrid({
-        width: "100%",
-        editing: true,
-        autoload: true,
-        sorting: true,
-        paging: true,
-        noDataContent: "Not found",
-        selecting: true,
-        pageSize: 10,
-        rowClick: function (args) {
-            var selectedRow = $("#basicGrid").find('table tr.highlight');
-            selectedRow.removeClass('highlight');
-            var $row = this.rowByItem(args.item);
-            $row.toggleClass("highlight");
-            SelectedItemauditbasic = args.item;
+
+    let gridApi;
+    const gridOptions = {
+        localeText: AG_GRID_LOCALE_TW,
+        rowData: [],
+        columnDefs: [
+            { headerName: "ID", field: "id", hide: true },
+            { headerName: "UUID", field: "uuid", hide: true },
+            { headerName: "工業區", field: "industrial_area", sortable: true, filter: true, width: 200 },
+            { headerName: "公司", field: "company", sortable: true, filter: true, width: 200 },
+            { headerName: "工廠", field: "factory", sortable: true, filter: true, width: 200 },
+            { headerName: "督導種類", field: "audit_type", sortable: true, filter: true, width: 150 },
+            { headerName: "災害類型", field: "disater_types", sortable: true, filter: true, width: 180 },
+            {
+                headerName: "事故時間",
+                field: "incident_datetime",
+                width: 150,
+                cellRenderer: function(params) {
+                    if (!params.value) return "";
+                    const myDate = moment.utc(params.value);
+                    const date = new Date(+new Date(myDate) + 8 * 3600 * 1000);
+                    return date.toISOString().substring(0, 10);
+                }
+            },
+            {
+                headerName: "督導時間",
+                field: "audit_start_date",
+                width: 150,
+                cellRenderer: function(params) {
+                    if (!params.value) return "";
+                    const myDate = moment.utc(params.value);
+                    const date = new Date(+new Date(myDate) + 8 * 3600 * 1000);
+                    return date.toISOString().substring(0, 10);
+                }
+            },
+            { headerName: "督導原因", field: "audit_cause", sortable: true, filter: true, width: 150 },
+            { headerName: "督導說明", field: "incident_description", hide: true, width: 100 },
+            { headerName: "停工?", field: "sd", width: 100 },
+            { headerName: "裁罰?", field: "penalty", width: 100 },
+            { headerName: "裁罰", field: "penalty_detail", hide: true, width: 100 },
+        ],
+        rowSelection: 'single',
+        domLayout: 'autoHeight', // 自適應高度
+        pagination: true, // 開啟分頁功能
+        paginationPageSize: 15, // 每頁顯示 10 條數據
+        defaultColDef: {
+            resizable: true,
+            sortable: true,
+            filter: true,
         },
-        data: [],
-        fields: [
-            { name: "id", css: "hide", width: 15 },
-            { name: "uuid", css: "hide", width: 15 },
-            { title: "工業區", name: "industrial_area", type: "text", width: 50 },
-            { title: "公司", name: "company", type: "text", width: 50 },
-            { title: "工廠", name: "factory", type: "text", width: 50 },
-            { title: "督導種類", name: "audit_type", type: "text", width: 30 },
-            { title: "災害類型", name: "disater_types", type: "text", width: 30 },
-            {
-                title: "事故時間", name: "incident_datetime", width: 20, align: "center", itemTemplate: function StringToDate(DateData) {
-                    if (DateData == "" || DateData == null || DateData == undefined)
-                        return "";
-                    var myDate = moment.utc(DateData);
-                    const date = new Date(+new Date(myDate) + 8 * 3600 * 1000);
-                    return date.toISOString().substring(0, 10);
-                }
-            },
-            {
-                title: "督導時間", name: "audit_start_date", width: 20, align: "center", itemTemplate: function StringToDate(DateData) {
-                    if (DateData == "" || DateData == null || DateData == undefined)
-                        return "";
-                    var myDate = moment.utc(DateData);
-                    const date = new Date(+new Date(myDate) + 8 * 3600 * 1000);
-                    return date.toISOString().substring(0, 10);
-                }
-            },
-            { title: "督導原因", name: "audit_cause", type: "text", width: 20 },
-            { title: "督導說明", name: "incident_description", css: "hide", type: "text", width: 10 },
-            { title: "停工?", name: "sd", type: "text", width: 10 },
-            { title: "裁罰?", name: "penalty", type: "text", width: 10 },
-            { title: "裁罰", name: "penalty_detail", css: "hide", type: "text", width: 20 },
-        ]
-    });
+        onGridReady: function(params) {
+            gridApi = params.api; // 獲取 gridApi
+        },
+        getRowId: function(params) {
+            return params.data.id; // 假設 'id' 是唯一識別符
+        },
+        onRowClicked: function(event) {
+            // 移除先前的高亮行
+            const previousRow = document.querySelectorAll('.ag-row.highlight');
+            previousRow.forEach(row => row.classList.remove('highlight'));
+
+            // 添加高亮行
+            const rowElement = event.api.getRowNode(event.node.id)?.rowTopElement;
+            if (rowElement) {
+                rowElement.classList.add('highlight'); // 添加高亮行
+            }
+            // 取得選擇的資料
+            SelectedItemauditbasic = event.data;
+            console.log("SelectedItemauditbasic",SelectedItemauditbasic);
+        },
+        overlayNoRowsTemplate: '<span class="no-rows-overlay">Not found</span>'
+    }
+    
     function auditInfo() {
         window.open('/Audit/AuditInfo/' + SelectedItemauditbasic.uuid, '_blank');
     }
@@ -218,8 +251,10 @@ ViewBag.Title = "石化督導資料綜合查詢";
                 //var column = $('#example2').DataTable().column([3]);
                 //$('#example2').DataTable().columns.adjust().draw(false);
                 //column.visible(!column.visible());
-                $("#basicGrid").jsGrid("reset");
-                $("#basicGrid").jsGrid({ data: data[0] });
+
+                gridApi.setRowData([]);
+                gridApi.setRowData(data[0]);
+                
                 Toast.fire({
                     icon: 'success',
                     title: '載入完畢，共' + data[0].length + "筆"
@@ -640,7 +675,7 @@ ViewBag.Title = "石化督導資料綜合查詢";
                                 <div class="row">
                                     <div class="col-12 col-sm-12">
                                         <h5>督導資訊</h5>
-                                        <div id="basicGrid"></div>
+                                        <div id="basicGrid" class="card-body ag-theme-quartz" style="width: 100%;"></div>
                                     </div>
                                 </div>
                             </div>
@@ -657,13 +692,6 @@ ViewBag.Title = "石化督導資料綜合查詢";
                                 <div class="row">
                                     <div class="col-12 col-sm-12">
                                         <h5>執行規劃</h5>
-                                        <div class="card-footer clearfix">
-                                            <div class="row">
-                                                <div id="chatbox_btn" class="col-12 col-sm-12">
-                                                    <button type="button" onclick="chat()" class="btn btn-info float-right">我要問問題</button>
-                                                </div>
-                                            </div>
-                                        </div>
                                         <table id="example2" class="table table-bordered table-striped">
                                         </table>
                                     </div>
@@ -672,38 +700,7 @@ ViewBag.Title = "石化督導資料綜合查詢";
                         </div>
                     </div>
                 </form>
-
-
-
-                <div class="fast" id ="chatbox" hidden="true">
-                    <button class="chatbot-toggler">
-                        <span class="material-symbols-rounded">mode_comment</span>
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
-                    <div class="chatbot">
-                        <header>
-                            <h2>智慧工安</h2>
-                            <span class="close-btn material-symbols-outlined"><svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" id="close"><path d="M437.5 386.6L306.9 256l130.6-130.6c14.1-14.1 14.1-36.8 0-50.9-14.1-14.1-36.8-14.1-50.9 0L256 205.1 125.4 74.5c-14.1-14.1-36.8-14.1-50.9 0-14.1 14.1-14.1 36.8 0 50.9L205.1 256 74.5 386.6c-14.1 14.1-14.1 36.8 0 50.9 14.1 14.1 36.8 14.1 50.9 0L256 306.9l130.6 130.6c14.1 14.1 36.8 14.1 50.9 0 14-14.1 14-36.9 0-50.9z"></path></svg></span>
-                        </header>
-                        <ul class="chatbox">
-                            <li class="chat incoming">
-                            <span class="material-symbols-outlined">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" clip-rule="evenodd" viewBox="0 0 500 500" id="star"><path fill="#ffd600" d="M250,25L317.308,182.692L442.308,250L317.308,317.308L250,475L182.692,317.308L57.692,250L182.692,182.692L250,25Z"></path></svg>
-                            </span>
-                                <p>你好 &#128079; <br />今天想問些什麼?</p>
-                            </li>
-                            <!-- <li class="chat outgoing">
-                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
-                            </li>  -->
-                        </ul>
-                        <div class="chat-input">
-                        <textarea placeholder="請輸入你想問的問題"
-                                  spellcheck="false"
-                                  required></textarea>
-                            <span id="send-btn" class="material-symbols-outlined">送出</span>
-                        </div>
-                    </div>
-                </div>
+                
             </div>
 
         </div>

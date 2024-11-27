@@ -303,7 +303,18 @@ namespace ISHAuditCore.Models
 
             return userSessionInfo;
         }
-        
+        public List<Codes> EnterType()
+        {
+            
+            var data = (from enter_type in _db.enter_types
+                select new Codes
+                {
+                    Id = enter_type.id.ToString(),
+                    Name = enter_type.enter_type1
+                }).ToList();
+            return data;
+            
+        }
         
     }
 }

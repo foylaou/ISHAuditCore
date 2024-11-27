@@ -1,0 +1,99 @@
+@using Newtonsoft.Json
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    ViewBag.Title = "新增帳號";
+}
+
+@section css{
+    <link rel="stylesheet" href="~/css/loading.css">
+    <link rel="stylesheet" href="~/plugins/LoginStyle/LoginStyle.css">
+}
+
+@section js{
+
+}
+
+@section page_title{
+
+}
+
+@section location{
+    <li class="breadcrumb-item">@Html.ActionLink("首頁", "Index", "Home")</li>
+    <li class="breadcrumb-item active">@Html.ActionLink("新增帳號", "Index", "SignUp")</li>
+}
+
+
+<div class="container-wrapper">
+    <div class="login-container active" id="stepUsername" aria-live="polite">
+        <div class="login-content">
+            <h5><b>email驗證</b></h5>
+            <div class="form-group">
+                <input type="email" id="usernameInput" placeholder="輸入您的email" required aria-required="true" aria-describedby="usernameHelp">
+                <label for="usernameInput">輸入您的email</label>
+                <div id="usernameHelp" class="sr-only">輸入您的email以繼續</div>
+                <div class="loader-container">
+                    <div class="loader"></div>
+                    <div id="errorMessage" style="color: red"></div>
+                </div>
+            </div>
+            <!-- 新增發送驗證信按鈕 -->
+            <div class="form-group">
+                <button onclick="sendVerificationEmail()" class="secondary-button" aria-label="發送驗證信">發送驗證信</button>
+                <div id="verificationEmailHelp" class="sr-only">發送驗證信到您填寫的email地址</div>
+            </div>
+
+            <!-- 新增填寫驗證碼的欄位 -->
+            <div class="form-group">
+                <input type="text" id="verificationCodeInput" placeholder="輸入您的驗證碼" aria-describedby="verificationCodeHelp">
+                <label for="verificationCodeInput">輸入您的驗證碼</label>
+                <div id="verificationCodeHelp" class="sr-only">輸入收到的驗證碼以繼續</div>
+                <div class="loader-container">
+                    <div class="loader"></div>
+                    <div id="verificationErrorMessage" style="color: red"></div>
+                </div>
+            </div>
+            <div class="button-group">
+                <button onclick="nextStep()" class="main-button" aria-label="下一步，繼續註冊">下一步</button>
+            </div>
+            <div class="hidden-buttons" style="height: 50px">
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+    function sendVerificationEmail() {
+        // 實現發送驗證信的邏輯，例如調用後端API發送email
+        console.log("發送驗證信");
+        const email = document.getElementById('usernameInput').value;
+        if (!email) {
+            document.getElementById('errorMessage').innerText = '請輸入有效的電子郵件';
+            return;
+        }
+        // 清除錯誤信息並發送驗證信
+        document.getElementById('errorMessage').innerText = "";
+        // 執行發送驗證信的邏輯
+        console.log('發送驗證信...');
+        fetch('/Register/SendVerificationEmail', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(email),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data.message);
+                // 顯示已發送郵件的提示，隱藏加載動畫
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                document.getElementById('errorMessage').textContent = '發送驗證信失敗，請稍後再試';
+            });
+    }
+</script>
+}

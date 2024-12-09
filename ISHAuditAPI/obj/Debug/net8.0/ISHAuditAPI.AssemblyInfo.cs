@@ -10,12 +10,12 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyCompanyAttribute("ISHAuditCore")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("ISHAuditAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+775b98b27eb483b4abea13141ded03c84013c46f")]
-[assembly: System.Reflection.AssemblyProductAttribute("ISHAuditCore")]
-[assembly: System.Reflection.AssemblyTitleAttribute("ISHAuditCore")]
+[assembly: System.Reflection.AssemblyProductAttribute("ISHAuditAPI")]
+[assembly: System.Reflection.AssemblyTitleAttribute("ISHAuditAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
 
 // 由 MSBuild WriteCodeFragment 類別產生。

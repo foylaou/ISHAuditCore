@@ -1,0 +1,6 @@
+@ISHAuditAPI_HostAddress = http://localhost:5204
+
+GET {{ISHAuditAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
